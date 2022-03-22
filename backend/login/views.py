@@ -34,7 +34,7 @@ def init(request):
         msg = '手机号码格式错误'
     elif len(password) < 6:
         status = 3
-        msg = '密码由最少6位字符组成'
+        msg = '密码设置格式错误'
     if status == 0:
         password = hash_md5(password)
     login = {'username':username,'phone':phone,'mail':mail, 'password':password, 'status':status, 'msg':msg}
@@ -47,40 +47,70 @@ def index(request):
 
 ## TODO 发布者登陆
 def login_pro(request):
-    login = init(request)
+    pw = hash_md5(request.POST['pw'])
     info = ''
-    if Producer.objects.filter(phone=login['phone']).exists():
-        Pro = Producer.objects.get(phone=login['phone'])
-        if Pro.password == login['password']:
-            code = 200
-            msg = '登陆成功'
-            info = Pro.to_dict()
+    account = request.POST['account']
+    if '@' not in account:
+        if Producer.objects.filter(phone=account).exists():
+            Pro = Producer.objects.get(phone=account)
+            if Pro.password == pw:
+                code = 200
+                msg = '登陆成功'
+                info = Pro.to_dict()
+            else:
+                code = 402
+                msg = '用户名或密码错误'
         else:
-            code = 402
+            code = 404
             msg = '用户名或密码错误'
     else:
-        code = 404
-        msg = '用户名或密码错误'
+        if Producer.objects.filter(email=account).exists():
+            Pro = Producer.objects.get(email=account)
+            if Pro.password == pw:
+                code = 200
+                msg = '登陆成功'
+                info = Pro.to_dict()
+            else:
+                code = 402
+                msg = '用户名或密码错误'
+        else:
+            code = 404
+            msg = '用户名或密码错误'
     data = {'code': code, 'msg': msg, "userInfo": info}
     return JsonResponse(data)
 
 
 ## TODO 接单者登陆
 def login_con(request):
-    login = init(request)
+    pw = hash_md5(request.POST['pw'])
     info = ''
-    if Consumer.objects.filter(phone=login['phone']).exists():
-        Con = Consumer.objects.get(phone=login['phone'])
-        if Con.password == login['password']:
-            code = 200
-            msg = '登陆成功'
-            info = Con.to_dict()
+    account = request.POST['account']
+    if '@' not in account:
+        if Consumer.objects.filter(phone=account).exists():
+            Con = Consumer.objects.get(phone=account)
+            if Con.password == pw:
+                code = 200
+                msg = '登陆成功'
+                info = Con.to_dict()
+            else:
+                code = 402
+                msg = '用户名或密码错误'
         else:
-            code = 402
+            code = 404
             msg = '用户名或密码错误'
     else:
-        code = 404
-        msg = '用户名或密码错误'
+        if Consumer.objects.filter(email=account).exists():
+            Con = Consumer.objects.get(email=account)
+            if Con.password == pw:
+                code = 200
+                msg = '登陆成功'
+                info = Con.to_dict()
+            else:
+                code = 402
+                msg = '用户名或密码错误'
+        else:
+            code = 404
+            msg = '用户名或密码错误'
     data = {'code': code, 'msg': msg, "userInfo": info}
     return JsonResponse(data)
 
@@ -94,7 +124,7 @@ def pro_register(request):
             msg = '该手机已经被注册'
         elif Producer.objects.filter(email=reg['email']).exist():
             code = 404
-            msg = '该邮箱以被注册'
+            msg = '该手机已经被注册'
         else:
             new = Producer()
             new.phone = reg['phone']
