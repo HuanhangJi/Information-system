@@ -2,7 +2,12 @@ from django.db import models
 
 # Create your models here.
 
-
-class Task(models.Model):
+#发布者类
+class Producer(models.Model):
     pass
+
+#完成者类
+class Consumer(models.Model):
+    pass
+
 

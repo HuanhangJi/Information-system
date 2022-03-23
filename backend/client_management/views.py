@@ -1,6 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import render
-from django.shortcuts import render
 import json
 from django.db.models import Q
 from django.http import *
@@ -11,57 +9,152 @@ from .models import *
 import hashlib
 
 
-## TODO 增加任务函数
-def insert(request):
-    try:
-        uid = request.GET['uid']
-        price = request.GET['price']
-        owner = request.GET['owner']
-        t = Task()
-        t.uid = uid
-        t.price = price
-        t.owner = owner
-        t.save()
-        data = {'code':200,'msg':'添加任务成功'}
-    except BaseException:
-        data = {'code':404,'msg':'添加任务失败'}
-    return JsonResponse(data)
+## 密码加密函数 finish
+def hash_md5(str):
+    hash = hashlib.md5()
+    hash.update(bytes(str.encode('utf-8')))
+    return hash.hexdigest()
 
 
-## TODO 删除任务函数
-def delete(request):
-    try:
-        uid = request.GET['uid']
-        if Task.objects.filter(uid=uid).exist():
-            task = Task.objects.get(uid=uid)
-            task.delete()
-            data = {'code':200,'msg':'删除成功'}
+## request初始化
+def init(request):
+    username = request.POST['username']
+    phone = request.POST['phone']
+    mail = request.POST['mail']
+    password = request.POST['pw']
+    status = 0
+    msg = ''
+    if username == '':
+        status = 1
+        msg = '用户名未填写'
+    elif len(phone)!= 11 or not phone.isdigit():
+        status = 2
+        msg = '手机号码格式错误'
+    elif len(password) < 6:
+        status = 3
+        msg = '密码设置格式错误'
+    if status == 0:
+        password = hash_md5(password)
+    login = {'username':username,'phone':phone,'mail':mail, 'password':password, 'status':status, 'msg':msg}
+    return login
+
+
+## TODO 发布者登陆
+def login_pro(request):
+    pw = hash_md5(request.POST['pw'])
+    info = ''
+    account = request.POST['account']
+    if '@' not in account:
+        if Producer.objects.filter(phone=account).exists():
+            Pro = Producer.objects.get(phone=account)
+            if Pro.password == pw:
+                code = 200
+                msg = '登陆成功'
+                info = Pro.to_dict()
+            else:
+                code = 402
+                msg = '用户名或密码错误'
         else:
-            data = {'code':402,'msg':'不存在删除对象'}
-    except BaseException:
-        data = {'code':404,'msg':'删除失败'}
-    return JsonResponse(data)
-
-
-## TODO 编辑任务函数
-def edit(request):
-    try:
-        uid = request.GET['uid']
-        price = request.GET['price']
-        owner = request.GET['owner']
-        if Task.objects.filter(uid=uid).exist():
-            t = Task.objects.get(uid=uid)
-            t.price = price
-            t.owner = owner
-            t.save()
-            data = {'code': 200, 'msg': '修改成功'}
+            code = 404
+            msg = '用户名或密码错误'
+    else:
+        if Producer.objects.filter(email=account).exists():
+            Pro = Producer.objects.get(email=account)
+            if Pro.password == pw:
+                code = 200
+                msg = '登陆成功'
+                info = Pro.to_dict()
+            else:
+                code = 402
+                msg = '用户名或密码错误'
         else:
-            data = {'code':402,'msg':'未找到该任务'}
-    except BaseException:
-        data = {'code':404,'msg':'修改失败'}
+            code = 404
+            msg = '用户名或密码错误'
+    data = {'code': code, 'msg': msg, "userInfo": info}
     return JsonResponse(data)
 
 
-## TODO 查询任务函数
-def query(request):
-    pass
+## TODO 接单者登陆
+def login_con(request):
+    pw = hash_md5(request.POST['pw'])
+    info = ''
+    account = request.POST['account']
+    if '@' not in account:
+        if Consumer.objects.filter(phone=account).exists():
+            Con = Consumer.objects.get(phone=account)
+            if Con.password == pw:
+                code = 200
+                msg = '登陆成功'
+                info = Con.to_dict()
+            else:
+                code = 402
+                msg = '用户名或密码错误'
+        else:
+            code = 404
+            msg = '用户名或密码错误'
+    else:
+        if Consumer.objects.filter(email=account).exists():
+            Con = Consumer.objects.get(email=account)
+            if Con.password == pw:
+                code = 200
+                msg = '登陆成功'
+                info = Con.to_dict()
+            else:
+                code = 402
+                msg = '用户名或密码错误'
+        else:
+            code = 404
+            msg = '用户名或密码错误'
+    data = {'code': code, 'msg': msg, "userInfo": info}
+    return JsonResponse(data)
+
+
+## TODO 发布者注册
+def pro_register(request):
+    reg = init(request)
+    if reg['status'] == 0:
+        if Producer.objects.filter(phone=reg['phone']).exist():
+            code = 404
+            msg = '该手机已经被注册'
+        elif Producer.objects.filter(email=reg['email']).exist():
+            code = 404
+            msg = '该手机已经被注册'
+        else:
+            new = Producer()
+            new.phone = reg['phone']
+            new.email = reg['email']
+            new.username = reg['username']
+            new.password = reg['password']
+            new.save()
+            code = 200
+            msg = '注册成功'
+        data = {'code': code, 'msg': msg}
+    else:
+        data = {'code':404, 'msg':reg['msg'] }
+    return JsonResponse(data)
+
+
+## TODO 接单者注册
+def con_register(request):
+    reg = init(request)
+    if reg['status']==0:
+        if Consumer.objects.filter(phone=reg['phone']).exist():
+            code = 404
+            msg = '该手机已经被注册'
+        elif Consumer.objects.filter(email=reg['email']).exist():
+            code = 404
+            msg = '该邮箱已被注册'
+        else:
+            new = Consumer()
+            new.phone = reg['phone']
+            new.email = reg['email']
+            new.username = reg['username']
+            new.password = reg['password']
+            new.save()
+            code = 200
+            msg = '注册成功'
+        data = {'code': code, 'msg': msg}
+    else:
+        data = {'code':404,'msg':reg['msg']}
+    return JsonResponse(data)
+
