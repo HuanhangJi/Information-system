@@ -1,6 +1,4 @@
 from django.shortcuts import render
-
-# Create your views here.
 import json
 from django.db.models import Q
 from django.http import *
@@ -43,7 +41,6 @@ def init(request):
 ## TODO 主页
 def index(request):
     return HttpResponse('主页')
-
 
 ## TODO 发布者登陆
 def login_pro(request):
