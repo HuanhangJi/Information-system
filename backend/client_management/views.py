@@ -158,3 +158,27 @@ def con_register(request):
         data = {'code':404,'msg':reg['msg']}
     return JsonResponse(data)
 
+
+## 后台登陆
+def admin_login(request):
+    pass
+
+
+## TODO 后台增加发布者
+def pro_add(request):
+    pass
+
+
+## TODO 后台删除发布者
+def pro_del(request):
+    pass
+
+
+## TODO 后台查询发布者
+def pro_query(request):
+    pass
+
+
+## TODO 后台修改发布者
+def pro_edit(request):
+    pass
