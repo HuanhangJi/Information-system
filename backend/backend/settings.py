@@ -50,6 +50,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'client_management.middleware.ProMiddleware'#拦截Pro登陆
+    'client_management.middleware.ConMiddleware'#拦截Con登陆
 ]
 
 ROOT_URLCONF = 'backend.urls'

@@ -7,6 +7,7 @@ import requests
 import json
 from .models import *
 import hashlib
+from django.shortcuts import *
 
 
 ## 密码加密函数 finish
@@ -40,7 +41,7 @@ def init(request):
 
 
 ## TODO 发布者登陆
-def login_pro(request):
+def pro_login(request):
     pw = hash_md5(request.POST['pw'])
     info = ''
     account = request.POST['account']
@@ -51,6 +52,7 @@ def login_pro(request):
                 code = 200
                 msg = '登陆成功'
                 info = Pro.to_dict()
+                request.session['producer'] = info
             else:
                 code = 402
                 msg = '用户名或密码错误'
@@ -64,6 +66,7 @@ def login_pro(request):
                 code = 200
                 msg = '登陆成功'
                 info = Pro.to_dict()
+                request.session['producer'] = info
             else:
                 code = 402
                 msg = '用户名或密码错误'
@@ -75,7 +78,7 @@ def login_pro(request):
 
 
 ## TODO 接单者登陆
-def login_con(request):
+def con_login(request):
     pw = hash_md5(request.POST['pw'])
     info = ''
     account = request.POST['account']
@@ -83,6 +86,7 @@ def login_con(request):
         if Consumer.objects.filter(phone=account).exists():
             Con = Consumer.objects.get(phone=account)
             if Con.password == pw:
+                request.session['consumer'] = Con.to_dict()
                 code = 200
                 msg = '登陆成功'
                 info = Con.to_dict()
@@ -96,6 +100,7 @@ def login_con(request):
         if Consumer.objects.filter(email=account).exists():
             Con = Consumer.objects.get(email=account)
             if Con.password == pw:
+                request.session['consumer'] = Con.to_dict()
                 code = 200
                 msg = '登陆成功'
                 info = Con.to_dict()
@@ -158,27 +163,10 @@ def con_register(request):
         data = {'code':404,'msg':reg['msg']}
     return JsonResponse(data)
 
-
-## 后台登陆
-def admin_login(request):
-    pass
-
-
-## TODO 后台增加发布者
-def pro_add(request):
-    pass
-
-
-## TODO 后台删除发布者
-def pro_del(request):
-    pass
-
-
-## TODO 后台查询发布者
-def pro_query(request):
-    pass
-
-
-## TODO 后台修改发布者
-def pro_edit(request):
-    pass
+def pro_logout(request):
+    try:
+        del request.session['producer']
+        info = '登出成功'
+    except Exception:
+        info = '登出失败'
+    return JsonResponse({'info':info})
