@@ -12,4 +12,8 @@ import hashlib
 
 ## TODO 主页
 def index(request):
-    return HttpResponse('主页')
+    try:
+        content = {'info':'成功打开主页'}
+        return render(request,'index/index.html',content)
+    except Exception:
+        return HttpResponse('打开主页失败')
