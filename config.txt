@@ -1,10 +1,8 @@
 用来前后端连接，均可修改
 
-路由配置
-1.index
-跳转主页面 目前无输入输出
-
-2.login
+用户管理路由配置
+具体看client_management中urls中注释
+login
 用于登陆 login_pro登陆发布者\login_con登陆接收者
 方式：POST
 输入：account(phone or email),pw(密码)
@@ -13,11 +11,16 @@ code := 200(success) 402(fail to match) 404(error)
 msg := 信息，有'用户名未填写''手机号码格式错误''密码设置格式错误''用户名或密码错误''登陆成功'
 info := 成功后传回该用户的各项数值，json
 
-
-3.register
+register
 用于注册 register_pro\register_con同上
 方式：POST
 输入：username,phone,email,pw(密码)
 输出：data = {'code': code, 'msg': msg}
 code := 200(success)  404(error)
 msg := 信息 '该手机已经被注册''该手机已经被注册''注册成功'
+
+
+主页路由配置
+具体看main中urls注释
+{% url 'index' %} 跳转主页
+{% url 'assignments' %}跳转任务市场
