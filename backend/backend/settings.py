@@ -52,7 +52,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+<<<<<<< Updated upstream
     'django.middleware.common.CommonMiddleware',
+=======
+    'django.middleware.common.CommonMiddleware'
+>>>>>>> Stashed changes
     # 'client_management.middleware.ProMiddleware'#拦截Pro登陆
     # 'client_management.middleware.ConMiddleware'#拦截Con登陆
 ]
