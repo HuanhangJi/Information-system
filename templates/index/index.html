@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>【京冬众质】 - 盗版数据标注平台</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css'%}"> 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="{% static '/layui-v2.6.8/layui/css/layui.css'%}">
     <script src="{% static '/layui-v2.6.8/layui/layui.js'%}"></script>
@@ -13,8 +13,8 @@
     <script src="{% static '/dist/js/zui.min.js'%}"></script>
 
     <style> 
-        a{ text-decoration:none} 
-        a:hover{ text-decoration:none} 
+        a{text-decoration:none;color:black;} 
+        a:hover{text-decoration:none;color:black;} 
         .footer {height: 200px;background-color:#1a1a1a;margin-top: 15px;}
         .footer .container {padding-top: 20px;}
         .container {position: relative;width: 1200px; margin: auto;background-color: transparent;}
@@ -26,10 +26,31 @@
         .links dl dt {font-size: 16px;color: #ffffff;margin-bottom: 5px;}
         .links dl dd a {font-size: 12px;color: #b1b1b1;}
     </style>
-    
+    <script>
+        layer.open({
+        type: 1
+        ,title: false //不显示标题栏
+        ,closeBtn: false
+        ,area: '300px;'
+        ,shade: 0.8
+        ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+        ,resize: false
+        ,btn: ['火速围观', '残忍拒绝']
+        ,btnAlign: 'c'
+        ,moveType: 1 //拖拽模式，0或者1
+        ,content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">【京冬众质】- 北航最好的盗版数据平台<hr>我们提供多类型的数据标注，如文本标注、图片标注、音频标注、视频标注等<hr>快来加入我们吧！</div>'
+            ,success: function(layero){
+            var btn = layero.find('.layui-layer-btn');
+            btn.find('.layui-layer-btn0').attr({target: '_blank'});
+        }
+      });
+    </script>
 </head>
 <body>
     
+    
+    
+
 
     <!-- 标题 -->
     <!-- <div class="jumbotron" style="margin-bottom:0px;margin-top: 56px;">
@@ -37,15 +58,15 @@
     </div> -->
 
     <!-- 轮播 -->
-    <div class="row" style="">
+    <div class="row">
         <div class="col-md-12" style="margin-top: 56px;">
             <div class="layui-carousel" id="test1">
                 <div carousel-item>
-                <div><a><img src="{% static './img/1.png' %}" style="width:100%"></a></div>
-                <div><a><img src="{% static './img/2.png' %}" style="width:100%"></a></div>
-                <div><a><img src="{% static './img/3.png' %}" style="width:100%"></a></div>
-                <div><a><img src="{% static './img/4.png' %}" style="width:100%"></a></div>
-                <div><a><img src="{% static './img/5.png' %}" style="width:100%"></a></div>
+                <div><a><img src="{% static '/img/1.png'%}" style="width:100%"></a></div>
+                <div><a><img src="{% static '/img/2.png'%}" style="width:100%"></a></div>
+                <div><a><img src="{% static '/img/3.png'%}" style="width:100%"></a></div>
+                <div><a><img src="{% static '/img/4.png'%}" style="width:100%"></a></div>
+                <div><a><img src="{% static '/img/5.png'%}" style="width:100%"></a></div>
                 </div>
             </div>
             <!-- 条目中可以是任意内容，如：<img src=""> -->
@@ -89,21 +110,24 @@
     <div class="cards cards-borderless" style="margin:0 10%;">   
         <div class="col-md-4 col-sm-4 col-lg-4" >
             <a class="card" href="###">
-                <img src="{% static './img/1.png' %}" alt="">
+                <img src="{% static '/img/1.png'%}" alt="">
                 <div class="caption">文本数据标注</div>
             </a>
         </div>      
         <div class="col-md-4 col-sm-4 col-lg-4">
             <a class="card" href="###">
-                <img src="{% static './img/1.png' %}" alt="">
+                <img src="{% static '/img/1.png'%}" alt="">
                 <div class="caption">图片数据标注</div>
             </a>
         </div>     
         <div class="col-md-4 col-sm-4 col-lg-4">
             <a class="card" href="###">
-                <img src="{% static './img/1.png' %}" alt="">
+                <img src="{% static '/img/1.png'%}" alt="">
                 <div class="caption">视频数据标注</div>
             </a>
+        </div>
+        <div style="text-align: center;">
+            <a style="text-decoration:none" onclick="show2()">更多项目></a>
         </div>
     </div>
 
@@ -118,22 +142,30 @@
     <div class="cards cards-borderless" style="margin:0 10%;">   
         <div class="col-md-4 col-sm-4 col-lg-4" >
             <a class="card" href="###">
-                <img src="{% static './img/1.png' %}" alt="">
+                <img src="{% static '/img/3.png'%}" alt="">
                 <div class="caption">文本数据标注</div>
             </a>
         </div>      
         <div class="col-md-4 col-sm-4 col-lg-4">
             <a class="card" href="###">
-                <img src="{% static './img/1.png' %}" alt="">
+                <img src="{% static '/img/3.png'%}" alt="">
                 <div class="caption">图片数据标注</div>
             </a>
         </div>     
         <div class="col-md-4 col-sm-4 col-lg-4">
             <a class="card" href="###">
-                <img src="{% static './img/1.png' %}" alt="">
+                <img src="{% static '/img/3.png'%}" alt="">
                 <div class="caption">视频数据标注</div>
             </a>
         </div>
+        <div style="text-align: center;">
+            <a onclick="show1()">更多项目></a>
+            <script>
+                function show1(){layer.msg('没有更多了', {time: 0 //不自动关闭
+                    ,btn: ['哦'],yes: function(index){layer.close(index);}})};
+            </script>
+        </div>
+        <div></div>
     </div>
 
     <!-- 商品栏
@@ -175,19 +207,13 @@
     </div> -->
 
 
-    <div class="row">
-        <div class="col-md-12" style="height: 1000px;background-color: #00a4ff;"></div>
-    </div>
-
-
-
 
 
 
       <div class="footer">
         <div class="container">
           <div class="copyright">
-            <img src="{% static '/img/title.svg' %}" alt="logo" />
+            <img src="{% static '/img/title.svg'%}" alt="logo" />
             <p>
                 【京冬众质】 - 北航最好的盗版数据标注平台<br />
               &copy; 2022年
@@ -226,7 +252,7 @@
     
     <!-- 顶部固定导航栏 -->
     <ul class="layui-nav" style="box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);background-color: white;text-align:center;position: fixed;top: 0px;width: 100%;">   
-        <li class="layui-nav-item "><a><img src="{% static '/img/title.svg' %}" style="height: 20px;"></a></li>
+        <li class="layui-nav-item "><a><img src="{% static '/img/title.svg'%}" style="height: 20px;"></a></li>
         <li class="layui-nav-item layui-this" ><a href="" style="color: black;">首页</a></li>
         <li class="layui-nav-item">   
             <a href="javascript:;" style="color: black;text-decoration:none;text-decoration:none;"> 任务市场 </a>
@@ -253,6 +279,5 @@
             <li class="layui-nav-item"><a href="" style="color: black;text-decoration:none;text-decoration:none;float: right;"> 登录 </a>
         </li>  
     </ul>
-    
 </body>
 </html>
