@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+<!Document html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>【京冬众质】 - 盗版数据标注平台</title>
-    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"> 
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css'%}">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="./layui-v2.6.8/layui/css/layui.css">
     <script src="./layui-v2.6.8/layui/layui.js"></script>
@@ -40,7 +41,7 @@
         <div class="col-md-12" style="margin-top: 56px;">
             <div class="layui-carousel" id="test1">
                 <div carousel-item>
-                <div><a><img src="./img/1.png" style="width:100%"></a></div>
+                <div><a><img src="{% static './img/1.png' %}" style="width:100%"></a></div>
                 <div><a><img src="./img/2.png" style="width:100%"></a></div>
                 <div><a><img src="./img/3.png" style="width:100%"></a></div>
                 <div><a><img src="./img/4.png" style="width:100%"></a></div>
