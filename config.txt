@@ -2,7 +2,6 @@
 请求路由方法  href={% url '路由名称'%}  路由名称在对应app中urls中查看
 
 
-
 用户管理路由配置
 具体看client_management中urls中注释
 login

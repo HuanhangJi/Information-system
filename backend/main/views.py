@@ -23,6 +23,6 @@ def index(request):
 def assignments(request):
     try:
         content = {'info':'成功打开任务市场'}
-        return render(request,'index/assignments.html',content)
+        return render(request,'index/product.html',content)
     except Exception:
         return HttpResponse('打开任务市场失败')

@@ -260,9 +260,9 @@
     <!-- 顶部固定导航栏 -->
     <ul class="layui-nav" style="z-index: 5;box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);background-color: white;text-align:center;position: fixed;top: 0px;width: 100%;">   
         <li class="layui-nav-item "><a><img src="{% static 'img/title.svg'%}" style="height: 20px;"></a></li>
-        <li class="layui-nav-item" ><a href="" style="color: black;">首页</a></li>
+        <li class="layui-nav-item" ><a href="{% url 'index' %}" style="color: black;">首页</a></li>
         <li class="layui-nav-item  layui-this">   
-            <a href="javascript:;" style="color: black;text-decoration:none;text-decoration:none;"> 任务市场 </a>
+            <a href="#" style="color: black;text-decoration:none;text-decoration:none;"> 任务市场 </a>
         </li>
         <li class="layui-nav-item">
             <a href="javascript:;" style="color: black;text-decoration:none;text-decoration:none;"> 数据标注 </a>
