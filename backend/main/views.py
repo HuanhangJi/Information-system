@@ -20,8 +20,11 @@ def assignments(request, pIndex=1):
         Tlist = Task.objects
         mywhere = []
         if kw:
-            Tlist = Task.objects.filter(Q(title__contains=kw)|Q(content__contains=kw))
             mywhere.append(f'keyword={kw}')
+            try:#在任务类建立后删除
+                Tlist = Task.objects.filter(Q(title__contains=kw)|Q(content__contains=kw))
+            except:
+                pass
         pIndex = int(pIndex)
         page = Paginator(Tlist,5)
         try:
