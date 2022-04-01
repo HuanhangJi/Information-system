@@ -5,7 +5,7 @@ from django.http import *
 import numpy as np
 import requests
 import json
-from .models import *
+from models import *
 import hashlib
 from django.shortcuts import *
 
@@ -19,10 +19,10 @@ def hash_md5(str):
 
 ## request初始化
 def init(request):
-    username = request.POST['username']
+    username = request.POST['user']
     phone = request.POST['phone']
     mail = request.POST['mail']
-    password = request.POST['pw']
+    password = request.POST['password']
     status = 0
     msg = ''
     if username == '':
@@ -42,9 +42,9 @@ def init(request):
 
 ## TODO 发布者登陆
 def pro_login(request):
-    pw = hash_md5(request.POST['pw'])
+    pw = hash_md5(request.POST['password'])
     info = ''
-    account = request.POST['account']
+    account = request.POST['user']
     if '@' not in account:
         if Producer.objects.filter(phone=account).exists():
             Pro = Producer.objects.get(phone=account)
@@ -79,9 +79,9 @@ def pro_login(request):
 
 ## TODO 接单者登陆
 def con_login(request):
-    pw = hash_md5(request.POST['pw'])
+    pw = hash_md5(request.POST['password'])
     info = ''
-    account = request.POST['account']
+    account = request.POST['user']
     if '@' not in account:
         if Consumer.objects.filter(phone=account).exists():
             Con = Consumer.objects.get(phone=account)
@@ -123,7 +123,7 @@ def pro_register(request):
             msg = '该手机已经被注册'
         elif Producer.objects.filter(email=reg['email']).exist():
             code = 404
-            msg = '该手机已经被注册'
+            msg = '该邮箱已经被注册'
         else:
             new = Producer()
             new.phone = reg['phone']
@@ -163,10 +163,20 @@ def con_register(request):
         data = {'code':404,'msg':reg['msg']}
     return JsonResponse(data)
 
+## TODO 发布者注销
 def pro_logout(request):
     try:
         del request.session['producer']
-        info = '登出成功'
+        code = 200
     except Exception:
-        info = '登出失败'
-    return JsonResponse({'info':info})
+        code = 404
+    return JsonResponse({'code':code})
+
+## TODO 接单者注销
+def con_logout(request):
+    try:
+        del request.session['consumer']
+        code = 200
+    except Exception:
+        code = 404
+    return JsonResponse({'code':code})
