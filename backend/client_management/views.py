@@ -5,7 +5,7 @@ from django.http import *
 import numpy as np
 import requests
 import json
-from models import *
+from .models import *
 import hashlib
 from django.shortcuts import *
 
@@ -42,75 +42,89 @@ def init(request):
 
 ## TODO 发布者登陆
 def pro_login(request):
+    # pw = hash_md5(request.POST['password'])
+    # info = ''
+    # account = request.POST['user']
+    # if '@' not in account:
+    #     if Producer.objects.filter(phone=account).exists():
+    #         Pro = Producer.objects.get(phone=account)
+    #         if Pro.password == pw:
+    #             code = 200
+    #             msg = '登陆成功'
+    #             info = Pro.to_dict()
+    #             request.session['producer'] = info
+    #         else:
+    #             code = 402
+    #             msg = '用户名或密码错误'
+    #     else:
+    #         code = 404
+    #         msg = '用户名或密码错误'
+    # else:
+    #     if Producer.objects.filter(email=account).exists():
+    #         Pro = Producer.objects.get(email=account)
+    #         if Pro.password == pw:
+    #             code = 200
+    #             msg = '登陆成功'
+    #             info = Pro.to_dict()
+    #             request.session['producer'] = info
+    #         else:
+    #             code = 402
+    #             msg = '用户名或密码错误'
+    #     else:
+    #         code = 404
+    #         msg = '用户名或密码错误'
+    # data = {'code': code, 'msg': msg, "userInfo": info}
+    # return JsonResponse(data)
+    ##############################################################
     pw = hash_md5(request.POST['password'])
-    info = ''
     account = request.POST['user']
-    if '@' not in account:
-        if Producer.objects.filter(phone=account).exists():
-            Pro = Producer.objects.get(phone=account)
-            if Pro.password == pw:
-                code = 200
-                msg = '登陆成功'
-                info = Pro.to_dict()
-                request.session['producer'] = info
-            else:
-                code = 402
-                msg = '用户名或密码错误'
-        else:
-            code = 404
-            msg = '用户名或密码错误'
-    else:
-        if Producer.objects.filter(email=account).exists():
-            Pro = Producer.objects.get(email=account)
-            if Pro.password == pw:
-                code = 200
-                msg = '登陆成功'
-                info = Pro.to_dict()
-                request.session['producer'] = info
-            else:
-                code = 402
-                msg = '用户名或密码错误'
-        else:
-            code = 404
-            msg = '用户名或密码错误'
-    data = {'code': code, 'msg': msg, "userInfo": info}
+    info = {'user':account, 'password': pw}
+    code = 200
+    data = {'code': code, "userInfo": info}
     return JsonResponse(data)
 
 
 ## TODO 接单者登陆
 def con_login(request):
+    # pw = hash_md5(request.POST['password'])
+    # info = ''
+    # account = request.POST['user']
+    # if '@' not in account:
+    #     if Consumer.objects.filter(phone=account).exists():
+    #         Con = Consumer.objects.get(phone=account)
+    #         if Con.password == pw:
+    #             request.session['consumer'] = Con.to_dict()
+    #             code = 200
+    #             msg = '登陆成功'
+    #             info = Con.to_dict()
+    #         else:
+    #             code = 402
+    #             msg = '用户名或密码错误'
+    #     else:
+    #         code = 404
+    #         msg = '用户名或密码错误'
+    # else:
+    #     if Consumer.objects.filter(email=account).exists():
+    #         Con = Consumer.objects.get(email=account)
+    #         if Con.password == pw:
+    #             request.session['consumer'] = Con.to_dict()
+    #             code = 200
+    #             msg = '登陆成功'
+    #             info = Con.to_dict()
+    #         else:
+    #             code = 402
+    #             msg = '用户名或密码错误'
+    #     else:
+    #         code = 404
+    #         msg = '用户名或密码错误'
+    # data = {'code': code, 'msg': msg, "userInfo": info}
+    # return JsonResponse(data)
+    ########################################################################
     pw = hash_md5(request.POST['password'])
-    info = ''
     account = request.POST['user']
-    if '@' not in account:
-        if Consumer.objects.filter(phone=account).exists():
-            Con = Consumer.objects.get(phone=account)
-            if Con.password == pw:
-                request.session['consumer'] = Con.to_dict()
-                code = 200
-                msg = '登陆成功'
-                info = Con.to_dict()
-            else:
-                code = 402
-                msg = '用户名或密码错误'
-        else:
-            code = 404
-            msg = '用户名或密码错误'
-    else:
-        if Consumer.objects.filter(email=account).exists():
-            Con = Consumer.objects.get(email=account)
-            if Con.password == pw:
-                request.session['consumer'] = Con.to_dict()
-                code = 200
-                msg = '登陆成功'
-                info = Con.to_dict()
-            else:
-                code = 402
-                msg = '用户名或密码错误'
-        else:
-            code = 404
-            msg = '用户名或密码错误'
-    data = {'code': code, 'msg': msg, "userInfo": info}
+    info = {'user':account, 'password': pw}
+    code = 200
+    data = {'code': code, "userInfo": info}
     return JsonResponse(data)
 
 
@@ -165,18 +179,24 @@ def con_register(request):
 
 ## TODO 发布者注销
 def pro_logout(request):
-    try:
-        del request.session['producer']
-        code = 200
-    except Exception:
-        code = 404
+    # try:
+    #     del request.session['producer']
+    #     code = 200
+    # except Exception:
+    #     code = 404
+    # return JsonResponse({'code':code})
+    ###########################################
+    code = 404
     return JsonResponse({'code':code})
 
 ## TODO 接单者注销
 def con_logout(request):
-    try:
-        del request.session['consumer']
-        code = 200
-    except Exception:
-        code = 404
+    # try:
+    #     del request.session['consumer']
+    #     code = 200
+    # except Exception:
+    #     code = 404
+    # return JsonResponse({'code':code})
+    ###############################################
+    code = 404
     return JsonResponse({'code':code})
