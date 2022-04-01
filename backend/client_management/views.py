@@ -76,11 +76,12 @@ def pro_login(request):
     # data = {'code': code, 'msg': msg, "userInfo": info}
     # return JsonResponse(data)
     ##############################################################
-    pw = hash_md5(request.POST['password'])
-    account = request.POST['user']
-    info = {'user':account, 'password': pw}
+    # pw = hash_md5(request.POST['password'])
+    # account = request.POST['user']
+    info = {'user':'account', 'password': 'pw'}
     code = 200
     data = {'code': code, "userInfo": info}
+    # request.session['producer'] = info
     return JsonResponse(data)
 
 
@@ -120,11 +121,12 @@ def con_login(request):
     # data = {'code': code, 'msg': msg, "userInfo": info}
     # return JsonResponse(data)
     ########################################################################
-    pw = hash_md5(request.POST['password'])
-    account = request.POST['user']
-    info = {'user':account, 'password': pw}
+    # pw = hash_md5(request.POST['password'])
+    # account = request.POST['user']
+    info = {'user':'account', 'password': 'pw'}
     code = 200
     data = {'code': code, "userInfo": info}
+    # request.session['consumer'] = info
     return JsonResponse(data)
 
 
@@ -186,7 +188,7 @@ def pro_logout(request):
     #     code = 404
     # return JsonResponse({'code':code})
     ###########################################
-    code = 404
+    code = 200
     return JsonResponse({'code':code})
 
 ## TODO 接单者注销
@@ -198,5 +200,5 @@ def con_logout(request):
     #     code = 404
     # return JsonResponse({'code':code})
     ###############################################
-    code = 404
+    code = 200
     return JsonResponse({'code':code})

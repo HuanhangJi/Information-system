@@ -10,8 +10,8 @@ Get：
 
 
 
-1.  path('login/pro', pro_login,name='pro_login'), #pro登陆路由
-    path('login/con',con_login,name='con_login'), #con登陆路由
+1.  path('pro/login', pro_login,name='pro_login'), #pro登陆路由
+    path('con/login',con_login,name='con_login'), #con登陆路由
 
 2.  path('query/',query,name='query'), #查询路由
 

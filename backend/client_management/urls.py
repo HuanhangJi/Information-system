@@ -11,7 +11,7 @@ urlpatterns = [
     # path('admin/pro/add',pro_add,name='pro_add'),
     # path('admin/pro/del',pro_del,name='pro_del'),
     # path('admin/pro/query',pro_query,name='pro_query'),
-    path('/pro/logout',pro_logout,name='pro_logout'),#pro注销路由
-    path('/con/logout',con_logout,name='con_logout'),#con注销路由
+    path('pro/logout/',pro_logout,name='pro_logout'),#pro注销路由
+    path('con/logout/',con_logout,name='con_logout'),#con注销路由
 
 ]
