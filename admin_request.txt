@@ -1,0 +1,20 @@
+Get：
+1.	传一个{“user”:，“password”:}，返回是否匹配，匹配就返回用户信息，一个token，token用于各类验证（有时间限制），还有用户的前六（N）条收到的动态，用户的前五（M）个任务信息。
+2.	带token及某些可能带的筛选参数（筛选任务id,发布者，任务状态，开始时间，结束时间，等级区间，报酬区间）请求，返回这个用户的满足要求的任务列表。
+3.	带token请求，返回用户的账户余额以及付款账户有哪些
+4.	带token和支付密码请求转账，支付密码错误返回错误，成功返回对应信息，然后将资金转移
+5.	带token和参数请求，修改用户的密码，手机号，各类密保问题
+6.	带token及某些可能带的参数（只看发布者，只看标注者）请求，返回用户的所有动态
+7.	注册相关，传对应的参数，将注册的用户添加到数据库
+8.	注销账户，请求接口，后台将token销毁或者过期
+
+
+
+1.  path('pro/login', pro_login,name='pro_login'), #pro登陆路由
+    path('con/login',con_login,name='con_login'), #con登陆路由
+
+2.  path('query/',query,name='query'), #查询路由
+
+8.  path('/pro/logout',pro_logout,name='pro_logout'),#pro注销路由
+    path('/con/logout',con_logout,name='con_logout'),#con注销路由
+

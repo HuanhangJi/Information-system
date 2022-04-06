@@ -64,14 +64,17 @@ def edit(request):
 
 ## TODO 查询任务函数
 def query(request):
-    try:
-        uid = request.GET['uid']
-        t = Task.objects.get(uid=uid)
-        task_info = {'uid':uid,'price':t.price,'owner':t.owner}
-        data = {'code': 200, 'msg': '查询成功', 'task_info':task_info}
-    except BaseException:
-        data = {'code': 404, 'msg': '查询失败','task_info':''}
+    # try:
+    #     uid = request.GET['uid']
+    #     t = Task.objects.get(uid=uid)
+    #     task_info = {'uid':uid,'price':t.price,'owner':t.owner}
+    #     data = {'code': 200, 'msg': '查询成功', 'task_info':task_info}
+    # except BaseException:
+    #     data = {'code': 404, 'msg': '查询失败','task_info':''}
+    # return JsonResponse(data)
+    ######################################################
+    task_info = {'uid':'uid','price':'t.price','owner':'t.owner'}
+    data = {'code': 200, 'msg': '查询成功', 'task_info':task_info}
     return JsonResponse(data)
 
 
-## TODO 接单
