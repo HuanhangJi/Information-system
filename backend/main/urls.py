@@ -3,5 +3,6 @@ from .views import *
 
 urlpatterns = [
     path('',index,name='index'), #主页路由
-    path('assignments/<int:pIndex>/', assignments, name='assignments')#任务市场路由
+    path('products/<int:pIndex>/', products, name='products'),#任务市场路由
+    path('products/info/<int:id>/', product_info, name='product_info')#任务市场路由
 ]

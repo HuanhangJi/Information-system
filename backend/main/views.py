@@ -6,16 +6,16 @@ from django.db.models import Q
 
 ## TODO 主页
 def index(request):
-    try:
+    # try:
         content = {'info':'成功打开主页'}
         return render(request,'index/index.html',content)
-    except Exception:
-        return HttpResponse('打开主页失败')
+    # except Exception:
+    #     return HttpResponse('打开主页失败')
 
 
 ## TODO 任务市场
-def assignments(request, pIndex=1):
-    try:
+def products(request, pIndex=1):
+    # try:
         kw = request.GET.get('keyword',None)
         Tlist = Task.objects
         mywhere = []
@@ -40,5 +40,9 @@ def assignments(request, pIndex=1):
         plist = page.page_range
         content = {'task_list':Tlist2,'plist':plist,'pIndex':pIndex,'max_page':max_page,'mywhere':mywhere,'info':'成功打开任务市场'}
         return render(request,'index/product.html',content)
-    except Exception:
-        return HttpResponse(f'打开任务市场失败')
+    # except Exception:
+    #     return HttpResponse(f'打开任务市场失败')
+
+def product_info(request,id=1):
+    content = {'id':id}
+    return render(request, 'index/shangpin.html', content)

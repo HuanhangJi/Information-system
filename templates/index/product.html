@@ -124,11 +124,11 @@
                         <div class="item" id="shangpin1">
                             <div class="row">
                                 <div class="col-md-3" style="margin: 20px 0;">
-                                    <a href="{% static './shangpin.html'%}" target="_blank"><img id="wenbentu1" src="{% static './img/6.png'%}"></a>
+                                    <a href="{% url 'product_info' 1 %}" target="_blank"><img id="wenbentu1" src="{% static './img/6.png'%}"></a>
                                 </div>
                                 <div class="col-md-9" style="margin:20px 0">
                                     <div class="item-heading">
-                                        <h4 style="display:inline"><a id="wenbenming1" href="{% static './shangpin.html'%}"  target="_blank" style="margin: top 2px;">文本情感分析1</a></h4>
+                                        <h4 style="display:inline"><a id="wenbenming1" href="{% url 'product_info' 1 %}"  target="_blank" style="margin: top 2px;">文本情感分析1</a></h4>
                                         <span class="layui-badge" style="margin-right: 1px;">新</span>
                                         <span class="label label-warning" id="wenbenbiao1">文本</span>
                                         <div  class="pull-right"><div id="test1" style="margin-top: 5px;margin-left: 7px;"></div></div>
@@ -275,9 +275,9 @@
     <!-- 顶部固定导航栏 -->
     <ul class="layui-nav" style="z-index: 5;box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);background-color: white;text-align:center;position: fixed;top: 0px;width: 100%;">   
         <li class="layui-nav-item "><a><img src="{% static './img/title.svg'%}" style="height: 20px;"></a></li>
-        <li class="layui-nav-item" ><a href="{% static './index.html'%}" style="color: black;">首页</a></li>
+        <li class="layui-nav-item" ><a href="{% url 'index' %}" style="color: black;">首页</a></li>
         <li class="layui-nav-item  layui-this">   
-            <a href="{% static './product.html'%}" style="color: black;text-decoration:none;text-decoration:none;"> 任务市场 </a>
+            <a href="{% url 'products' 1%}" style="color: black;text-decoration:none;text-decoration:none;"> 任务市场 </a>
         </li>
         <li class="layui-nav-item">
             <a href="javascript:;" style="color: black;text-decoration:none;text-decoration:none;"> 数据标注 </a>
