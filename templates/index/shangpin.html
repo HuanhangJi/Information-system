@@ -159,9 +159,9 @@
     <div class="row">
       <ul class="layui-nav" style="z-index: 5;box-shadow: 0px 2px 3px rgb(151 151 151 / 60%);background-color: white;text-align:center;position: fixed;top: 0px;width: 100%;">   
           <li class="layui-nav-item "><a><img src="{% static './img/title.svg'%}" style="height: 20px;"></a></li>
-          <li class="layui-nav-item" ><a href="{% static './index.html'%}" style="color: black;">首页</a></li>
+          <li class="layui-nav-item" ><a href="{% url 'index'%}" style="color: black;">首页</a></li>
           <li class="layui-nav-item  layui-this">   
-              <a href="{% static './product.html'%}" style="color: black;text-decoration:none;text-decoration:none;"> 任务市场 </a>
+              <a href="{% url 'products' 1%}" style="color: black;text-decoration:none;text-decoration:none;"> 任务市场 </a>
           </li>
           <li class="layui-nav-item">
               <a href="javascript:;" style="color: black;text-decoration:none;text-decoration:none;"> 数据标注 </a>
