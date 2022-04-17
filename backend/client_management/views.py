@@ -77,7 +77,6 @@ def con_login(request):
             if Con.password == pw:
                 request.session['consumer'] = Con.to_dict()
                 code = 200
-                info = Con.to_dict()
             else:
                 code = 402
         else:
@@ -88,12 +87,11 @@ def con_login(request):
             if Con.password == pw:
                 request.session['consumer'] = Con.to_dict()
                 code = 200
-                info = Con.to_dict()
             else:
                 code = 402
         else:
             code = 404
-    data = {'code': code, "userInfo": info}
+    data = {'code': code}
     return JsonResponse(data)
 
 
