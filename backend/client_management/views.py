@@ -19,24 +19,20 @@ def hash_md5(str):
 
 ## request初始化
 def init(request):
-    username = request.POST['user']
-    phone = request.POST['phone']
-    mail = request.POST['mail']
+    username = request.POST['name']
+    phone = request.POST['tel']
+    mail = request.POST['mail_add']
     password = request.POST['password']
     status = 0
-    msg = ''
     if username == '':
         status = 1
-        msg = '用户名未填写'
     elif len(phone)!= 11 or not phone.isdigit():
         status = 2
-        msg = '手机号码格式错误'
     elif len(password) < 6:
         status = 3
-        msg = '密码设置格式错误'
     if status == 0:
         password = hash_md5(password)
-    login = {'username':username,'phone':phone,'mail':mail, 'password':password, 'status':status, 'msg':msg}
+    login = {'username':username,'phone':phone,'mail':mail, 'password':password, 'status':status}
     return login
 
 
@@ -44,73 +40,60 @@ def init(request):
 def pro_login(request):
     pw = hash_md5(request.POST['password'])
     info = ''
-    account = request.POST['user']
+    account = request.POST['account_id']
     if '@' not in account:
-        if Producer.objects.filter(phone=account).exists():
-            Pro = Producer.objects.get(phone=account)
+        if Producer.objects.filter(tel=account).exists():
+            Pro = Producer.objects.get(tel=account)
             if Pro.password == pw:
                 code = 200
-                msg = '登陆成功'
                 info = Pro.to_dict()
                 request.session['producer'] = info
             else:
                 code = 402
-                msg = '用户名或密码错误'
         else:
             code = 404
-            msg = '用户名或密码错误'
     else:
-        if Producer.objects.filter(email=account).exists():
-            Pro = Producer.objects.get(email=account)
+        if Producer.objects.filter(email_add=account).exists():
+            Pro = Producer.objects.get(email_add=account)
             if Pro.password == pw:
                 code = 200
-                msg = '登陆成功'
                 info = Pro.to_dict()
                 request.session['producer'] = info
             else:
                 code = 402
-                msg = '用户名或密码错误'
         else:
             code = 404
-            msg = '用户名或密码错误'
-    data = {'code': code, 'msg': msg, "userInfo": info}
+    data = {'code': code, "userInfo": info}
     return JsonResponse(data)
 
 
 ## TODO 接单者登陆
 def con_login(request):
     pw = hash_md5(request.POST['password'])
-    info = ''
-    account = request.POST['user']
+    account = request.POST['account_id']
     if '@' not in account:
-        if Consumer.objects.filter(phone=account).exists():
-            Con = Consumer.objects.get(phone=account)
+        if Consumer.objects.filter(tel=account).exists():
+            Con = Consumer.objects.get(tel=account)
             if Con.password == pw:
                 request.session['consumer'] = Con.to_dict()
                 code = 200
-                msg = '登陆成功'
                 info = Con.to_dict()
             else:
                 code = 402
-                msg = '用户名或密码错误'
         else:
             code = 404
-            msg = '用户名或密码错误'
     else:
-        if Consumer.objects.filter(email=account).exists():
-            Con = Consumer.objects.get(email=account)
+        if Consumer.objects.filter(email_add=account).exists():
+            Con = Consumer.objects.get(email_add=account)
             if Con.password == pw:
                 request.session['consumer'] = Con.to_dict()
                 code = 200
-                msg = '登陆成功'
                 info = Con.to_dict()
             else:
                 code = 402
-                msg = '用户名或密码错误'
         else:
             code = 404
-            msg = '用户名或密码错误'
-    data = {'code': code, 'msg': msg, "userInfo": info}
+    data = {'code': code, "userInfo": info}
     return JsonResponse(data)
 
 
@@ -118,24 +101,21 @@ def con_login(request):
 def pro_register(request):
     reg = init(request)
     if reg['status'] == 0:
-        if Producer.objects.filter(phone=reg['phone']).exist():
+        if Producer.objects.filter(tel=reg['phone']).exist():
             code = 404
-            msg = '该手机已经被注册'
-        elif Producer.objects.filter(email=reg['email']).exist():
+        elif Producer.objects.filter(email_add=reg['email']).exist():
             code = 404
-            msg = '该邮箱已经被注册'
         else:
             new = Producer()
-            new.phone = reg['phone']
-            new.email = reg['email']
-            new.username = reg['username']
+            new.tel = reg['phone']
+            new.email_add = reg['email']
+            new.account_id = reg['username']
             new.password = reg['password']
             new.save()
             code = 200
-            msg = '注册成功'
-        data = {'code': code, 'msg': msg}
+        data = {'code': code}
     else:
-        data = {'code':404, 'msg':reg['msg'] }
+        data = {'code':404}
     return JsonResponse(data)
 
 
@@ -143,12 +123,10 @@ def pro_register(request):
 def con_register(request):
     reg = init(request)
     if reg['status']==0:
-        if Consumer.objects.filter(phone=reg['phone']).exist():
+        if Consumer.objects.filter(tel=reg['phone']).exist():
             code = 404
-            msg = '该手机已经被注册'
-        elif Consumer.objects.filter(email=reg['email']).exist():
+        elif Consumer.objects.filter(email_add=reg['email']).exist():
             code = 404
-            msg = '该邮箱已被注册'
         else:
             new = Consumer()
             new.phone = reg['phone']
@@ -157,10 +135,9 @@ def con_register(request):
             new.password = reg['password']
             new.save()
             code = 200
-            msg = '注册成功'
-        data = {'code': code, 'msg': msg}
+        data = {'code': code}
     else:
-        data = {'code':404,'msg':reg['msg']}
+        data = {'code':404}
     return JsonResponse(data)
 
 
