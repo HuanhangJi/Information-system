@@ -81,21 +81,17 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-#   数据库设置，根据自己情况更改name与password即可
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'mytest',
-#         'USER': 'root',
-#         'PASSWORD': 'ji1085hh',
-#         'HOST': 'localhost',
-#         'PORT': '3306'
-#     }
-# }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
+# #   数据库设置，根据自己情况更改name与password即可
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mydb',
+        'USER': 'root',
+        'PASSWORD': 'ji1085hh',
+        'HOST': 'localhost',
+        'PORT': '3306'
+    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -164,4 +160,3 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
-
