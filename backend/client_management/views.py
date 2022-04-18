@@ -39,8 +39,7 @@ def init(request):
 ## TODO 发布者登陆
 def pro_login(request):
     pw = hash_md5(request.POST['password'])
-    info = ''
-    account = request.POST['account_id']
+    account = request.POST['tel']
     if '@' not in account:
         if Producer.objects.filter(tel=account).exists():
             Pro = Producer.objects.get(tel=account)
