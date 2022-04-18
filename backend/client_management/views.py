@@ -19,9 +19,8 @@ def hash_md5(str):
 
 ## request初始化
 def init(request):
-    username = request.POST['name']
+    username = request.POST['nickname']
     phone = request.POST['tel']
-    mail = request.POST['mail_add']
     password = request.POST['password']
     status = 0
     if username == '':
@@ -32,7 +31,7 @@ def init(request):
         status = 3
     if status == 0:
         password = hash_md5(password)
-    login = {'username':username,'phone':phone,'mail':mail, 'password':password, 'status':status}
+    login = {'username':username,'phone':phone, 'password':password, 'status':status}
     return login
 
 
@@ -40,28 +39,17 @@ def init(request):
 def pro_login(request):
     pw = hash_md5(request.POST['password'])
     account = request.POST['tel']
-    if '@' not in account:
-        if Producer.objects.filter(tel=account).exists():
-            Pro = Producer.objects.get(tel=account)
-            if Pro.password == pw:
-                code = 200
-                info = Pro.to_dict()
-                request.session['producer'] = info
-            else:
-                code = 402
+    info = ''
+    if Producer.objects.filter(tel=account).exists():
+        Pro = Producer.objects.get(tel=account)
+        if Pro.password == pw:
+            code = 200
+            info = Pro.to_dict()
+            request.session['producer'] = info
         else:
             code = 404
     else:
-        if Producer.objects.filter(email_add=account).exists():
-            Pro = Producer.objects.get(email_add=account)
-            if Pro.password == pw:
-                code = 200
-                info = Pro.to_dict()
-                request.session['producer'] = info
-            else:
-                code = 402
-        else:
-            code = 404
+        code = 404
     data = {'code': code, "userInfo": info}
     return JsonResponse(data)
 
@@ -69,28 +57,19 @@ def pro_login(request):
 ## TODO 接单者登陆
 def con_login(request):
     pw = hash_md5(request.POST['password'])
-    account = request.POST['account_id']
-    if '@' not in account:
-        if Consumer.objects.filter(tel=account).exists():
-            Con = Consumer.objects.get(tel=account)
-            if Con.password == pw:
-                request.session['consumer'] = Con.to_dict()
-                code = 200
-            else:
-                code = 402
+    account = request.POST['tel']
+    info = ''
+    if Consumer.objects.filter(tel=account).exists():
+        Con = Consumer.objects.get(tel=account)
+        if Con.password == pw:
+            request.session['consumer'] = Con.to_dict()
+            code = 200
+            info = Con.to_dict()
         else:
             code = 404
     else:
-        if Consumer.objects.filter(email_add=account).exists():
-            Con = Consumer.objects.get(email_add=account)
-            if Con.password == pw:
-                request.session['consumer'] = Con.to_dict()
-                code = 200
-            else:
-                code = 402
-        else:
-            code = 404
-    data = {'code': code}
+        code = 404
+    data = {'code': code, "userInfo": info}
     return JsonResponse(data)
 
 
@@ -100,12 +79,9 @@ def pro_register(request):
     if reg['status'] == 0:
         if Producer.objects.filter(tel=reg['phone']).exist():
             code = 404
-        elif Producer.objects.filter(email_add=reg['email']).exist():
-            code = 404
         else:
             new = Producer()
             new.tel = reg['phone']
-            new.email_add = reg['email']
             new.account_id = reg['username']
             new.password = reg['password']
             new.save()
@@ -122,12 +98,9 @@ def con_register(request):
     if reg['status']==0:
         if Consumer.objects.filter(tel=reg['phone']).exist():
             code = 404
-        elif Consumer.objects.filter(email_add=reg['email']).exist():
-            code = 404
         else:
             new = Consumer()
             new.phone = reg['phone']
-            new.email = reg['email']
             new.username = reg['username']
             new.password = reg['password']
             new.save()
