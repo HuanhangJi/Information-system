@@ -2,10 +2,10 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('insert/',insert,name='insert'), #增加路由
-    path('delete/',delete,name='delete'), #删除路由
-    path('edit/',edit,name='edit'), #编辑路由
-    path('query/',query,name='query'), #查询路由
+    path('project/insert/',insert,name='project_add'), #增加路由
+    path('project/delete/',delete,name='project_delete'), #删除路由
+    path('project/edit/',edit,name='project_edit'), #编辑路由
+    path('project/query/',query,name='project_query'), #查询路由
 ]
 
 

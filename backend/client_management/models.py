@@ -4,7 +4,7 @@ from django.db import models
 
 #用户基类
 class UserInfo(models.Model):
-    account_id = models.CharField(max_length=20)
+    account_id = models.CharField(max_length=20,primary_key=True)
     password = models.CharField(max_length=20)
     account_type = models.IntegerField()
     tel = models.CharField(max_length=20)
@@ -21,12 +21,8 @@ class UserInfo(models.Model):
 
 #完成者类
 class Consumer(UserInfo):
-    worker_id = models.CharField(max_length=20, auto_created=True)
     level = models.IntegerField()
     experience = models.IntegerField()
-
-    class Meta:
-        unique_together = ("account_id", "worker_id")
 
     def to_dict(self):
         pass
@@ -34,11 +30,7 @@ class Consumer(UserInfo):
 
 #发布者类
 class Producer(UserInfo):
-    publisher_id = models.CharField(max_length=20, auto_created=True)
     payment_password = models.CharField(max_length=6)
-
-    class Meta:
-        unique_together = ("account_id", "publisher_id")
 
     def to_dict(self):
         pass
@@ -62,3 +54,7 @@ class record(models.Model):
     cw_type = models.CharField(max_length=4)
     cw_amount = models.FloatField()
     pay_time = models.DateTimeField()
+
+#用户id库
+class user_id_pool(models.Model):
+    account_id = models.CharField(max_length=20,primary_key=True)

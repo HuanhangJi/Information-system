@@ -9,12 +9,14 @@ class Task(models.Model):
     task_status = models.CharField(max_length=20)
     score = models.IntegerField()
 
+    def to_dict(self):
+        pass
+
 
 class Project(models.Model):
-    project_id = models.CharField(max_length=25,primary_key=True,auto_created=True)
+    project_id = models.CharField(max_length=25,primary_key=True)
     prepay_id = models.CharField(max_length=25)
     account_id = models.CharField(max_length=25)
-    publisher_id = models.CharField(max_length=25)
     project_name = models.CharField(max_length=64)
     project_type = models.CharField(max_length=20)
     description = models.CharField(max_length=1024)
@@ -24,6 +26,9 @@ class Project(models.Model):
     project_status = models.IntegerField()
     task_num = models.IntegerField()
     completed_task_num = models.IntegerField()
+
+    def to_dict(self):
+        pass
 
 
 class Prepay(models.Model):
@@ -35,12 +40,11 @@ class Prepay(models.Model):
 
 class Task_record(models.Model):
     account_id = models.CharField(max_length=25)
-    worker_id = models.CharField(max_length=25)
     task_id = models.CharField(max_length=25)
     reward_id = models.CharField(max_length=25)
 
     class Meta:
-        unique_together = ("account_id", "worker_id", "task_id")
+        unique_together = ("account_id", "task_id")
 
 
 class Reward_record(models.Model):
@@ -56,3 +60,8 @@ class Total_account(models.Model):
     PAF_amount = models.FloatField()
     PAF_balance = models.FloatField()
     PAF_time = models.DateTimeField()
+
+
+# 项目id库
+class project_id_pool(models.Model):
+    project_id = models.CharField(max_length=20,primary_key=True)

@@ -1,0 +1,25 @@
+用户管理文档
+请求路由127.0.0.1  +路由
+1./pro/login 发布者登陆
+输入  tel password
+输出  data = {'code': code, "userInfo": info}
+
+2./con/login 接收者登陆
+输入  tel password
+输出  data = {'code': code, "userInfo": info}
+
+3./pro/register 发布者注册
+输入  nickname tel password
+输出  data = {'code':404}
+
+4./con/register 接受者注册
+输入  nickname tel password
+输出  data = {'code':404}
+
+5./pro/logout 接受者退出登陆
+输入
+输出  data = {'code': code, "userInfo": info}
+
+6./con/logout 发布者退出登陆
+输入
+输出  data = {'code': code, "userInfo": info}

@@ -8,7 +8,20 @@ import json
 from .models import *
 import hashlib
 from django.shortcuts import *
+import random
 
+def full_user_id(request):
+    for ids in range(10000000,10005000):
+        id = user_id_pool()
+        id.account_id = ids
+        id.save()
+    return HttpResponse('成功添加')
+
+def test(request):
+    id = user_id_pool.objects.first()
+    print(id.account_id)
+    id.delete()
+    return HttpResponse('成功')
 
 ## 密码加密函数 finish
 def hash_md5(str):
@@ -81,9 +94,14 @@ def pro_register(request):
             code = 404
         else:
             new = Producer()
+            ids = user_id_pool.objects
+            id = ids.first()
+            new.account_id = id.account_id
+            id.delete()
             new.tel = reg['phone']
             new.account_id = reg['username']
             new.password = reg['password']
+            new.account_type = 1
             new.save()
             code = 200
         data = {'code': code}
@@ -95,14 +113,19 @@ def pro_register(request):
 ## TODO 接单者注册
 def con_register(request):
     reg = init(request)
-    if reg['status']==0:
+    if reg['status'] == 0:
         if Consumer.objects.filter(tel=reg['phone']).exist():
             code = 404
         else:
             new = Consumer()
+            ids = user_id_pool.objects
+            id = ids.first()
+            new.account_id = id.account_id
+            id.delete()
             new.phone = reg['phone']
             new.username = reg['username']
             new.password = reg['password']
+            new.account_type = 2
             new.save()
             code = 200
         data = {'code': code}
