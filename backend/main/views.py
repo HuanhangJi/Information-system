@@ -1,15 +1,18 @@
 from django.shortcuts import render
-from django.http import *
-from task_management.models import Task
+import os
+import sys
+sys.path.append(os.path.abspath('..'))
+from task_management.models import *
+from client_management.models import *
 from django.core.paginator import *
 from django.db.models import Q
+from django.http import *
 
 
 ## TODO 主页
 def index(request):
     # try:
-        content = {'info':'成功打开主页'}
-        return render(request,'index/index.html',content)
+        return render(request,'index/index.html')
     # except Exception:
     #     return HttpResponse('打开主页失败')
 
@@ -18,16 +21,14 @@ def index(request):
 def products(request, pIndex=1):
     # try:
         kw = request.GET.get('keyword',None)
-        Tlist = Task.objects
+        Plist = Project.objects
         mywhere = []
         if kw:
             mywhere.append(f'keyword={kw}')
-            try:#在任务类建立后删除
-                Tlist = Task.objects.filter(Q(title__contains=kw)|Q(content__contains=kw))
-            except:
-                pass
+            Plist = Plist.filter(Q(title__contains=kw)|Q(content__contains=kw))
+        Plist = Plist.order_by("project_id")
         pIndex = int(pIndex)
-        page = Paginator(Tlist,5)
+        page = Paginator(Plist,5)
         try:
             max_page = page.num_pages
         except Exception:
@@ -37,13 +38,17 @@ def products(request, pIndex=1):
             pIndex = 1
         if pIndex > max_page:
             pIndex = max_page
-        Tlist2 = page.page(pIndex)
+        Plist2 = page.page(pIndex)
         plist = page.page_range
-        content = {'task_list':Tlist2,'plist':plist,'pIndex':pIndex,'max_page':max_page,'mywhere':mywhere,'info':'成功打开任务市场'}
+        content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'max_page':max_page,'mywhere':mywhere}
         return render(request,'index/product.html',content)
     # except Exception:
     #     return HttpResponse(f'打开任务市场失败')
 
-def product_info(request,id=1):
-    content = {'id':id}
+def product_info(request,project_id):
+    try:
+        p = Project()
+        content = p.objects.get(project_id=project_id).to_dict()
+    except Exception:
+        content = {'info':404}
     return render(request, 'index/shangpin.html', content)

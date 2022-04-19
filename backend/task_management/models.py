@@ -8,9 +8,15 @@ class Task(models.Model):
     PAF_id = models.CharField(max_length=25)
     task_status = models.CharField(max_length=20)
     score = models.IntegerField()
+    due_time = models.DateTimeField()
 
     def to_dict(self):
-        pass
+        data = {'project_id':self.project_id,
+                'task_id':self.task_id,
+                'score':self.score,
+                'due_time': self.due_time
+                }
+        return data
 
 
 class Project(models.Model):
@@ -28,7 +34,16 @@ class Project(models.Model):
     completed_task_num = models.IntegerField()
 
     def to_dict(self):
-        pass
+        data = {'project_id':self.project_id,
+                'description':self.description,
+                'project_name':self.project_name,
+                'project_type':self.project_type,
+                'due_time':self.due_time,
+                'payment_per_task':self.payment_per_task,
+                'task_num':self.task_num,
+                'sample_document':self.sample_document
+                }
+        return data
 
 
 class Prepay(models.Model):

@@ -1,14 +1,18 @@
-from django.shortcuts import render
-import json
-from django.db.models import Q
 from django.http import *
-import numpy as np
-import requests
-import json
 from .models import *
 import hashlib
 from django.shortcuts import *
-import random
+import os
+import sys
+sys.path.append(os.path.abspath('..'))
+from task_management.models import *
+import numpy as np
+import requests
+import json
+from django.shortcuts import render
+import json
+from django.db.models import Q
+
 
 def full_user_id(request):
     for ids in range(10000000,10005000):
@@ -152,3 +156,6 @@ def con_logout(request):
     except Exception:
         code = 404
     return JsonResponse({'code':code})
+
+
+

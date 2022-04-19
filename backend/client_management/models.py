@@ -5,7 +5,7 @@ from django.db import models
 #用户基类
 class UserInfo(models.Model):
     account_id = models.CharField(max_length=20,primary_key=True)
-    password = models.CharField(max_length=20)
+    password = models.CharField(max_length=50)
     account_type = models.IntegerField()
     tel = models.CharField(max_length=20)
     name = models.CharField(max_length=20)
@@ -14,6 +14,7 @@ class UserInfo(models.Model):
     ID_num = models.CharField(max_length=25)#身份证号
     nickname = models.CharField(max_length=20)
     mail_add = models.CharField(max_length=20)
+    status = models.IntegerField()
 
     class Meta:
         abstract = True
@@ -25,15 +26,27 @@ class Consumer(UserInfo):
     experience = models.IntegerField()
 
     def to_dict(self):
-        pass
+        data = {'acccount_id' : self.account_id,
+                'tel':self.tel,
+                'nickname':self.nickname,
+                'level':self.level,
+                'avatar':self.avatar,
+                'experience':self.experience,
+                }
+        return data
 
 
 #发布者类
 class Producer(UserInfo):
-    payment_password = models.CharField(max_length=6)
+    payment_password = models.CharField(max_length=50)
 
     def to_dict(self):
-        pass
+        data = {'acccount_id' : self.account_id,
+                'tel':self.tel,
+                'nickname':self.nickname,
+                'avatar':self.avatar,
+                }
+        return data
 
 #钱包类
 class wallet(models.Model):
@@ -58,3 +71,4 @@ class record(models.Model):
 #用户id库
 class user_id_pool(models.Model):
     account_id = models.CharField(max_length=20,primary_key=True)
+

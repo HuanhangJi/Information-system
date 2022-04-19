@@ -1,17 +1,15 @@
-import pylab as p
-from django.shortcuts import render
-from django.shortcuts import render
+from django.http import *
+from .models import *
+import os
+import sys
+sys.path.append(os.path.abspath('..'))
+from client_management.models import *
 from django.shortcuts import render
 import json
 from django.db.models import Q
-from django.http import *
-import numpy as np
-import requests
-import json
-from .models import *
-import hashlib
 
 
+## 补充ID池
 def full_project_id(request):
     for ids in range(10000000,10005000):
         id = project_id_pool()
@@ -20,8 +18,20 @@ def full_project_id(request):
     return HttpResponse('成功添加')
 
 
+## 判断分数
+def judge_score(payment):
+    payment = int(payment)
+    if payment < 50:
+        score = 100
+    elif payment <100:
+        score = 300
+    else:
+        score = 500
+    return score
+
+
 ## TODO 增加任务函数
-def insert(request):
+def project_add(request):
     # try:
         publisher_id = request.GET['publisher_id']
         project_name = request.GET['project_name']
@@ -30,9 +40,11 @@ def insert(request):
         due_time = request.GET['due_time']
         pay_per_task = request.GET['pay_per_task']
         task_num = request.GET['task_num']
+        sample_document = request.GET['sample_document']
         p = Project()
         id = project_id_pool().objects.first()
-        p.project_id = id.project_id
+        project_id = id.project_id
+        p.project_id = project_id
         id.delete()
         p.publisher_id = publisher_id
         p.project_type = project_type
@@ -43,7 +55,16 @@ def insert(request):
         p.due_time = due_time
         p.description = description
         p.project_name = project_name
+        p.sample_document = sample_document
         p.save()
+        for i in range(1,task_num+1):
+            t = Task()
+            t.project_id = project_id
+            t.task_id = project_id+'_'+str(i)
+            t.score = judge_score(pay_per_task)
+            t.original_data = sample_document
+            t.due_time = due_time
+            t.task_status = 0
         data = {'code':200,'msg':'添加任务成功'}
     # except BaseException:
     #     data = {'code':404,'msg':'添加任务失败'}
@@ -51,12 +72,12 @@ def insert(request):
 
 
 ## TODO 删除任务函数
-def delete(request):
+def project_delete(request):
     # try:
         project_id = request.GET['project_id']
         if Project.objects.filter(project_id=project_id).exist():
-            project = Project.objects.get(project_id=project_id)
-            project.delete()
+            Project.objects.get(project_id=project_id).delete()
+            Task.objects.filter(project_id=project_id).delete()
             data = {'code':200,'msg':'删除成功'}
         else:
             data = {'code':402,'msg':'不存在删除对象'}
@@ -66,7 +87,7 @@ def delete(request):
 
 
 ## TODO 编辑任务函数
-def edit(request):
+def project_edit(request):
     # try:
         project_id = request.GET['project_id']
         project_name = request.GET['project_name']
@@ -91,7 +112,7 @@ def edit(request):
 
 
 ## TODO 查询任务函数
-def query(request):
+def project_query(request):
     # try:
         keyword = request.GET['keyword']
         t = Project.objects.get(project_id=keyword)
