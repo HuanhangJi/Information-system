@@ -9,7 +9,7 @@ class UserInfo(models.Model):
     account_type = models.IntegerField()
     tel = models.CharField(max_length=20)
     name = models.CharField(max_length=20)
-    avatar = models.ImageField(upload_to='avatar/%Y/%m/%d', default='')#头像
+    # avatar = models.ImageField(upload_to='avatar/%Y/%m/%d', default='')#头像
     gender = models.CharField(max_length=2)
     ID_num = models.CharField(max_length=25)#身份证号
     nickname = models.CharField(max_length=20)
@@ -30,7 +30,7 @@ class Consumer(UserInfo):
                 'tel':self.tel,
                 'nickname':self.nickname,
                 'level':self.level,
-                'avatar':self.avatar,
+                # 'avatar':self.avatar,
                 'experience':self.experience,
                 }
         return data
@@ -44,7 +44,7 @@ class Producer(UserInfo):
         data = {'acccount_id' : self.account_id,
                 'tel':self.tel,
                 'nickname':self.nickname,
-                'avatar':self.avatar,
+                # 'avatar':self.avatar,
                 }
         return data
 

@@ -14,6 +14,7 @@ import json
 from django.db.models import Q
 
 
+## 补充id池
 def full_user_id(request):
     for ids in range(10000000,10005000):
         id = user_id_pool()
@@ -21,11 +22,6 @@ def full_user_id(request):
         id.save()
     return HttpResponse('成功添加')
 
-def test(request):
-    id = user_id_pool.objects.first()
-    print(id.account_id)
-    id.delete()
-    return HttpResponse('成功')
 
 ## 密码加密函数 finish
 def hash_md5(str):
@@ -71,7 +67,7 @@ def pro_login(request):
     return JsonResponse(data)
 
 
-## TODO 接单者登陆
+## TODO 标注者登陆
 def con_login(request):
     pw = hash_md5(request.POST['password'])
     account = request.POST['tel']
@@ -100,8 +96,13 @@ def pro_register(request):
             new = Producer()
             ids = user_id_pool.objects
             id = ids.first()
-            new.account_id = id.account_id
+            account_id = id.account_id
+            new.account_id = account_id
             id.delete()
+            w = wallet()
+            w.account_id = account_id
+            w.account_num = 0
+            w.save()
             new.tel = reg['phone']
             new.account_id = reg['username']
             new.password = reg['password']
@@ -114,7 +115,7 @@ def pro_register(request):
     return JsonResponse(data)
 
 
-## TODO 接单者注册
+## TODO 标注者者注册
 def con_register(request):
     reg = init(request)
     if reg['status'] == 0:
@@ -124,8 +125,13 @@ def con_register(request):
             new = Consumer()
             ids = user_id_pool.objects
             id = ids.first()
-            new.account_id = id.account_id
+            account_id = id.account_id
+            new.account_id = account_id
             id.delete()
+            w = wallet()
+            w.account_id = account_id
+            w.account_num = 0
+            w.save()
             new.phone = reg['phone']
             new.username = reg['username']
             new.password = reg['password']
@@ -148,7 +154,7 @@ def pro_logout(request):
     return JsonResponse({'code':code})
 
 
-## TODO 接单者注销
+## TODO 标注者注销
 def con_logout(request):
     try:
         del request.session['consumer']
@@ -158,4 +164,11 @@ def con_logout(request):
     return JsonResponse({'code':code})
 
 
+def upload_avatar(request):
+    pass
 
+def write_data(data, name):
+    destination = '..../upload/avatar/'+name
+    with open(destination,'wb+') as f:
+        for chunk in data.chunks():
+            f.write(chunk)

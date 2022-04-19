@@ -1,12 +1,13 @@
 from django.db import models
 # Create your models here.
 
-
 class Task(models.Model):
     task_id = models.CharField(max_length=25,primary_key=True)
     project_id = models.CharField(max_length=25)
     PAF_id = models.CharField(max_length=25)
     task_status = models.CharField(max_length=20)
+    # original_data = models.FileField(upload_to='data')
+    # processed_data = models.FileField(upload_to='data')
     score = models.IntegerField()
     due_time = models.DateTimeField()
 
@@ -26,7 +27,7 @@ class Project(models.Model):
     project_name = models.CharField(max_length=64)
     project_type = models.CharField(max_length=20)
     description = models.CharField(max_length=1024)
-    sample_document = models.FileField(upload_to='sample_document')
+    # sample_document = models.FileField(upload_to='sample_document')
     due_time = models.DateTimeField()
     payment_per_task = models.FloatField()
     project_status = models.IntegerField()

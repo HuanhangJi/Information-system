@@ -8,7 +8,6 @@ from django.shortcuts import render
 import json
 from django.db.models import Q
 
-
 ## 补充ID池
 def full_project_id(request):
     for ids in range(10000000,10005000):
@@ -40,12 +39,13 @@ def project_add(request):
         due_time = request.GET['due_time']
         pay_per_task = request.GET['pay_per_task']
         task_num = request.GET['task_num']
-        sample_document = request.GET['sample_document']
+        sample_document = request.FILES['sample_document']
         p = Project()
         id = project_id_pool().objects.first()
         project_id = id.project_id
         p.project_id = project_id
         id.delete()
+        write_data(sample_document, project_id)
         p.publisher_id = publisher_id
         p.project_type = project_type
         p.completed_task_num = 0
@@ -55,14 +55,14 @@ def project_add(request):
         p.due_time = due_time
         p.description = description
         p.project_name = project_name
-        p.sample_document = sample_document
+        # p.sample_document = sample_document
         p.save()
         for i in range(1,task_num+1):
             t = Task()
             t.project_id = project_id
             t.task_id = project_id+'_'+str(i)
             t.score = judge_score(pay_per_task)
-            t.original_data = sample_document
+            # t.original_data = sample_document
             t.due_time = due_time
             t.task_status = 0
         data = {'code':200,'msg':'添加任务成功'}
@@ -93,14 +93,14 @@ def project_edit(request):
         project_name = request.GET['project_name']
         description = request.GET['description']
         due_time = request.GET['due_time']
-        pay_per_task = request.GET['pay_per_task']
+        # pay_per_task = request.GET['pay_per_task']
         task_num = request.GET['task_num']
         if Project.objects.filter(project_id=project_id).exist():
             p = Project.objects.get(project_id=project_id)
             p.project_name = project_name
             p.description = description
             p.due_time = due_time
-            p.payment_per_task = pay_per_task
+            # p.payment_per_task = pay_per_task
             p.task_num = task_num
             p.save()
             data = {'code': 200, 'msg': '修改成功'}
@@ -123,4 +123,8 @@ def project_query(request):
         return JsonResponse(data)
 
 
-
+def write_data(data, name):
+    destination = '..../upload/sample_document/'+name
+    with open(destination,'wb+') as f:
+        for chunk in data.chunks():
+            f.write(chunk)
