@@ -49,7 +49,7 @@ class Producer(UserInfo):
 
 
 #钱包类
-class Wallet(models.Model):
+class Wallet(models.Model):#数据库修改
     AB_id = models.CharField(max_length=25, primary_key=True, auto_created=True)
     account_id = models.CharField(max_length=20)
     account_num = models.FloatField()

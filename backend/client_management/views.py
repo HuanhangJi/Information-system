@@ -165,7 +165,7 @@ def con_logout(request):
         return JsonResponse({'code':code})
 
 
-## 上传头像
+## TODO 上传头像
 def upload_avatar(request):
     avatar = request.FILES['avatar']
     account_id = request.GET['account_id']
@@ -182,7 +182,7 @@ def write_data(data, name):
             f.write(chunk)
 
 
-## 设置支付密码
+## TODO 设置支付密码
 def set_payment_password(request):
     payment_pass = request.POST['payment_password']
     account_id = request.POST['account_id']
@@ -191,7 +191,7 @@ def set_payment_password(request):
     W.save()
 
 
-## 钱包转账提现
+## TODO 钱包转账提现
 def change_wallet(request):
     cw_type = request.POST['cw_type']
     account_id = request.POST['account_id']
@@ -204,8 +204,12 @@ def change_wallet(request):
             w.account_num += cw_amount
             w.save()
         if cw_type == 'withdraw':
-            w.account_num -= cw_amount
-            w.save()
+            if w.account_num >= cw_amount:
+                w.account_num -= cw_amount
+                w.save()
+            else:
+                info = {'code': 404}
+                return JsonResponse(info)
     else:
         info = {'code': 404}
         return JsonResponse(info)

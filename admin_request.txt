@@ -9,12 +9,3 @@ Get：
 8.	注销账户，请求接口，后台将token销毁或者过期
 
 
-
-1.  path('pro/login', pro_login,name='pro_login'), #pro登陆路由
-    path('con/login',con_login,name='con_login'), #con登陆路由
-
-2.  path('query/',query,name='query'), #查询路由
-
-8.  path('/pro/logout',pro_logout,name='pro_logout'),#pro注销路由
-    path('/con/logout',con_logout,name='con_logout'),#con注销路由
-

@@ -1,12 +1,14 @@
+import datetime
 from django.http import *
 from .models import *
 import os
 import sys
 sys.path.append(os.path.abspath('..'))
 from client_management.models import *
+from django.db.models import Q
 from django.shortcuts import render
 import json
-from django.db.models import Q
+
 
 ## 补充ID池
 def full_project_id(request):
@@ -47,14 +49,14 @@ def project_add(request):
         project_id = id.project_id
         p.project_id = project_id
         id.delete()
-        write_data(sample_document, project_id+'.'+sample_type)
+        write_data(sample_document, project_id+'.'+sample_type, project_id)
         p.publisher_id = publisher_id
         p.project_type = project_type
-        p.completed_task_num = 0
         p.task_num = task_num
         p.project_status = 0
         p.payment_per_task = pay_per_task
         p.due_time = due_time
+        p.completed_task_num = 0
         p.description = description
         p.project_name = project_name
         p.project_star = project_star
@@ -126,8 +128,8 @@ def project_query(request):
         return JsonResponse(data)
 
 
-def write_data(data, name):
-    destination = '..../upload/sample_document/'+name
+def write_data(data, name, project_id):
+    destination = f'..../upload/sample_document/{project_id}/'+ name
     if os.path.exists(destination):
         os.remove(destination)
     with open(destination,'wb+') as f:
@@ -139,7 +141,112 @@ def write_data(data, name):
 def prepay(request):
     project_id = request.POST.get('project_id',None)
     prepay_amount = request.POST.get('prepay_amount',None)
-    perpay_balance = prepay_amount
+    account_id = request.POST.get('account_id', None)
+    w = Wallet.objects.get(account_id=account_id)
+    if w.account_num > prepay_amount:
+        w.account_num -= prepay_amount
+        w.save()
+        p = Prepay()
+        p.prepay_amount = prepay_amount
+        p.prepay_balance = prepay_amount
+        p.project_id = project_id
+        p.account_id=account_id
+        p.save()
+        return JsonResponse({'code': 200})
+    else:
+        return JsonResponse({'code':404})
+
+
+## TODO 标注者接收任务
+def get_task(request):
+    project_id = request.GET['project_id']
+    account_id = request.GET['account_id']
+    tasks = Task.objects.filter(Q(project_id=project_id)|Q(task_status=0))
+    Project.objects.get(project_id=project_id).project_status = 1
+    task_num = tasks.count()
+    if task_num >=1:
+        task = tasks.first()
+        task.task_status = 1
+        task.save()
+        ta = Task_association()
+        ta.task_id = task.task_id
+        ta.account_id = account_id
+        ta.project_id = project_id
+        ta.save()
+        return JsonResponse({'code': 200})
+    else:
+        return JsonResponse({'code':404})
+
+
+## TODO 标注者取消任务
+def give_up_task(request):
+    account_id = request.GET['account_id']
+    task_id = request.GET['task_id']
+    ta = Task_association.objects.filter(Q(account_id=account_id)|Q(task_id=task_id))
+    ta.delete()
+    t = Task.objects.get(task_id=task_id)
+    t.task_status = 0
+    t.save()
+    return JsonResponse({'code': 200})
+
+
+## TODO 标注者提交任务
+def commit_task(request):
+    processed_data = request.FILES['processed_data']
+    task_id = request.GET['task_id']
+    type = processed_data.name.split('.').pop()
+    project_id = task_id.split('.')[0]
+    write_data(processed_data,task_id+'.'+type,project_id)
+    t = Task.objects.get(task_id=task_id)
+    t.task_status = 2
+    t.save()
+    return JsonResponse({'code': 200})
+
+
+## TODO task提交成功后付款与升级
+def completed_task(request):
+    task_id = request.GET['task_id']
+    project_id = request.GET['project_id']
+    account_id = request.GET['account_id']
+    t = Task.objects.get(task_id=task_id)
+    ta = Task_association.objects.get(Q(account_id=account_id)|Q(task_id=task_id))
+    c = Consumer.objects.get(account_id=account_id)
+    p = Project.objects.get(project_id=project_id)
+    pre = Prepay.objects.get(project_id=project_id)
+    w = Wallet.objects.get(account_id=account_id)
+    r = Reward_record()
+    t.task_status = 3
+    t.save()
+    r.reward_amount = p.payment_per_task
+    r.ta_id = ta.ta_id
+    r.reward_time = datetime.datetime.now()
+    r.save()
+    pre.prepay_balance -= p.payment_per_task
+    pre.save()
+    t.completed_task_num += 1
+    t.save()
+    w.account_num += float(p.payment_per_task)*0.8
+    w.save()
+    c.experience += t.score
+    if c.experience >= 1000:
+        c.experience -= 1000
+        if c.level <= 5:
+            c.level += 1
+    c.save()
+    if p.task_num == p.completed_task_num:
+        p.project_status = 2
+        p.save()
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,4 +1,5 @@
 from django.db import models
+
 # Create your models here.
 
 class Task(models.Model):
@@ -50,23 +51,17 @@ class Project(models.Model):
         return data
 
 
-class Prepay(models.Model):
+class Prepay(models.Model):#数据库修改
     prepay_id = models.CharField(max_length=25, primary_key=True, auto_created=True)
     project_id = models.CharField(max_length=25)
     prepay_amount = models.FloatField()
     prepay_balance = models.FloatField()
-
-
-class Task_record(models.Model):
     account_id = models.CharField(max_length=25)
-    task_id = models.CharField(max_length=25)
-    reward_id = models.CharField(max_length=25)
-
-    class Meta:
-        unique_together = ("account_id", "task_id")
 
 
-class Reward_record(models.Model):
+
+class Reward_record(models.Model):#数据库修改
+    ta_id = models.CharField(max_length=25)
     reward_id = models.CharField(max_length=25,primary_key=True, auto_created=True)
     reward_amount = models.FloatField()
     reward_time = models.DateTimeField()
@@ -79,6 +74,14 @@ class Total_account(models.Model):
     PAF_amount = models.FloatField()
     PAF_balance = models.FloatField()
     PAF_time = models.DateTimeField()
+
+
+class Task_association(models.Model):#数据库修改
+    account_id = models.CharField(max_length=25)
+    task_id = models.CharField(max_length=25)
+    project_id = models.CharField(max_length=25)
+    ta_id = models.CharField(max_length=25,primary_key=True,auto_created=True)
+
 
 
 # 项目id库
