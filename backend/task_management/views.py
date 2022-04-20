@@ -18,11 +18,11 @@ def full_project_id(request):
 
 
 ## 判断分数
-def judge_score(payment):
-    payment = int(payment)
-    if payment < 50:
+def judge_score(star):
+    stars = int(star)
+    if stars <= 2:
         score = 100
-    elif payment <100:
+    elif stars <= 4:
         score = 300
     else:
         score = 500
@@ -40,12 +40,14 @@ def project_add(request):
         pay_per_task = request.GET['pay_per_task']
         task_num = request.GET['task_num']
         sample_document = request.FILES['sample_document']
+        sample_type = sample_document.name.split('.').pop()
+        project_star = request['project_star']
         p = Project()
-        id = project_id_pool().objects.first()
+        id = project_id_pool.objects.first()
         project_id = id.project_id
         p.project_id = project_id
         id.delete()
-        write_data(sample_document, project_id)
+        write_data(sample_document, project_id+'.'+sample_type)
         p.publisher_id = publisher_id
         p.project_type = project_type
         p.completed_task_num = 0
@@ -55,13 +57,14 @@ def project_add(request):
         p.due_time = due_time
         p.description = description
         p.project_name = project_name
+        p.project_star = project_star
         # p.sample_document = sample_document
         p.save()
         for i in range(1,task_num+1):
             t = Task()
             t.project_id = project_id
             t.task_id = project_id+'_'+str(i)
-            t.score = judge_score(pay_per_task)
+            t.score = judge_score(project_star)
             # t.original_data = sample_document
             t.due_time = due_time
             t.task_status = 0
@@ -125,6 +128,19 @@ def project_query(request):
 
 def write_data(data, name):
     destination = '..../upload/sample_document/'+name
+    if os.path.exists(destination):
+        os.remove(destination)
     with open(destination,'wb+') as f:
         for chunk in data.chunks():
             f.write(chunk)
+
+
+## TODO 预付款
+def prepay(request):
+    project_id = request.POST.get('project_id',None)
+    prepay_amount = request.POST.get('prepay_amount',None)
+    perpay_balance = prepay_amount
+
+
+
+

@@ -33,6 +33,9 @@ class Project(models.Model):
     project_status = models.IntegerField()
     task_num = models.IntegerField()
     completed_task_num = models.IntegerField()
+    project_star = models.IntegerField()
+
+
 
     def to_dict(self):
         data = {'project_id':self.project_id,
@@ -42,7 +45,7 @@ class Project(models.Model):
                 'due_time':self.due_time,
                 'payment_per_task':self.payment_per_task,
                 'task_num':self.task_num,
-                'sample_document':self.sample_document
+                # 'sample_document':self.sample_document
                 }
         return data
 
