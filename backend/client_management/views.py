@@ -59,7 +59,7 @@ def pro_login(request):
         if Pro.password == pw:
             code = 200
             info = Pro.to_dict()
-            request.session['producer'] = info
+            request.session['user'] = info
         else:
             code = 404
     else:
@@ -76,7 +76,7 @@ def con_login(request):
     if Consumer.objects.filter(tel=account).exists():
         Con = Consumer.objects.get(tel=account)
         if Con.password == pw:
-            request.session['consumer'] = Con.to_dict()
+            request.session['user'] = Con.to_dict()
             code = 200
             info = Con.to_dict()
         else:
@@ -148,7 +148,7 @@ def con_register(request):
 ## TODO 发布者注销
 def pro_logout(request):
     # try:
-        del request.session['producer']
+        del request.session['user']
         code = 200
     # except Exception:
     #     code = 404
@@ -158,7 +158,7 @@ def pro_logout(request):
 ## TODO 标注者注销
 def con_logout(request):
     # try:
-        del request.session['consumer']
+        del request.session['user']
         code = 200
     # except Exception:
     #     code = 404
@@ -168,7 +168,7 @@ def con_logout(request):
 ## TODO 上传头像
 def upload_avatar(request):
     avatar = request.FILES['avatar']
-    account_id = request.GET['account_id']
+    account_id = request.session['user']['account_id']
     avatar_type = avatar.name.split('.').pop()
     write_data(avatar,account_id+'.'+avatar_type)
 
@@ -185,7 +185,7 @@ def write_data(data, name):
 ## TODO 设置支付密码
 def set_payment_password(request):
     payment_pass = request.POST['payment_password']
-    account_id = request.POST['account_id']
+    account_id = request.session['user']['account_id']
     W = Wallet.objects.get(account_id=account_id)
     W.payment_password = hash_md5(str(payment_pass))
     W.save()
@@ -194,7 +194,7 @@ def set_payment_password(request):
 ## TODO 钱包转账提现
 def change_wallet(request):
     cw_type = request.POST['cw_type']
-    account_id = request.POST['account_id']
+    account_id = request.session['user']['account_id']
     cw_amount = request.POST['cw_amount']
     payment_pass = request.POST['payment_password']
     r = Wallet_record()

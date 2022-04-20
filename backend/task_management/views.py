@@ -141,7 +141,7 @@ def write_data(data, name, project_id):
 def prepay(request):
     project_id = request.POST.get('project_id',None)
     prepay_amount = request.POST.get('prepay_amount',None)
-    account_id = request.POST.get('account_id', None)
+    account_id = request.session['user']['account_id']
     w = Wallet.objects.get(account_id=account_id)
     if w.account_num > prepay_amount:
         w.account_num -= prepay_amount
@@ -160,7 +160,7 @@ def prepay(request):
 ## TODO 标注者接收任务
 def get_task(request):
     project_id = request.GET['project_id']
-    account_id = request.GET['account_id']
+    account_id = request.session['user']['account_id']
     tasks = Task.objects.filter(Q(project_id=project_id)|Q(task_status=0))
     Project.objects.get(project_id=project_id).project_status = 1
     task_num = tasks.count()
@@ -180,7 +180,7 @@ def get_task(request):
 
 ## TODO 标注者取消任务
 def give_up_task(request):
-    account_id = request.GET['account_id']
+    account_id = request.session['user']['account_id']
     task_id = request.GET['task_id']
     ta = Task_association.objects.filter(Q(account_id=account_id)|Q(task_id=task_id))
     ta.delete()
@@ -207,9 +207,9 @@ def commit_task(request):
 def completed_task(request):
     task_id = request.GET['task_id']
     project_id = request.GET['project_id']
-    account_id = request.GET['account_id']
     t = Task.objects.get(task_id=task_id)
-    ta = Task_association.objects.get(Q(account_id=account_id)|Q(task_id=task_id))
+    ta = Task_association.objects.get(task_id=task_id)
+    account_id = ta.account_id
     c = Consumer.objects.get(account_id=account_id)
     p = Project.objects.get(project_id=project_id)
     pre = Prepay.objects.get(project_id=project_id)
