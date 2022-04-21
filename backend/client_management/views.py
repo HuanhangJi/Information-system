@@ -15,7 +15,7 @@ import json
 from django.db.models import Q
 
 
-## 补充id池
+## 补充id池 FINISH
 def full_user_id(request):
     for ids in range(10000000,10005000):
         id = User_id_pool()
@@ -24,14 +24,14 @@ def full_user_id(request):
     return HttpResponse('成功添加')
 
 
-## 密码加密函数 finish
+## 密码加密函数 FINISH
 def hash_md5(str):
     hash = hashlib.md5()
     hash.update(bytes(str.encode('utf-8')))
     return hash.hexdigest()
 
 
-## request初始化
+## request初始化 FINISH
 def init(request):
     username = request.POST['nickname']
     phone = request.POST['tel']

@@ -10,7 +10,7 @@ from django.shortcuts import render
 import json
 
 
-## 补充ID池
+## TODO 补充ID池
 def full_project_id(request):
     for ids in range(10000000,10005000):
         id = project_id_pool()
@@ -19,7 +19,7 @@ def full_project_id(request):
     return HttpResponse('成功添加')
 
 
-## 判断分数
+## TODO 判断分数
 def judge_score(star):
     stars = int(star)
     if stars <= 2:
@@ -236,18 +236,3 @@ def completed_task(request):
     if p.task_num == p.completed_task_num:
         p.project_status = 2
         p.save()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
