@@ -99,14 +99,12 @@ def project_edit(request):
         description = request.GET['description']
         due_time = request.GET['due_time']
         # pay_per_task = request.GET['pay_per_task']
-        task_num = request.GET['task_num']
         if Project.objects.filter(project_id=project_id).exist():
             p = Project.objects.get(project_id=project_id)
             p.project_name = project_name
             p.description = description
             p.due_time = due_time
             # p.payment_per_task = pay_per_task
-            p.task_num = task_num
             p.save()
             data = {'code': 200, 'msg': '修改成功'}
         else:
