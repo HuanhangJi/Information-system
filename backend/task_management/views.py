@@ -22,13 +22,29 @@ def full_project_id(request):
 ## TODO 判断分数
 def judge_score(star):
     stars = int(star)
-    if stars <= 2:
+    if stars == 1:
         score = 100
-    elif stars <= 4:
+    elif stars == 2:
         score = 300
-    else:
+    elif stars == 3:
         score = 500
+    elif stars == 4:
+        score = 1000
+    else:
+        score = 2000
     return score
+
+def judge_level(scores):
+    if scores <= 1000:
+        return 1
+    elif scores <=3000:
+        return 2
+    elif scores <= 10000:
+        return 3
+    elif scores <= 20000:
+        return 4
+    else:
+        return 5
 
 
 ## TODO 增加任务函数
@@ -204,7 +220,7 @@ def commit_task(request):
 ## TODO task提交成功后付款与升级
 def completed_task(request):
     task_id = request.GET['task_id']
-    project_id = request.GET['project_id']
+    project_id = task_id.split('_')[0]
     t = Task.objects.get(task_id=task_id)
     ta = Task_association.objects.get(task_id=task_id)
     account_id = ta.account_id
@@ -213,6 +229,8 @@ def completed_task(request):
     pre = Prepay.objects.get(project_id=project_id)
     w = Wallet.objects.get(account_id=account_id)
     r = Reward_record()
+    web = Web_account()
+    web.task_id = task_id
     t.task_status = 3
     t.save()
     r.reward_amount = p.payment_per_task
@@ -224,12 +242,14 @@ def completed_task(request):
     t.completed_task_num += 1
     t.save()
     w.account_num += float(p.payment_per_task)*0.8
+    web.PAF_time = datetime.datetime.now()
+    web.PAF_amount = float(p.payment_per_task)*0.2
+    web.PAF_type = p.project_type
+    web.PAF_balance += web.PAF_amount
+    web.save()
     w.save()
     c.experience += t.score
-    if c.experience >= 1000:
-        c.experience -= 1000
-        if c.level <= 5:
-            c.level += 1
+    c.level = judge_level(c.experience)
     c.save()
     if p.task_num == p.completed_task_num:
         p.project_status = 2

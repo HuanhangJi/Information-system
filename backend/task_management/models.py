@@ -5,7 +5,6 @@ from django.db import models
 class Task(models.Model):
     task_id = models.CharField(max_length=25,primary_key=True)
     project_id = models.CharField(max_length=25)
-    PAF_id = models.CharField(max_length=25)
     task_status = models.CharField(max_length=20)
     # original_data = models.FileField(upload_to='data')
     # processed_data = models.FileField(upload_to='data')
@@ -67,7 +66,7 @@ class Reward_record(models.Model):#数据库修改
     reward_time = models.DateTimeField()
 
 
-class Total_account(models.Model):
+class Web_account(models.Model):
     PAF_id = models.CharField(max_length=25,primary_key=True, auto_created=True)
     task_id = models.CharField(max_length=25)
     PAF_type = models.CharField(max_length=4)
