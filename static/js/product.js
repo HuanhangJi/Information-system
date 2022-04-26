@@ -58,3 +58,35 @@ $(document).ready(function(){
             ,readonly: true})
         });
     }); 
+
+
+// 修改任务星级
+$(document).ready(function(){
+    layui.use(['rate'], function(){
+        var rate = layui.rate;
+        rate.render({
+            elem: '#test4'
+            ,value: 2
+            ,readonly: true})
+        });
+    }); 
+// 修改任务星级
+$(document).ready(function(){
+    layui.use(['rate'], function(){
+        var rate = layui.rate;
+        rate.render({
+            elem: '#test5'
+            ,value: 4
+            ,readonly: true})
+        });
+    }); 
+// 修改任务星级
+$(document).ready(function(){
+    layui.use(['rate'], function(){
+        var rate = layui.rate;
+        rate.render({
+            elem: '#test6'
+            ,value: 5
+            ,readonly: true})
+        });
+    }); 
