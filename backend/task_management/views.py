@@ -10,6 +10,13 @@ from django.shortcuts import render
 import json
 
 
+## request初始化 FINISH
+def get_res(request):
+    data = request.body.decode('utf-8')
+    res = json.loads(data)
+    return res
+
+
 ## TODO 补充ID池
 def full_project_id(request):
     for ids in range(10000000,10005000):
@@ -50,13 +57,14 @@ def judge_level(scores):
 ## TODO 增加任务函数
 def project_add(request):
     # try:
-        publisher_id = request.GET['publisher_id']
-        project_name = request.GET['project_name']
-        project_type = request.GET['project_type']
-        description = request.GET['description']
-        due_time = request.GET['due_time']
-        pay_per_task = request.GET['pay_per_task']
-        task_num = request.GET['task_num']
+        res = get_res(request)
+        publisher_id = res['publisher_id']
+        project_name = res['project_name']
+        project_type = res['project_type']
+        description = res['description']
+        due_time = res['due_time']
+        pay_per_task = res['pay_per_task']
+        task_num = res['task_num']
         sample_document = request.FILES['sample_document']
         sample_type = sample_document.name.split('.').pop()
         project_star = request['project_star']
@@ -95,7 +103,8 @@ def project_add(request):
 ## TODO 删除任务函数
 def project_delete(request):
     # try:
-        project_id = request.GET['project_id']
+        res = get_res(request)
+        project_id = res['project_id']
         if Project.objects.filter(project_id=project_id).exist():
             Project.objects.get(project_id=project_id).delete()
             Task.objects.filter(project_id=project_id).delete()
@@ -110,10 +119,11 @@ def project_delete(request):
 ## TODO 编辑任务函数
 def project_edit(request):
     # try:
-        project_id = request.GET['project_id']
-        project_name = request.GET['project_name']
-        description = request.GET['description']
-        due_time = request.GET['due_time']
+        res = get_res(request)
+        project_id = res['project_id']
+        project_name = res['project_name']
+        description = res['description']
+        due_time = res['due_time']
         # pay_per_task = request.GET['pay_per_task']
         if Project.objects.filter(project_id=project_id).exist():
             p = Project.objects.get(project_id=project_id)
@@ -133,7 +143,8 @@ def project_edit(request):
 ## TODO 查询任务函数
 def project_query(request):
     # try:
-        keyword = request.GET['keyword']
+        res = get_res(request)
+        keyword = res['keyword']
         t = Project.objects.get(project_id=keyword)
         info = t.to_dict()
         data = {'code': 200, 'msg': '查询成功', 'task_info':info}
@@ -153,8 +164,9 @@ def write_data(data, name, project_id):
 
 ## TODO 预付款
 def prepay(request):
-    project_id = request.POST.get('project_id',None)
-    prepay_amount = request.POST.get('prepay_amount',None)
+    res = get_res(request)
+    project_id = res('project_id',None)
+    prepay_amount = res('prepay_amount',None)
     account_id = request.session['user']['account_id']
     w = Wallet.objects.get(account_id=account_id)
     if w.account_num > prepay_amount:
@@ -173,8 +185,9 @@ def prepay(request):
 
 ## TODO 标注者接收任务
 def get_task(request):
-    project_id = request.GET['project_id']
-    account_id = request.session['user']['account_id']
+    res = get_res(request)
+    project_id = res['project_id']
+    account_id = res['user']['account_id']
     tasks = Task.objects.filter(Q(project_id=project_id)|Q(task_status=0))
     Project.objects.get(project_id=project_id).project_status = 1
     task_num = tasks.count()
@@ -194,8 +207,9 @@ def get_task(request):
 
 ## TODO 标注者取消任务
 def give_up_task(request):
+    res = get_res(request)
     account_id = request.session['user']['account_id']
-    task_id = request.GET['task_id']
+    task_id = res['task_id']
     ta = Task_association.objects.filter(Q(account_id=account_id)|Q(task_id=task_id))
     ta.delete()
     t = Task.objects.get(task_id=task_id)
@@ -206,8 +220,9 @@ def give_up_task(request):
 
 ## TODO 标注者提交任务
 def commit_task(request):
+    res = get_res(request)
     processed_data = request.FILES['processed_data']
-    task_id = request.GET['task_id']
+    task_id = res['task_id']
     type = processed_data.name.split('.').pop()
     project_id = task_id.split('.')[0]
     write_data(processed_data,task_id+'.'+type,project_id)
@@ -219,7 +234,8 @@ def commit_task(request):
 
 ## TODO task提交成功后付款与升级
 def completed_task(request):
-    task_id = request.GET['task_id']
+    res = get_res(request)
+    task_id = res['task_id']
     project_id = task_id.split('_')[0]
     t = Task.objects.get(task_id=task_id)
     ta = Task_association.objects.get(task_id=task_id)
