@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -81,13 +82,13 @@
         </div>     
 
         <div class="col-md-3 col-sm-3 col-lg-3">
-            <a class="card shadow" href="{% url './product.html' %}" style="border-radius: 20px;">
+            <a class="card shadow" href="{% url 'products' %}" style="border-radius: 20px;">
                 <img src="{% static './img/5.png' %}" alt="" style="border-radius: 20px;">
             </a>
         </div>  
 
         <div class="col-md-3 col-sm-3 col-lg-3">
-            <a class="card shadow" href="{% url './product.html' %}" style="border-radius: 20px;">
+            <a class="card shadow" href="{% url 'products' %}" style="border-radius: 20px;">
                 <img src="{% static './img/6.png' %}" alt="" style="border-radius: 20px;">
             </a>
         </div>  
