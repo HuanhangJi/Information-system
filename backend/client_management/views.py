@@ -33,26 +33,30 @@ def hash_md5(str):
 
 ## request初始化 FINISH
 def init(request):
-    username = request.POST['nickname']
-    phone = request.POST['tel']
-    password = request.POST['password']
+    res = get_res(request)
+    username = res['nickname']
+    phone = res['tel']
+    password = res['password']
     status = 0
-    if username == '':
-        status = 1
-    elif len(phone)!= 11 or not phone.isdigit():
-        status = 2
-    elif len(password) < 6:
-        status = 3
     if status == 0:
         password = hash_md5(password)
     login = {'username':username,'phone':phone, 'password':password, 'status':status}
     return login
 
 
+## request取数据 FINISH
+def get_res(request):
+    data = request.body.decode('utf-8')
+    res = json.loads(data)
+    return res
+
+
+
 ## TODO 发布者登陆
 def pro_login(request):
-    pw = hash_md5(request.POST['password'])
-    account = request.POST['tel']
+    res = get_res(request)
+    pw = hash_md5(res['password'])
+    account = res['tel']
     info = ''
     if Producer.objects.filter(tel=account).exists():
         Pro = Producer.objects.get(tel=account)
@@ -70,8 +74,9 @@ def pro_login(request):
 
 ## TODO 标注者登陆
 def con_login(request):
-    pw = hash_md5(request.POST['password'])
-    account = request.POST['tel']
+    res = get_res(request)
+    pw = hash_md5(res['password'])
+    account = res['tel']
     info = ''
     if Consumer.objects.filter(tel=account).exists():
         Con = Consumer.objects.get(tel=account)
@@ -93,6 +98,7 @@ def pro_register(request):
     if reg['status'] == 0:
         if Producer.objects.filter(tel=reg['phone']).exist():
             code = 404
+            msg = '手机已绑定'
         else:
             new = Producer()
             ids = User_id_pool.objects
@@ -110,18 +116,19 @@ def pro_register(request):
             new.account_type = 1
             new.save()
             code = 200
-        data = {'code': code}
+        data = {'code': code,'msg':msg}
     else:
-        data = {'code':404}
+        msg = '网络拥堵，请稍后再试'
+        data = {'code':404,'msg':msg}
     return JsonResponse(data)
 
 
-## TODO 标注者者注册
 def con_register(request):
     reg = init(request)
     if reg['status'] == 0:
-        if Consumer.objects.filter(tel=reg['phone']).exist():
+        if Consumer.objects.filter(tel=reg['phone']).exists():
             code = 404
+            msg = "手机号已绑定"
         else:
             new = Consumer()
             ids = User_id_pool.objects
@@ -139,11 +146,11 @@ def con_register(request):
             new.account_type = 2
             new.save()
             code = 200
-        data = {'code': code}
+        data = {'code': code,"msg":msg}
     else:
-        data = {'code':404}
+        msg = "网络堵塞，请稍后"
+        data = {'code':404,"msg":msg}
     return JsonResponse(data)
-
 
 ## TODO 发布者注销
 def pro_logout(request):
@@ -184,7 +191,8 @@ def write_data(data, name):
 
 ## TODO 设置支付密码
 def set_payment_password(request):
-    payment_pass = request.POST['payment_password']
+    res = get_res(request)
+    payment_pass = res['payment_password']
     account_id = request.session['user']['account_id']
     W = Wallet.objects.get(account_id=account_id)
     W.payment_password = hash_md5(str(payment_pass))
@@ -193,10 +201,11 @@ def set_payment_password(request):
 
 ## TODO 钱包转账提现
 def change_wallet(request):
-    cw_type = request.POST['cw_type']
+    res = get_res(request)
+    cw_type = res['cw_type']
     account_id = request.session['user']['account_id']
-    cw_amount = request.POST['cw_amount']
-    payment_pass = request.POST['payment_password']
+    cw_amount = res['cw_amount']
+    payment_pass = res['payment_password']
     r = Wallet_record()
     w = Wallet.objects.get(account_id=account_id)
     if hash_md5(str(payment_pass)) == w.payment_password:
