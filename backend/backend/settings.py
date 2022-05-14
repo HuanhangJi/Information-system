@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# #   数据库设置，根据自己情况更改name与password即可
+# 数据库设置，根据自己情况更改name与password即可
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
