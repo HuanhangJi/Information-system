@@ -26,7 +26,7 @@ class Consumer(UserInfo):
     experience = models.IntegerField()
 
     def to_dict(self):
-        data = {'acccount_id' : self.account_id,
+        data = {'account_id' : self.account_id,
                 'tel':self.tel,
                 'nickname':self.nickname,
                 'level':self.level,
@@ -40,7 +40,7 @@ class Consumer(UserInfo):
 class Producer(UserInfo):
 
     def to_dict(self):
-        data = {'acccount_id' : self.account_id,
+        data = {'account_id' : self.account_id,
                 'tel':self.tel,
                 'nickname':self.nickname,
                 # 'avatar':self.avatar,
@@ -77,3 +77,5 @@ class Wallet_record(models.Model):
 class User_id_pool(models.Model):
     account_id = models.CharField(max_length=20,primary_key=True)
 
+class Token(models.Model):
+    account_id = models.CharField(max_length=50)

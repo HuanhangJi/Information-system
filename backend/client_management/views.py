@@ -48,7 +48,7 @@ def init(request):
 def get_res(request):
     data = request.body.decode('utf-8')
     res = json.loads(data)
-    return res
+    return res['info']
 
 
 
@@ -56,14 +56,16 @@ def get_res(request):
 def pro_login(request):
     res = get_res(request)
     pw = hash_md5(res['password'])
-    account = res['tel']
+    account = str(res['tel'])
     info = ''
     if Producer.objects.filter(tel=account).exists():
         Pro = Producer.objects.get(tel=account)
         if Pro.password == pw:
             code = 200
             info = Pro.to_dict()
-            request.session['user'] = info
+            t = Token()
+            t.account_id = info['account_id']
+            t.save()
         else:
             code = 404
     else:
@@ -76,14 +78,16 @@ def pro_login(request):
 def con_login(request):
     res = get_res(request)
     pw = hash_md5(res['password'])
-    account = res['tel']
+    account = str(res['tel'])
     info = ''
     if Consumer.objects.filter(tel=account).exists():
         Con = Consumer.objects.get(tel=account)
         if Con.password == pw:
-            request.session['user'] = Con.to_dict()
             code = 200
             info = Con.to_dict()
+            t = Token()
+            t.account_id = info['account_id']
+            t.save()
         else:
             code = 404
     else:
@@ -96,7 +100,7 @@ def con_login(request):
 def pro_register(request):
     reg = init(request)
     if reg['status'] == 0:
-        if Producer.objects.filter(tel=reg['phone']).exist():
+        if Producer.objects.filter(tel=reg['phone']).exists():
             code = 404
             msg = '手机已绑定'
         else:
@@ -116,6 +120,7 @@ def pro_register(request):
             new.account_type = 1
             new.save()
             code = 200
+            msg = ''
         data = {'code': code,'msg':msg}
     else:
         msg = '网络拥堵，请稍后再试'
@@ -146,26 +151,19 @@ def con_register(request):
             new.account_type = 2
             new.save()
             code = 200
+            msg = ''
         data = {'code': code,"msg":msg}
     else:
         msg = "网络堵塞，请稍后"
         data = {'code':404,"msg":msg}
     return JsonResponse(data)
 
-## TODO 发布者注销
-def pro_logout(request):
+## TODO 注销
+def logout(request):
     # try:
-        del request.session['user']
-        code = 200
-    # except Exception:
-    #     code = 404
-        return JsonResponse({'code':code})
-
-
-## TODO 标注者注销
-def con_logout(request):
-    # try:
-        del request.session['user']
+        account_id = get_res(request)['account_id']
+        t = Token.objects.filter(account_id=account_id)
+        t.delete()
         code = 200
     # except Exception:
     #     code = 404
@@ -174,8 +172,9 @@ def con_logout(request):
 
 ## TODO 上传头像
 def upload_avatar(request):
+    res = get_res(request)
     avatar = request.FILES['avatar']
-    account_id = request.session['user']['account_id']
+    account_id = res['account_id']
     avatar_type = avatar.name.split('.').pop()
     write_data(avatar,account_id+'.'+avatar_type)
 
@@ -193,7 +192,7 @@ def write_data(data, name):
 def set_payment_password(request):
     res = get_res(request)
     payment_pass = res['payment_password']
-    account_id = request.session['user']['account_id']
+    account_id = res['account_id']
     W = Wallet.objects.get(account_id=account_id)
     W.payment_password = hash_md5(str(payment_pass))
     W.save()
@@ -203,7 +202,7 @@ def set_payment_password(request):
 def change_wallet(request):
     res = get_res(request)
     cw_type = res['cw_type']
-    account_id = request.session['user']['account_id']
+    account_id = res['account_id']
     cw_amount = res['cw_amount']
     payment_pass = res['payment_password']
     r = Wallet_record()
