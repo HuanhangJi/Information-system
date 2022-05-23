@@ -8,6 +8,7 @@ from client_management.models import *
 from django.db.models import Q
 from django.shortcuts import render
 import json
+import zipfile
 
 
 ## request初始化 FINISH
@@ -160,6 +161,10 @@ def write_data(data, name, project_id):
     with open(destination,'wb+') as f:
         for chunk in data.chunks():
             f.write(chunk)
+    r = zipfile.ZipFile(name,'r')
+    for file in r.namelist():
+        r.extract(file)
+
 
 
 ## TODO 预付款
