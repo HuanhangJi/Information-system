@@ -52,7 +52,7 @@ def get_res(request):
 
 
 
-## TODO 发布者登陆
+## 发布者登陆 FINISH
 def pro_login(request):
     res = get_res(request)
     pw = hash_md5(res['password'])
@@ -74,7 +74,7 @@ def pro_login(request):
     return JsonResponse(data)
 
 
-## TODO 标注者登陆
+## 标注者登陆 FINISH
 def con_login(request):
     res = get_res(request)
     pw = hash_md5(res['password'])
@@ -96,7 +96,7 @@ def con_login(request):
     return JsonResponse(data)
 
 
-## TODO 发布者注册
+## 发布者注册 FINISH
 def pro_register(request):
     reg = init(request)
     if reg['status'] == 0:
@@ -128,6 +128,7 @@ def pro_register(request):
     return JsonResponse(data)
 
 
+## 标注者注册 FINISH
 def con_register(request):
     reg = init(request)
     if reg['status'] == 0:
@@ -171,19 +172,31 @@ def logout(request):
 
 
 ## TODO 上传头像
-def upload_avatar(request):
-    res = get_res(request)
-    avatar = request.FILES['avatar']
-    account_id = res['account_id']
-    avatar_type = avatar.name.split('.').pop()
-    write_data(avatar,account_id+'.'+avatar_type)
+def upload_avatar(request, account_id, usertype):
+    # try:
+        avatar = request.FILES['file']
+        account_id = str(account_id)
+        avatar_type = avatar.name.split('.').pop()
+        write_data(avatar,account_id+'.'+avatar_type)
+        if usertype == 1:
+            p = Producer.objects.get(account_id=account_id)
+            p.avatar = f"http://localhost:8000/static/avatar/{account_id}.{avatar_type}"
+            p.save()
+        if usertype == 2:
+            c = Consumer.objects.get(account_id=account_id)
+            c.avatar = f"http://localhost:8000/static/avatar/{account_id}.{avatar_type}"
+            c.save()
+        return JsonResponse({"code": 200,"url":f"http://localhost:8000/static/avatar/{account_id}.{avatar_type}"})
+    # except Exception:
+    #     return JsonResponse({"code": 404})
+
 
 
 def write_data(data, name):
-    destination = '..../upload/avatar/'+name
+    destination = '../static/avatar/'+name
     if os.path.exists(destination):
         os.remove(destination)
-    with open(destination,'wb+') as f:
+    with open(destination,'wb') as f:
         for chunk in data.chunks():
             f.write(chunk)
 
@@ -229,3 +242,37 @@ def change_wallet(request):
     r.save()
     info = {'code': 200}
     return JsonResponse(info)
+
+## TODO 修改用户信息
+def user_change(request):
+    res = get_res(request)
+    account_id = res['account_id']
+    usertype = res['usertype']
+    type = res['type']
+    value = res['value']
+    if usertype == 'pointer':
+        if type == 'password':
+            c = Consumer.objects.filter(account_id=account_id)
+            c.password = hash_md5(value)
+            c.save()
+        if type == 'phone':
+            c = Consumer.objects.filter(account_id=account_id)
+            c.tel = value
+            c.save()
+        if type == 'nickname':
+            c = Consumer.objects.filter(account_id=account_id)
+            c.nickname = value
+            c.save()
+    if usertype == 'poster':
+        if type == 'password':
+            p = Producer.objects.filter(account_id=account_id)
+            p.password = hash_md5(value)
+            p.save()
+        if type == 'phone':
+            p = Producer.objects.filter(account_id=account_id)
+            p.tel = value
+            p.save()
+        if type == 'nickname':
+            p = Producer.objects.filter(account_id=account_id)
+            p.nickname = value
+            p.save()

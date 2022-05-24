@@ -8,6 +8,7 @@ from client_management.models import *
 from django.db.models import Q
 from django.shortcuts import render
 import json
+import time
 import zipfile
 
 
@@ -15,7 +16,8 @@ import zipfile
 def get_res(request):
     data = request.body.decode('utf-8')
     res = json.loads(data)
-    return res
+    print(res)
+    return res['info']
 
 
 ## TODO 补充ID池
@@ -66,21 +68,30 @@ def project_add(request):
         due_time = res['due_time']
         pay_per_task = res['pay_per_task']
         task_num = res['task_num']
-        sample_document = request.FILES['sample_document']
-        sample_type = sample_document.name.split('.').pop()
-        project_star = request['project_star']
+        project_star = res['project_star']
+        text_tags = res['text_tags']
         p = Project()
         id = project_id_pool.objects.first()
         project_id = id.project_id
         p.project_id = project_id
         id.delete()
-        write_data(sample_document, project_id+'.'+sample_type, project_id)
+        os.mkdir(f'../upload/sample_document/{project_id}')
+        with open(f'../upload/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
+            n = len(text_tags)
+            for i in range(n):
+                if text_tags[i] == '，':
+                    text_tags=replace_char(text_tags,",",i)
+                if text_tags[i] == '；':
+                    text_tags=replace_char(text_tags,";",i)
+            fp.write(text_tags)
         p.publisher_id = publisher_id
         p.project_type = project_type
         p.task_num = task_num
         p.project_status = 0
         p.payment_per_task = pay_per_task
-        p.due_time = due_time
+        t = time.localtime(due_time/1000)
+        due_time = time.strftime("%Y-%m-%d %H:%M:%S",t)
+        p.due_time = str(due_time)
         p.completed_task_num = 0
         p.description = description
         p.project_name = project_name
@@ -95,10 +106,21 @@ def project_add(request):
             # t.original_data = sample_document
             t.due_time = due_time
             t.task_status = 0
-        data = {'code':200,'msg':'添加任务成功'}
+            t.save()
+        data = {'code':200,'msg':'添加任务成功','project_id':project_id}
     # except BaseException:
     #     data = {'code':404,'msg':'添加任务失败'}
         return JsonResponse(data)
+
+def replace_char(old_string, char, index):
+    '''
+    字符串按索引位置替换字符
+    '''
+    old_string = str(old_string)
+    # 新的字符串 = 老字符串[:要替换的索引位置] + 替换成的目标字符 + 老字符串[要替换的索引位置+1:]
+    new_string = old_string[:index] + char + old_string[index+1:]
+    return new_string
+
 
 
 ## TODO 删除任务函数
@@ -154,17 +176,22 @@ def project_query(request):
         return JsonResponse(data)
 
 
-def write_data(data, name, project_id):
-    destination = f'..../upload/sample_document/{project_id}/'+ name
+def write_data(request, project_id):
+    project_id = project_id
+    sample_document = request.FILES['file']
+    destination = f'../static/sample_document/{project_id}/{sample_document.name}'
     if os.path.exists(destination):
         os.remove(destination)
-    with open(destination,'wb+') as f:
-        for chunk in data.chunks():
+    z = zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED)
+    z.close()
+    with open(destination,'wb') as f:
+        for chunk in sample_document.chunks():
             f.write(chunk)
-    r = zipfile.ZipFile(name,'r')
-    for file in r.namelist():
-        r.extract(file)
-
+    data = {'code': 200, 'msg': '写入成功'}
+    Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
+    for i in Z.namelist():
+        Z.extract(i,path=f'../static/sample_document/{project_id}')
+    return JsonResponse(data)
 
 
 ## TODO 预付款

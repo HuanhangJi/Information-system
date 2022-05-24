@@ -44,18 +44,21 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     # 'client_management.middleware.ProMiddleware'#拦截Pro登陆
     # 'client_management.middleware.ConMiddleware'#拦截Con登陆
 ]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = ('authorization', 'Content-Disposition')
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -160,6 +163,5 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'upload/')
 MEDIA_URL = '/upload/' #这个是在浏览器上访问该上传文件的url的前缀
+MEDIA_ROOT = os.path.join(BASE_DIR, 'upload/')

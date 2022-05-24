@@ -68,7 +68,7 @@ def jdzz_product(request, user_id=0, page=1):
     # 根据user_id从数据库调img_url
     context = {'user_id': user_id, 'img_url': '/static/img/6159252dd42a2834f52175724d59cfe014cebf3e.png'}
     # 从数据库调任务信息
-    shangpin_info = {'name1': '文本任务1', 'star1': 2, 'url1': '/jdzz_shangpin/' + str(user_id) + '/50/',
+    shangpin_info = {'name1': '文本任务1', 'star1':2.5, 'url1': '/jdzz_shangpin/' + str(user_id) + '/50/',
                      'name2': "文本标注11111"}
     return render(request, "index/product.html", {**context, **shangpin_info})
 

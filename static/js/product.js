@@ -12,6 +12,7 @@ $(document).ready(function(){
         rate.render({
             elem: '#test1'
             ,value: star1
+            ,half:true
             ,readonly: true})
         });
     }); 

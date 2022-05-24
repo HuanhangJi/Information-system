@@ -33,7 +33,7 @@ class Project(models.Model):
     project_status = models.IntegerField()
     task_num = models.IntegerField()
     completed_task_num = models.IntegerField()
-    project_star = models.IntegerField()
+    project_star = models.FloatField()
 
 
 
