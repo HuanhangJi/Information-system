@@ -94,9 +94,6 @@ def con_login(request):
             t.account_id = info['account_id']
             t.save()
             w = Wallet.objects.get(account_id=info['account_id'])
-            print(1)
-            print(type(w.payment_password))
-            print(2)
             if w.payment_password != '':
                 info['wallet_status'] = 1
             else:
@@ -215,10 +212,9 @@ def write_data(data, name):
 
 
 ## TODO 设置支付密码
-def set_payment_password(request):
-    res = get_res(request)
-    payment_pass = res['payment_password']
-    account_id = res['account_id']
+def set_payment_password(pay_password,account_id):
+    payment_pass = pay_password
+    account_id = account_id
     W = Wallet.objects.get(account_id=account_id)
     W.payment_password = hash_md5(str(payment_pass))
     W.save()
@@ -278,6 +274,8 @@ def user_change(request):
     usertype = res['usertype']
     type = res['type']
     value = res['value']
+    if type == 'pay_password':
+        set_payment_password(value,account_id)
     if usertype == 'pointer':
         if type == 'password':
             c = Consumer.objects.filter(account_id=account_id)
@@ -304,7 +302,23 @@ def user_change(request):
             p = Producer.objects.filter(account_id=account_id)
             p.nickname = value
             p.save()
-
+    if usertype == 'pointer':
+        c = Consumer.objects.get(account_id=account_id)
+        info = c.to_dict()
+        w = Wallet.objects.get(account_id=account_id)
+        if w.payment_password != '':
+            info['wallet_status'] = 1
+        else:
+            info['wallet_status'] = 0
+    if usertype == 'poster':
+        p = Producer.objects.get(account_id=account_id)
+        info = p.to_dict()
+        w = Wallet.objects.get(account_id=account_id)
+        if w.payment_password != '':
+            info['wallet_status'] = 1
+        else:
+            info['wallet_status'] = 0
+    return JsonResponse(info)
 
 def wallet_info(request):
     res = get_res(request)
