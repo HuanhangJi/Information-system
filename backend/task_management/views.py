@@ -76,41 +76,44 @@ def project_add(request):
         p.project_id = project_id
         id.delete()
         dic = prepay(request,project_id)
-        os.mkdir(f'../upload/sample_document/{project_id}')
-        with open(f'../upload/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
-            n = len(text_tags)
-            for i in range(n):
-                if text_tags[i] == '，':
-                    text_tags=replace_char(text_tags,",",i)
-                if text_tags[i] == '；':
-                    text_tags=replace_char(text_tags,";",i)
-            fp.write(text_tags)
-        p.publisher_id = publisher_id
-        p.project_type = project_type
-        p.task_num = task_num
-        p.project_status = 0
-        p.payment_per_task = pay_per_task
-        t = time.localtime(due_time/1000)
-        due_time = time.strftime("%Y-%m-%d %H:%M:%S",t)
-        p.due_time = str(due_time)
-        p.completed_task_num = 0
-        p.description = description
-        p.project_name = project_name
-        p.project_star = project_star
-        # p.sample_document = sample_document
-        p.save()
-        for i in range(1,task_num+1):
-            t = Task()
-            t.project_id = project_id
-            t.task_id = project_id+'_'+str(i)
-            t.score = judge_score(project_star)
-            # t.original_data = sample_document
-            t.due_time = due_time
-            t.task_status = 0
-            t.save()
-        data = {'code':200,'msg':'添加任务成功','project_id':project_id}
-    # except BaseException:
-    #     data = {'code':404,'msg':'添加任务失败'}
+        if dic['code'] == 200:
+            os.mkdir(f'../upload/sample_document/{project_id}')
+            with open(f'../upload/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
+                n = len(text_tags)
+                for i in range(n):
+                    if text_tags[i] == '，':
+                        text_tags=replace_char(text_tags,",",i)
+                    if text_tags[i] == '；':
+                        text_tags=replace_char(text_tags,";",i)
+                fp.write(text_tags)
+            p.publisher_id = publisher_id
+            p.project_type = project_type
+            p.task_num = task_num
+            p.project_status = 0
+            p.payment_per_task = pay_per_task
+            t = time.localtime(due_time/1000)
+            due_time = time.strftime("%Y-%m-%d %H:%M:%S",t)
+            p.due_time = str(due_time)
+            p.completed_task_num = 0
+            p.description = description
+            p.project_name = project_name
+            p.project_star = project_star
+            # p.sample_document = sample_document
+            p.save()
+            for i in range(1,task_num+1):
+                t = Task()
+                t.project_id = project_id
+                t.task_id = project_id+'_'+str(i)
+                t.score = judge_score(project_star)
+                # t.original_data = sample_document
+                t.due_time = due_time
+                t.task_status = 0
+                t.save()
+            data = {'code':200,'msg':'添加任务成功','project_id':project_id}
+        else:
+            data = {'code':404,'msg':'预付款余额不足'}
+        # except BaseException:
+        #     data = {'code':404,'msg':'添加任务失败'}
         return JsonResponse(data)
 
 def replace_char(old_string, char, index):
