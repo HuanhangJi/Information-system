@@ -1,1 +1,0 @@
-# Information-system-group-work
