@@ -77,8 +77,8 @@ def project_add(request):
         id.delete()
         dic = prepay(request,project_id)
         if dic['code'] == 200:
-            os.mkdir(f'../upload/sample_document/{project_id}')
-            with open(f'../upload/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
+            os.mkdir(f'../static/sample_document/{project_id}')
+            with open(f'../static/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
                 n = len(text_tags)
                 for i in range(n):
                     if text_tags[i] == '，':
@@ -203,7 +203,7 @@ def prepay(request,project_id):
     res = get_res(request)
     pay_per_task = float(res['pay_per_task'])
     task_num = int(res['task_num'])
-    account_id = res['account_id']
+    account_id = res['publisher_id']
     total = pay_per_task * task_num
     w = Wallet.objects.get(account_id=account_id)
     if w.account_num > total:
@@ -215,9 +215,10 @@ def prepay(request,project_id):
         p.project_id = project_id
         p.account_id=account_id
         p.save()
-        return JsonResponse({'code': 200})
+        data =  {'code': 200}
     else:
-        return JsonResponse({'code':404})
+        data = {'code':404}
+    return data
 
 
 ## TODO 标注者接收任务
