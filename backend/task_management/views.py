@@ -75,6 +75,7 @@ def project_add(request):
         project_id = id.project_id
         p.project_id = project_id
         id.delete()
+        dic = prepay(request,project_id)
         os.mkdir(f'../upload/sample_document/{project_id}')
         with open(f'../upload/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
             n = len(text_tags)
@@ -195,18 +196,19 @@ def write_data(request, project_id):
 
 
 ## TODO 预付款
-def prepay(request):
+def prepay(request,project_id):
     res = get_res(request)
-    project_id = res('project_id',None)
-    prepay_amount = res('prepay_amount',None)
-    account_id = request.session['user']['account_id']
+    pay_per_task = float(res['pay_per_task'])
+    task_num = int(res['task_num'])
+    account_id = res['account_id']
+    total = pay_per_task * task_num
     w = Wallet.objects.get(account_id=account_id)
-    if w.account_num > prepay_amount:
-        w.account_num -= prepay_amount
+    if w.account_num > total:
+        w.account_num -= total
         w.save()
         p = Prepay()
-        p.prepay_amount = prepay_amount
-        p.prepay_balance = prepay_amount
+        p.prepay_amount = total
+        p.prepay_balance = total
         p.project_id = project_id
         p.account_id=account_id
         p.save()
@@ -217,9 +219,8 @@ def prepay(request):
 
 ## TODO 标注者接收任务
 def get_task(request):
-    res = get_res(request)
-    project_id = res['project_id']
-    account_id = res['user']['account_id']
+    project_id = request.POST['project_id']
+    account_id = request.POST['account_id']
     tasks = Task.objects.filter(Q(project_id=project_id)|Q(task_status=0))
     Project.objects.get(project_id=project_id).project_status = 1
     task_num = tasks.count()

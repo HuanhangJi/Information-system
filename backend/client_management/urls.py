@@ -10,7 +10,6 @@ urlpatterns = [
     path('api/logout/', logout,name='pro_logout'),#注销
     path('api/full_user_id/', full_user_id,name='full_user_id'),#补充id池
     path('api/upload_avatar/<int:account_id>/<int:usertype>',upload_avatar,name='upload_avatar'),#上传头像
-    path('api/set_payment_password/',set_payment_password,name='set_payment_password'),#设置支付密码
     path('api/withdraw_wallet/',withdraw_wallet,name='withdraw_wallet'),#钱包转账
     path('api/recharge_wallet/', recharge_wallet, name='recharge_wallet'),  # 钱包充值
     path('api/change_user_info/',user_change,name='change_user_info'),#用户信息修改
