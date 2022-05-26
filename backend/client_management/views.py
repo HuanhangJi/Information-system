@@ -274,6 +274,8 @@ def user_change(request):
     usertype = res['usertype']
     type = res['type']
     value = res['value']
+    print(type)
+    print(value)
     if type == 'pay_password':
         set_payment_password(value,account_id)
     if usertype == 'pointer':
