@@ -93,6 +93,14 @@ def con_login(request):
             t = Token()
             t.account_id = info['account_id']
             t.save()
+            w = Wallet.objects.get(account_id=info['account_id'])
+            print(1)
+            print(type(w.payment_password))
+            print(2)
+            if w.payment_password != '':
+                info['wallet_status'] = 1
+            else:
+                info['wallet_status'] = 0
         else:
             code = 404
     else:

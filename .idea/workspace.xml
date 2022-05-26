@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fe95a52c-35f2-4785-ba2e-df8f7322a1d8" name="变更" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/backend/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/backend/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/1.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/img/1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/2.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/img/2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/3.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/img/3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/4.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/img/4.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/img/5.png" beforeDir="false" afterPath="$PROJECT_DIR$/static/img/5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/jquery-3.6.0.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/jquery-3.6.0.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/product.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/product.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index/product.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index/product.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index/shangpin.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index/shangpin.html" afterDir="false" />
+    <list default="true" id="fe95a52c-35f2-4785-ba2e-df8f7322a1d8" name="变更" comment="变更">
+      <change beforePath="$PROJECT_DIR$/backend/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/backend/backend/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/backend/backend/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/backend/client_management/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/backend/client_management/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
