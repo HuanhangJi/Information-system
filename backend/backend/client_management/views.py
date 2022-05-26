@@ -66,6 +66,11 @@ def pro_login(request):
             t = Token()
             t.account_id = info['account_id']
             t.save()
+            w = Wallet.objects.get(account_id=info['account_id'])
+            if w.payment_password != None:
+                info['wallet_status'] = 1
+            else:
+                info['wallet_status'] = 0
         else:
             code = 404
     else:
@@ -215,7 +220,7 @@ def set_payment_password(request):
 def withdraw_wallet(request):
     res = get_res(request)
     account_id = res['account_id']
-    cw_amount = res['cw_amount']
+    cw_amount = int(res['cw_amount'])
     payment_pass = res['payment_password']
     r = Wallet_record()
     w = Wallet.objects.get(account_id=account_id)
@@ -229,7 +234,7 @@ def withdraw_wallet(request):
     else:
         info = {'code': 404, 'msg':'网络连接异常'}
         return JsonResponse(info)
-    pay_time = datetime.datetime.now()
+    pay_time = str(datetime.datetime.now())
     r.cw_type = 'withdraw'
     r.cw_amount = cw_amount
     r.AB_id = w.AB_id
@@ -242,7 +247,7 @@ def withdraw_wallet(request):
 def recharge_wallet(request):
     res = get_res(request)
     account_id = res['account_id']
-    account_num = res['account_num']
+    account_num = int(res['account_num'])
     r = Wallet_record()
     w = Wallet.objects.get(account_id=account_id)
     w.account_num += account_num
