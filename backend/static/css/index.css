@@ -1,0 +1,14 @@
+a{text-decoration:none;color:black;} 
+a:hover{text-decoration:none;color:black;} 
+.footer {height: 200px;background-color:#1a1a1a;margin-top: 15px;}
+.footer .container {padding-top: 20px;}
+.container {position: relative;width: 1200px; margin: auto;background-color: transparent;}
+.copyright {float: left;}
+.copyright p {font-size: 12px;color: #ffffff;margin: 20px 0 15px 0;}
+.copyright .app {display: inline-block;width: 118px;height: 33px;text-align: center;line-height: 33px;border: 1px solid #00a4ff;font-style: 16px;color: #00a4ff;}
+.links {float: right;}
+.links dl {float: left;margin-left: 100px;}
+.links dl dt {font-size: 16px;color: #ffffff;margin-bottom: 5px;}
+.links dl dd a {font-size: 12px;color: #b1b1b1;}
+.shadow:hover{box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);border-radius: 20px;}
+.shadow{border-radius: 0 0 20px 20px;}

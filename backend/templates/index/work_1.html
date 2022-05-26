@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>【京冬众质】 - 盗版数据标注平台</title>
+    <script src="/static/js/jquery-3.6.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/layui-v2.6.8/layui/css/layui.css">
+    <script src="/static/layui-v2.6.8/layui/layui.js"></script>
+    <script src="/static/js/footer.js"></script>
+    <link rel="shortcut icon" href="/static/img/title.svg">
+    <link rel="stylesheet" href="/static/dist/css/zui.min.css">
+    <script src="/static/dist/js/zui.min.js"></script>
+    <link rel="stylesheet" href="/static/css/work1.css">
+    <script src="/static/js/work1.js"></script>
+    <script>
+        var csrf = '{{ csrf_token }}';
+        var jindu = '{{ jindu }}';
+        var user_id = {{user_id}};
+        var task_id = {{task_id}};
+        var page = {{page}};
+        var page_max = {{page_max}};
+    </script>
+</head>
+<body style="background-color: #f0f2f5;overflow-x:hidden;">
+    <!-- 提交成功弹窗 -->
+    <div class="modal fade"  id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+              <h4 class="modal-title">任务提交确认</h4>
+            </div>
+            <div class="modal-body">
+                <h1 style="color: #0b68fb;">提交任务成功！:)</h1>
+                <!-- <p>提交任务成功！</p> -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+          </div>
+        </div>
+      </div> 
+    <!--大哥广告-->
+<!--    <img src="/static/img/guanggao.jpg" style="position: fixed;height: 250px;left:0px;top:60%;z-index: 4;">-->
+<!--    <img src="/static/img/guanggao2.jpg" style="position: fixed;height: 250px;right:0px;top:60%;z-index:4;">-->
+
+    <!-- 商品描述卡片 -->
+    <div class="row">
+        <div class="col-md-7 container-fluid" style="background-color: #ffffff;margin: 0 21%;margin-top: 95px;margin-bottom: 30px;border-radius: 10px 10px 10px 10px;box-shadow: 1px 1px 5px rgb(151 151 151 / 80%);padding: 0 0px;">
+            <!-- 顶部任务描述区域 -->
+            <div class="container-fluid col-md-12" style="width: 100%;height: auto;background-color: #f7fafc;border-radius: 5px 5px 0px 0px;border-top: 1px solid #fff;
+                border-top-left-radius: 4px;border-top-right-radius: 4px;padding: 30px 40px 15px 20px;background: #F7FAFC;border-bottom: 1px solid #ededed;">
+                <span style="font-size: 30px;">任务号：<span id="renwuhao">{{renwuhao}}</span></span>
+                <div style="font-size: 22px;color: #00a4ff;margin-top: 10px;" id="miaoshu">{{miaoshu}}</div>
+                <!--进度条-->   
+                <div class="progress progress-striped active" style="margin-top: 15px;">
+                    <div id="jindu2" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                    </div>
+                </div>
+                <span style="font-size: 22px;margin-top: 10px;">任务进度：</span>
+                <span style="font-size: 22px;margin-top: 10px;color: #999999;" id="jindu">{{jindu}}</span>
+                <span style="font-size: 22px;margin-top: 10px;color: #999999;">/100</span>
+            </div>
+
+            <!-- 任务展示区域 -->
+            <div class="row" style="padding: 30px 30px;height:auto;">
+                <div class="col-md-12">
+                    <div id="neirong" style="min-height:300px;margin-top: 30px;font-size: 20px;margin-bottom: 10px;padding-top: 10px; padding-bottom: 20px;">新系统真难用</div>
+                </div>
+                <div class="col-md-12">
+                </div>
+            </div>
+
+            <!--底部选择按钮区域-->
+            <div class="container-fluid col-md-12" style="width: 100%;height: auto;background-color: #f7fafc;border-radius: 5px 5px 0px 0px;border-top: 1px solid #fff;
+                border-top-left-radius: 4px;border-top-right-radius: 4px;padding: 30px 40px 40px 30px;background: #F7FAFC;border-bottom: 1px solid #ededed;">
+                <div class="row" >
+                    <div class="col-md-3"><button id="previous" class="btn btn-lg btn-success" type="button" onclick="previous_task()">上一题</button></div>
+                    <div class="col-md-6" style="text-align: center;" id="choices">
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice1()">开心</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice2()">难过</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice3()">生气</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice4()">其他</button>
+                        <!-- <button id="end" type="button" class="btn" data-moveable="true" data-toggle="modal" data-target="#myModal">提交任务</button> -->
+                        <button id="end" class="btn btn-lg btn-primary" type="button" onclick="end_task()" style="margin-right: 10px;display: none;" data-moveable="inside" data-toggle="modal" data-target="#myModal">提交任务</button>
+                    </div>
+                    <div class="col-md-3"style="right: 0px;">
+                        <button id="next" class="btn btn-lg btn-success pull-right" type="button" onclick="next_task()">下一题</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部网站信息 -->
+    <div class="footer" style="width: 100%;">
+        <div class="container">
+            <div class="copyright">
+                <img src="/static/img/title.svg" alt="logo" />
+                <p>
+                    【京冬众质】 - 北航最好的盗版数据标注平台<br />
+                &copy; 2022年
+                </p>
+                <a href="#" class="app">666</a>
+            </div>
+            <div class="links">
+                <dl>
+                    <dt>关于京冬众质</dt>
+                    <dd><a href="#">关于</a></dd>
+                    <dd><a href="#">团队管理</a></dd>
+                    <dd><a href="#">工作机会</a></dd>
+                    <dd><a href="#">帮助</a></dd>
+                </dl>
+                <dl>
+                    <dt>使用帮助</dt>
+                    <dd><a href="#">用户指南</a></dd>
+                    <dd><a href="#">常见问题</a></dd>
+                    <dd><a href="#">客户服务</a></dd>
+                </dl>
+                <dl>
+                    <dt>联系我们</dt>
+                    <dd><a href="#">咨询邮箱：建议不要咨询</a></dd>
+                </dl>
+                <dl>
+                    <dt>更多信息</dt>
+                    <dd><a href="#">社会责任</a></dd>
+                    <dd><a href="#">知识产权</a></dd>
+                    <dd><a href="#">免责声明</a></dd>
+                    <dd><a href="#">加入我们</a></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 顶部固定导航栏 -->
+    <div class="row">
+      <ul class="layui-nav" style="z-index: 5;box-shadow: 0px 2px 3px rgb(151 151 151 / 60%);background-color: white;text-align:center;position: fixed;top: 0px;right:0px;width: 100%;">
+        <!--头顶大LOGO-->
+        <div style="float: left;vertical-align: middle;line-height: 60px;margin-left: 15px;"><a href="/jdzz/{{user_id}}"><img src="/static/img/title.svg" style="height: 20px;"></a></div>
+        <li class="layui-nav-item" style="float:right;" id="log_in_0">
+            <a id='denglu' href="" style="color:black;margin-right: 30px;"> 登录 </a>
+            <dl class="layui-nav-child" style="margin-right: 50px;">
+                <dd><a href="" style="color: black;">我的任务</a></dd>
+                <dd><a href="" style="color: black;">账号设置</a></dd>
+                <dd><a href="" style="color: black;">支持与服务</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item" style="float:right;display: none;" id="log_in_1">
+            <a href="" style="color: black;"><img src={{img_url}} class="layui-nav-img">我</a>
+            <dl class="layui-nav-child">
+                <dd><a href="" style="color: black;">我的任务</a></dd>
+                <dd><a href="" style="color: black;">账号设置</a></dd>
+                <dd><a href="" style="color: black;">支持与服务</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item  layui-this" style="float:right">
+            <a href="#" style="color: black;float:right"> 数据标注 </a>
+        </li>
+        <li class="layui-nav-item" style="float:right">
+            <a href="/jdzz_product/{{user_id}}/1/" style="color: black;float:right"> 任务市场 </a>
+        </li>
+        <li class="layui-nav-item" style="float:right">
+            <a href="/jdzz/{{user_id}}" style="color: black;">首页</a>
+        </li>
+      </ul>
+    </div>
+
+
+</body>
+</html>
