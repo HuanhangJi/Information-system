@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.jdzz),  # 欢迎页
     path('jdzz/<int:user_id>/', views.jdzz),  # 欢迎页
-    path('jdzz_product/<int:user_id>/<int:page>/', views.jdzz_product),  # 任务市场页
+    path('jdzz_product/<int:user_id>/<int:pIndex>/', views.jdzz_product),  # 任务市场页
     path('jdzz_shangpin/<int:user_id>/<int:task_id>/', views.jdzz_shangpin),  # 商品详情页
     path('jdzz_work1/<int:user_id>/<int:task_id>/', views.work1),  # 文字工作台
     path('jdzz_work2/<int:user_id>/<int:task_id>/', views.work2),  # 图片工作台

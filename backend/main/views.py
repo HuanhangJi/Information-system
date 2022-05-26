@@ -8,7 +8,9 @@ from django.core.paginator import *
 from django.db.models import Q
 from django.http import *
 import json
+import os
 
+os.chdir(os.path.abspath(os.path.join(os.getcwd(),'..')))
 
 # ## TODO 主页
 # def index(request):
@@ -54,19 +56,38 @@ import json
 #         content = {'info':404}
 #     return render(request, 'index/shangpin.html', content)
 
+def get_avatar(user_id):
+    pics = os.listdir('./static/avatar')
+    flag = 0
+    pid = ''
+    for pic in pics:
+        if pic.split('.')[0] == str(user_id):
+            flag = 1
+            pid = pic
+            break
+    return {'flag':flag,'pid':pid}
 
-def jdzz(request, user_id=0):
+
+def jdzz(request, user_id='0'):
     # user_id为0表示未登录
-    print(user_id)
     # 根据user_id从数据库调img_url(用户头像的图片)
-    context = {'user_id': user_id, 'img_url': '/static/img/6159252dd42a2834f52175724d59cfe014cebf3e.png'}
+    dic = get_avatar(user_id)
+    if dic['flag'] == 1:
+        context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
+    else:
+        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
     return render(request, "index/index.html", context)
 
 
+
 # 任务市场
-def jdzz_product(request, user_id=0, page=1):
+def jdzz_product(request, user_id=0, pIndex=1):
     # 根据user_id从数据库调img_url
-    context = {'user_id': user_id, 'img_url': '/static/img/6159252dd42a2834f52175724d59cfe014cebf3e.png'}
+    dic = get_avatar(user_id)
+    if dic['flag'] == 1:
+        context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
+    else:
+        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
     # 从数据库调任务信息
     shangpin_info = {'name1': '文本任务1', 'star1':2.5, 'url1': '/jdzz_shangpin/' + str(user_id) + '/50/',
                      'name2': "文本标注11111"}
@@ -75,7 +96,11 @@ def jdzz_product(request, user_id=0, page=1):
 
 def jdzz_shangpin(request, task_id, user_id=0):
     # 根据user_id从数据库调img_url
-    context = {'user_id': user_id, 'img_url': '/static/img/6159252dd42a2834f52175724d59cfe014cebf3e.png'}
+    dic = get_avatar(user_id)
+    if dic['flag'] == 1:
+        context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
+    else:
+        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
     # 根据task_id从数据库调取task_info
     task_info = {'task_id': task_id, 'biaoti': '微博评论情绪标注', 'fabuzhe': 123, 'renwuhao': task_id,
                  'leixing': '文本', 'nandu': '简单', 'shijian': "2022-03-29 16:14:37", 'star1': 2,
@@ -84,7 +109,12 @@ def jdzz_shangpin(request, task_id, user_id=0):
 
 
 def work1(request, task_id, page=1, user_id=0):
-    context = {'user_id': user_id, 'img_url': '/static/img/6159252dd42a2834f52175724d59cfe014cebf3e.png', 'page_max': 5}
+    # 根据user_id从数据库调img_url
+    dic = get_avatar(user_id)
+    if dic['flag'] == 1:
+        context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
+    else:
+        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
     page_try = request.GET.get('page')
     # 根据task_id和page从数据库调task_info
     if page_try:
