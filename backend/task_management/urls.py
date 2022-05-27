@@ -6,7 +6,7 @@ urlpatterns = [
     path('project/delete/',project_delete,name='project_delete'), #删除任务
     path('project/edit/',project_edit,name='project_edit'), #编辑任务
     path('project/query/',project_query,name='project_query'), #查询任务
-    path('full_project_id/',full_project_id,name='full_project_id'),
+    path('api/full_project_id/',full_project_id,name='full_project_id'),
     path('upload_document/<int:project_id>',write_data,name='upload_document')
 ]
 

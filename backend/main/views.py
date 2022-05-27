@@ -296,7 +296,6 @@ def get_task(request,account_id,project_id):
         task.task_status = 1
         task.save()
         ta = Task_association()
-        ta.task_id = task.task_id
         ta.account_id = account_id
         ta.project_id = project_id
         ta.save()

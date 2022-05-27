@@ -253,7 +253,6 @@ def withdraw_wallet(request):
     pay_time = str(datetime.datetime.now())
     r.cw_type = 'withdraw'
     r.cw_amount = cw_amount
-    r.AB_id = w.AB_id
     r.pay_time = pay_time
     r.save()
     info = {'code': 200}
@@ -271,7 +270,6 @@ def recharge_wallet(request):
     pay_time = datetime.datetime.now()
     r.cw_type = 'recharge'
     r.cw_amount = account_num
-    r.AB_id = w.AB_id
     r.pay_time = pay_time
     r.save()
     info = {'code': 200}

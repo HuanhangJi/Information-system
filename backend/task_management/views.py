@@ -7,6 +7,7 @@ sys.path.append(os.path.abspath('..'))
 os.chdir(os.path.abspath(os.getcwd()))
 from client_management.models import *
 from django.db.models import Q
+import shutil
 from django.shortcuts import render
 import json
 import time
@@ -78,6 +79,8 @@ def project_add(request):
         id.delete()
         dic = prepay(request,project_id)
         if dic['code'] == 200:
+            if os.path.exists(f'./static/sample_document/{project_id}'):
+                shutil.rmtree(f'./static/sample_document/{project_id}')
             os.mkdir(f'./static/sample_document/{project_id}')
             with open(f'./static/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
                 n = len(text_tags)
