@@ -64,14 +64,14 @@ class Prepay(models.Model):#数据库修改
 
 class Reward_record(models.Model):#数据库修改
     ta_id = models.CharField(max_length=25)
-    reward_id = models.CharField(max_length=25,primary_key=True, auto_created=True)
+    # reward_id = models.CharField(max_length=25,primary_key=True, auto_created=True)
     reward_amount = models.FloatField()
     reward_time = models.DateTimeField()
 
 
 
 class Web_account(models.Model):
-    PAF_id = models.CharField(max_length=25,primary_key=True, auto_created=True)
+    # PAF_id = models.CharField(max_length=25,primary_key=True, auto_created=True)
     task_id = models.CharField(max_length=25)
     PAF_type = models.CharField(max_length=4)
     PAF_amount = models.FloatField()
@@ -83,7 +83,7 @@ class Task_association(models.Model):#数据库修改
     account_id = models.CharField(max_length=25)
     task_id = models.CharField(max_length=25)
     project_id = models.CharField(max_length=25)
-    ta_id = models.CharField(max_length=25,primary_key=True,auto_created=True)
+    # ta_id = models.CharField(max_length=25,primary_key=True,auto_created=True)
 
 
 

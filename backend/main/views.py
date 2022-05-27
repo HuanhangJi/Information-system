@@ -287,5 +287,20 @@ def work2_post(request):
     #     .....
     return JsonResponse({})
 
-def get_task(request):
-    pass
+def get_task(request,account_id,project_id):
+    tasks = Task.objects.filter(Q(project_id=project_id),(Q(task_status=0)))
+    Project.objects.get(project_id=project_id).project_status = 1
+    task_num = tasks.count()
+    if task_num >=1:
+        task = tasks.first()
+        task.task_status = 1
+        task.save()
+        ta = Task_association()
+        ta.task_id = task.task_id
+        ta.account_id = account_id
+        ta.project_id = project_id
+        ta.save()
+        return JsonResponse({'code': 200})
+    else:
+        return JsonResponse({'code':404})
+

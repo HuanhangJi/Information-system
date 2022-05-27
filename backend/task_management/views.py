@@ -181,7 +181,7 @@ def project_query(request):
         return JsonResponse(data)
 
 
-def write_data(request, project_id, task_num):
+def write_data(request, project_id):
     project_id = project_id
     sample_document = request.FILES['file']
     destination = f'./static/sample_document/{project_id}/{sample_document.name}'
@@ -189,26 +189,56 @@ def write_data(request, project_id, task_num):
         os.remove(destination)
     z = zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED)
     z.close()
-    with open(destination,'wb') as f:
-        for chunk in sample_document.chunks():
-            f.write(chunk)
-    Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
-    path = f'./static/sample_document/{project_id}'
-    num = 0
-    for i in Z.namelist():
-        num += 1
-        try:
-            new_name = i.encode('cp437').decode('gbk')
-        except:
-            new_name = i.encode('cp437').decode('utf-8')
-        Z.extract(i,path=path)
-        os.rename(path+f'/{i}',path+f'/{new_name}')
-    if num < 10 * int(task_num):
-        data = {'code':404, 'msg' : '无法分配任务'}
-        os.remove(path)
-    else:
+    try:
+        with open(destination,'wb') as f:
+            for chunk in sample_document.chunks():
+                f.write(chunk)
+        Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
+        path = f'./static/sample_document/{project_id}'
+        num = 0
+        for i in Z.namelist():
+            num += 1
+            try:
+                new_name = i.encode('cp437').decode('gbk')
+            except:
+                new_name = i.encode('cp437').decode('utf-8')
+            Z.extract(i,path=path)
+            os.rename(path+f'/{i}',path+f'/{new_name}')
         data = {'code': 200, 'msg': '写入成功'}
+    except Exception:
+        os.remove(destination)
+        data = {'code': 404, 'msg': '写入失败'}
     return JsonResponse(data)
+
+
+# def write_data(request, project_id, task_num):
+#     project_id = project_id
+#     sample_document = request.FILES['file']
+#     destination = f'./static/sample_document/{project_id}/{sample_document.name}'
+#     if os.path.exists(destination):
+#         os.remove(destination)
+#     z = zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED)
+#     z.close()
+#     with open(destination,'wb') as f:
+#         for chunk in sample_document.chunks():
+#             f.write(chunk)
+#     Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
+#     path = f'./static/sample_document/{project_id}'
+#     num = 0
+#     for i in Z.namelist():
+#         num += 1
+#         try:
+#             new_name = i.encode('cp437').decode('gbk')
+#         except:
+#             new_name = i.encode('cp437').decode('utf-8')
+#         Z.extract(i,path=path)
+#         os.rename(path+f'/{i}',path+f'/{new_name}')
+#     if num < 10 * int(task_num):
+#         data = {'code':404, 'msg' : '无法分配任务'}
+#         os.remove(path)
+#     else:
+#         data = {'code': 200, 'msg': '写入成功'}
+#     return JsonResponse(data)
 
 
 ## TODO 预付款
