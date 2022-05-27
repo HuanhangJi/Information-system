@@ -4,6 +4,7 @@ from .models import *
 import os
 import sys
 sys.path.append(os.path.abspath('..'))
+os.chdir(os.path.abspath(os.getcwd()))
 from client_management.models import *
 from django.db.models import Q
 from django.shortcuts import render
@@ -77,8 +78,8 @@ def project_add(request):
         id.delete()
         dic = prepay(request,project_id)
         if dic['code'] == 200:
-            os.mkdir(f'../static/sample_document/{project_id}')
-            with open(f'../static/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
+            os.mkdir(f'./static/sample_document/{project_id}')
+            with open(f'./static/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
                 n = len(text_tags)
                 for i in range(n):
                     if text_tags[i] == '，':
@@ -86,7 +87,7 @@ def project_add(request):
                     if text_tags[i] == '；':
                         text_tags=replace_char(text_tags,";",i)
                 fp.write(text_tags)
-            p.publisher_id = publisher_id
+            p.account_id = publisher_id
             p.project_type = project_type
             p.task_num = task_num
             p.project_status = 0
@@ -180,10 +181,10 @@ def project_query(request):
         return JsonResponse(data)
 
 
-def write_data(request, project_id):
+def write_data(request, project_id, task_num):
     project_id = project_id
     sample_document = request.FILES['file']
-    destination = f'../static/sample_document/{project_id}/{sample_document.name}'
+    destination = f'./static/sample_document/{project_id}/{sample_document.name}'
     if os.path.exists(destination):
         os.remove(destination)
     z = zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED)
@@ -191,16 +192,29 @@ def write_data(request, project_id):
     with open(destination,'wb') as f:
         for chunk in sample_document.chunks():
             f.write(chunk)
-    data = {'code': 200, 'msg': '写入成功'}
     Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
+    path = f'./static/sample_document/{project_id}'
+    num = 0
     for i in Z.namelist():
-        Z.extract(i,path=f'../static/sample_document/{project_id}')
+        num += 1
+        try:
+            new_name = i.encode('cp437').decode('gbk')
+        except:
+            new_name = i.encode('cp437').decode('utf-8')
+        Z.extract(i,path=path)
+        os.rename(path+f'/{i}',path+f'/{new_name}')
+    if num < 10 * int(task_num):
+        data = {'code':404, 'msg' : '无法分配任务'}
+        os.remove(path)
+    else:
+        data = {'code': 200, 'msg': '写入成功'}
     return JsonResponse(data)
 
 
 ## TODO 预付款
 def prepay(request,project_id):
     res = get_res(request)
+    print(project_id)
     pay_per_task = float(res['pay_per_task'])
     task_num = int(res['task_num'])
     account_id = res['publisher_id']
@@ -213,9 +227,10 @@ def prepay(request,project_id):
         p.prepay_amount = total
         p.prepay_balance = total
         p.project_id = project_id
-        p.account_id=account_id
+        p.account_id = account_id
         p.save()
-        data =  {'code': 200}
+        print(1)
+        data = {'code': 200}
     else:
         data = {'code':404}
     return data

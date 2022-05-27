@@ -22,7 +22,7 @@ class Task(models.Model):
 
 class Project(models.Model):
     project_id = models.CharField(max_length=25,primary_key=True)
-    prepay_id = models.CharField(max_length=25)
+    # prepay_id = models.CharField(max_length=25)
     account_id = models.CharField(max_length=25)
     project_name = models.CharField(max_length=64)
     project_type = models.CharField(max_length=20)
@@ -45,17 +45,20 @@ class Project(models.Model):
                 'due_time':self.due_time,
                 'payment_per_task':self.payment_per_task,
                 'task_num':self.task_num,
+                'project_star':self.project_star,
+                'account_id':self.account_id,
+                'completed_task_num':self.completed_task_num
                 # 'sample_document':self.sample_document
                 }
         return data
 
 
 class Prepay(models.Model):#数据库修改
-    prepay_id = models.CharField(max_length=25, primary_key=True, auto_created=True)
     project_id = models.CharField(max_length=25)
     prepay_amount = models.FloatField()
     prepay_balance = models.FloatField()
     account_id = models.CharField(max_length=25)
+
 
 
 
@@ -64,6 +67,7 @@ class Reward_record(models.Model):#数据库修改
     reward_id = models.CharField(max_length=25,primary_key=True, auto_created=True)
     reward_amount = models.FloatField()
     reward_time = models.DateTimeField()
+
 
 
 class Web_account(models.Model):

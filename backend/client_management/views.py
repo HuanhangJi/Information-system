@@ -6,6 +6,7 @@ import os
 import datetime
 import sys
 sys.path.append(os.path.abspath('..'))
+os.chdir(os.path.abspath(os.getcwd()))
 from task_management.models import *
 import numpy as np
 import requests
@@ -76,6 +77,7 @@ def pro_login(request):
     else:
         code = 404
     data = {'code': code, "userInfo": info}
+    print(data)
     return JsonResponse(data)
 
 
@@ -103,6 +105,7 @@ def con_login(request):
     else:
         code = 404
     data = {'code': code, "userInfo": info}
+    print(data)
     return JsonResponse(data)
 
 
@@ -128,6 +131,7 @@ def pro_register(request):
             new.nickname = reg['username']
             new.password = reg['password']
             new.account_type = 1
+            new.status = 1
             new.save()
             code = 200
             msg = ''
@@ -160,6 +164,9 @@ def con_register(request):
             new.nickname = reg['username']
             new.password = reg['password']
             new.account_type = 2
+            new.status = 1
+            new.level = 1
+            new.experience = 0
             new.save()
             code = 200
             msg = ''
@@ -184,6 +191,7 @@ def logout(request):
 ## TODO 上传头像
 def upload_avatar(request, account_id, usertype):
     # try:
+        print(os.getcwd())
         avatar = request.FILES['file']
         account_id = str(account_id)
         avatar_type = avatar.name.split('.').pop()
@@ -203,12 +211,16 @@ def upload_avatar(request, account_id, usertype):
 
 
 def write_data(data, name):
-    destination = '../static/avatar/'+name
-    if os.path.exists(destination):
-        os.remove(destination)
-    with open(destination,'wb') as f:
-        for chunk in data.chunks():
-            f.write(chunk)
+    destination = './static/avatar/'+name
+    print(os.getcwd())
+    try:
+        if os.path.exists(destination):
+            os.remove(destination)
+        with open(destination,'wb') as f:
+            for chunk in data.chunks():
+                f.write(chunk)
+    except Exception:
+        pass
 
 
 ## TODO 设置支付密码
@@ -280,15 +292,15 @@ def user_change(request):
         set_payment_password(value,account_id)
     if usertype == 'pointer':
         if type == 'password':
-            c = Consumer.objects.filter(account_id=account_id)
+            c = Consumer.objects.get(account_id=account_id)
             c.password = hash_md5(value)
             c.save()
         if type == 'phone':
-            c = Consumer.objects.filter(account_id=account_id)
+            c = Consumer.objects.get(account_id=account_id)
             c.tel = value
             c.save()
         if type == 'nickname':
-            c = Consumer.objects.filter(account_id=account_id)
+            c = Consumer.objects.get(account_id=account_id)
             c.nickname = value
             c.save()
     if usertype == 'poster':
@@ -297,11 +309,11 @@ def user_change(request):
             p.password = hash_md5(value)
             p.save()
         if type == 'phone':
-            p = Producer.objects.filter(account_id=account_id)
+            p = Producer.objects.get(account_id=account_id)
             p.tel = value
             p.save()
         if type == 'nickname':
-            p = Producer.objects.filter(account_id=account_id)
+            p = Producer.objects.get(account_id=account_id)
             p.nickname = value
             p.save()
     if usertype == 'pointer':

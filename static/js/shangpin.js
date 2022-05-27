@@ -10,3 +10,9 @@ layui.use(['rate'], function(){
         ,readonly: true
     })});
 
+function lingqu() {
+                            x = document.getElementById("lingqu");
+                            x.innerHTML = "领取成功";
+                            x.className = "btn btn-lg btn-success disabled";
+                            window.open('//{{user_id}}/{{task_id}}/','_self');
+                        };

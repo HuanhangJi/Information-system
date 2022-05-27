@@ -56,6 +56,62 @@ os.chdir(os.path.abspath(os.path.join(os.getcwd(),'..')))
 #         content = {'info':404}
 #     return render(request, 'index/shangpin.html', content)
 
+## TODO 判断分数
+def judge_score(star):
+    stars = int(star)
+    if stars == 1:
+        score = 100
+    elif stars == 2:
+        score = 300
+    elif stars == 3:
+        score = 500
+    elif stars == 4:
+        score = 1000
+    else:
+        score = 2000
+    return score
+
+def judge_level(scores):
+    if scores <= 1000:
+        return 1
+    elif scores <=3000:
+        return 2
+    elif scores <= 10000:
+        return 3
+    elif scores <= 20000:
+        return 4
+    else:
+        return 5
+
+def judge_diff(star):
+    stars = int(star)
+    if stars<= 1.5:
+        score = "很简单"
+    elif stars <= 2.5:
+        score = "比较简单"
+    elif stars <= 3.5:
+        score = "中等"
+    elif stars <= 4.5:
+        score = "比较困难"
+    else:
+        score = "很困难"
+    return score
+
+def judge_time(star):
+    stars = int(star)
+    if stars<= 1.5:
+        score = "10分钟"
+    elif stars <= 2.5:
+        score = "20分钟"
+    elif stars <= 3.5:
+        score = "30分钟"
+    elif stars <= 4.5:
+        score = "45分钟"
+    else:
+        score = "60分钟"
+    return score
+
+
 def get_avatar(user_id):
     pics = os.listdir('./static/avatar')
     flag = 0
@@ -67,6 +123,14 @@ def get_avatar(user_id):
             break
     return {'flag':flag,'pid':pid}
 
+def show_avatar(user_id):
+    dic = get_avatar(user_id)
+    if dic['flag'] == 1:
+        context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
+    else:
+        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
+    return context
+
 
 def jdzz(request, user_id='0'):
     # user_id为0表示未登录
@@ -75,7 +139,7 @@ def jdzz(request, user_id='0'):
     if dic['flag'] == 1:
         context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
     else:
-        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
+        context = {'user_id': user_id, 'img_url': '/static/avatar/default/default_avatar.jpeg'}
     return render(request, "index/index.html", context)
 
 
@@ -83,38 +147,65 @@ def jdzz(request, user_id='0'):
 # 任务市场
 def jdzz_product(request, user_id=0, pIndex=1):
     # 根据user_id从数据库调img_url
-    dic = get_avatar(user_id)
-    if dic['flag'] == 1:
-        context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
-    else:
-        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
+    context = show_avatar(user_id)
     # 从数据库调任务信息
-    shangpin_info = {'name1': '文本任务1', 'star1':2.5, 'url1': '/jdzz_shangpin/' + str(user_id) + '/50/',
-                     'name2': "文本标注11111"}
-    return render(request, "index/product.html", {**context, **shangpin_info})
+# try:
+    kw = request.GET.get('keyword',None)
+    Plist = Project.objects
+    mywhere = []
+    if kw:
+        mywhere.append(f'keyword={kw}')
+        Plist = Plist.filter(Q(title__contains=kw)|Q(content__contains=kw))
+    Plist = Plist.order_by("project_id")
+    pIndex = int(pIndex)
+    page = Paginator(Plist,5)
+    max_page = page.num_pages
+    if pIndex < 1:
+        pIndex = 1
+    if pIndex > max_page:
+        pIndex = max_page
+    Plist2 = page.page(pIndex)
+    plist = page.page_range
+    content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'max_page':max_page,'mywhere':mywhere}
+    print(content['task_list'])
+    infos = []
+    for i in content['task_list']:
+        info = i.to_dict()
+        shangpin_info = {'name': f'{info["project_name"]}', 'star':f'{info["project_star"]}', 'url': f'/jdzz_shangpin/\
+{user_id}/{info["project_id"]}'}
+        infos.append(shangpin_info)
+        print(shangpin_info['url'])
+    print({**context, **{'info':infos}})
+    return render(request, "index/product.html", {**context, **{'info':infos}})
 
 
-def jdzz_shangpin(request, task_id, user_id=0):
+def jdzz_shangpin(request, project_id, user_id=0):
     # 根据user_id从数据库调img_url
-    dic = get_avatar(user_id)
-    if dic['flag'] == 1:
-        context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
-    else:
-        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
+    context = show_avatar(user_id)
     # 根据task_id从数据库调取task_info
-    task_info = {'task_id': task_id, 'biaoti': '微博评论情绪标注', 'fabuzhe': 123, 'renwuhao': task_id,
-                 'leixing': '文本', 'nandu': '简单', 'shijian': "2022-03-29 16:14:37", 'star1': 2,
-                 'exp': 150, 'jingbi': 150, 'time_guji': '2小时', 'miaoshu': '这是一个文本标注任务' * 100}
+    p = Project.objects.get(project_id=project_id)
+    info = p.to_dict()
+    h = Producer.objects.get(account_id=info['account_id'])
+    h
+    if info['project_type'] == 'image_block':
+        type_ = '图片标注'
+    elif info['project_type'] == 'text_type':
+        type_ = '文本标注'
+    else:
+        return JsonResponse({'code':404})
+    task_info = {'task_id': project_id, 'biaoti': info['project_name'], 'fabuzhe': h.nickname,
+                 'renwuhao': project_id,
+                 'leixing': type_, 'nandu': judge_diff(info['project_star']),
+                 'shijian': info['due_time'], 'star1': info['project_star'],
+                 'exp': judge_score(info['project_star']),
+                 'jingbi': info['payment_per_task']*0.8*100, 'time_guji': judge_time(info['project_star']), 'miaoshu': info['description']}
     return render(request, "index/shangpin.html", {**context, **task_info})
 
 
 def work1(request, task_id, page=1, user_id=0):
     # 根据user_id从数据库调img_url
-    dic = get_avatar(user_id)
-    if dic['flag'] == 1:
-        context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
-    else:
-        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
+    print(user_id)
+    context = show_avatar(user_id)
     page_try = request.GET.get('page')
     # 根据task_id和page从数据库调task_info
     if page_try:
@@ -136,7 +227,7 @@ def work1(request, task_id, page=1, user_id=0):
             jindu = '100'
         return JsonResponse({'data': {'content': content, 'jindu': jindu, 'new_page': page}})
     else:
-        task_info = {'task_id': task_id, 'page': page, 'renwuhao': '8521', 'miaoshu': '请判断以下文字中的情绪', 'jindu': '40'}
+        task_info = {'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': '请判断以下文字中的情绪', 'jindu': '40'}
         return render(request, "index/work_1.html", {**context, **task_info})
 
 
@@ -168,7 +259,7 @@ def work2(request, task_id, page=1, user_id=0):
             jindu = '100'
         return JsonResponse({'data': {'task_img': task_img, 'jindu': jindu, 'new_page': page, 'target': target}})
     else:
-        task_info = {'task_id': task_id, 'page': page, 'renwuhao': '8522', 'target': '奥特曼之眼', 'jindu': '10',
+        task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': '10',
                      'task_img': '/static/img/built.jpeg'}
         return render(request, "index/work_2.html", {**context, **task_info})
 
@@ -195,3 +286,6 @@ def work2_post(request):
     # if page = page_max:
     #     .....
     return JsonResponse({})
+
+def get_task(request):
+    pass
