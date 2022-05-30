@@ -6,8 +6,6 @@
     <title>【京冬众质】 - 盗版数据标注平台</title>
     <script src="/static/js/jquery-3.6.0.js"></script>
     <script>
-        var star1 = {{star1}};
-        var name2 = '{{name2}}';
         var user_id = '{{user_id}}';
     </script>
     <script src="/static/js/product.js"></script>
@@ -110,31 +108,46 @@
 
                     <div class="items items-hover">
                         
-                      <!-- 单件商品 -->
-                      <div class="item" id="shangpin1">
-                            <div class="row">
-                                <div class="col-md-3" style="margin: 20px 0;">
-                                    <a href="{{url1}}" target="_blank"><img id="wenbentu1" src="/static/img/6.png"></a>
+                        {% for task in task_list %}
+                        <!-- 单件商品 -->
+                        <div class="item" id="shangpin1">
+                                <div class="row">
+                                    <div class="col-md-3" style="margin: 20px 0;">
+                                        <a href={{url1}} target="_blank"><img id="wenbentu1" src={{ task.project_pic }}></a>
+                                    </div>
+                                    <div class="col-md-9" style="margin:20px 0">
+                                        <div class="item-heading">
+                                            <h4 style="display:inline"><a id="wenbenming1" href={{url1}}  target="_blank" style="margin: top 2px;">{{ task.project_name }}</a></h4>
+                                            <!-- 小标签先去掉 -->
+                                            <!-- <span class="layui-badge" style="margin-right: 1px;">新</span>
+                                            <span class="label label-warning" id="wenbenbiao1">文本</span> -->
+                                            <div  class="pull-right"><div id={{ task.project_id }} style="margin-top: 5px;margin-left: 7px;"></div></div>
+                                            <script>
+                                                // 修改任务星级
+                                                $(document).ready(function(){
+                                                    layui.use(['rate'], function(){
+                                                        var rate = layui.rate;
+                                                        rate.render({
+                                                            elem: '#'+{{ task.project_id }}
+                                                            ,value: {{ task.project_star }}
+                                                            ,half:true
+                                                            ,readonly: true})
+                                                        });
+                                                    }); 
+                                            </script>
+                                        </div>
+                                        <div class="item-content">
+                                            <div class="text" style="margin-top: 10px; width: 80%;">
+                                                <span style="color: #727f8f;">数据类型：</span><span>{{ task.project_type }}</span>
+                                                <span style="color: #727f8f;margin-left:50px">截止时间：</span><span>{{ task.time }}</span>
+                                            </div>
+                                            <div class="item-footer">
+                                                <!-- <a href="#" class="text-muted"><i class="icon-comments"></i> 243</a> &nbsp; <span class="text-muted">2022-03-29 16:14:37</span> -->
+                                            </div>
+                                        </div>
+                                    </div>    
                                 </div>
-                                <div class="col-md-9" style="margin:20px 0">
-                                    <div class="item-heading">
-                                        <h4 style="display:inline"><a id="wenbenming1" href={{url1}}  target="_blank" style="margin: top 2px;">{{name}}</a></h4>
-                                        <span class="layui-badge" style="margin-right: 1px;">新</span>
-                                        <span class="label label-warning" id="wenbenbiao1">文本</span>
-                                        <div  class="pull-right"><div id="test1" style="margin-top: 5px;margin-left: 7px;"></div></div>
-                                    </div>
-                                    <div class="item-content">
-                                        <div class="text" style="margin-top: 10px; width: 80%;">
-                                            <span style="color: #727f8f;">数据类型：</span><span>文本</span>
-                                            <span style="color: #727f8f;margin-left:50px">时间：</span><span>{{time}}</span>
-                                        </div>
-                                        <div class="item-footer">
-                                            <a href="#" class="text-muted"><i class="icon-comments"></i> 243</a> &nbsp; <span class="text-muted">2022-03-29 16:14:37</span>
-                                        </div>
-                                    </div>
-                                </div>    
-                            </div>
-                      </div>
+                        </div>
 
     
                     </div>
