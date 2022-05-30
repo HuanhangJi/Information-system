@@ -1,4 +1,6 @@
 import datetime
+import math
+
 from django.http import *
 from .models import *
 import os
@@ -12,7 +14,8 @@ from django.shortcuts import render
 import json
 import time
 import zipfile
-
+task_num = 0
+flag = 0
 
 ## request初始化 FINISH
 def get_res(request):
@@ -66,9 +69,15 @@ def project_add(request):
         publisher_id = res['publisher_id']
         project_name = res['project_name']
         project_type = res['project_type']
+        global flag
+        if project_type == 'image_block':
+            flag = 0
+        else:
+            flag = 1
         description = res['description']
         due_time = res['due_time']
         pay_per_task = res['pay_per_task']
+        global task_num
         task_num = res['task_num']
         project_star = res['project_star']
         text_tags = res['text_tags']
@@ -82,14 +91,15 @@ def project_add(request):
             if os.path.exists(f'./static/sample_document/{project_id}'):
                 shutil.rmtree(f'./static/sample_document/{project_id}')
             os.mkdir(f'./static/sample_document/{project_id}')
-            with open(f'./static/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
-                n = len(text_tags)
-                for i in range(n):
-                    if text_tags[i] == '，':
-                        text_tags=replace_char(text_tags,",",i)
-                    if text_tags[i] == '；':
-                        text_tags=replace_char(text_tags,";",i)
-                fp.write(text_tags)
+            if flag == 1:
+                with open(f'./static/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
+                    n = len(text_tags)
+                    for i in range(n):
+                        if text_tags[i] == '，':
+                            text_tags=replace_char(text_tags,",",i)
+                        if text_tags[i] == '；':
+                            text_tags=replace_char(text_tags,";",i)
+                    fp.write(text_tags)
             p.account_id = publisher_id
             p.project_type = project_type
             p.task_num = task_num
@@ -184,37 +194,7 @@ def project_query(request):
         return JsonResponse(data)
 
 
-def write_data(request, project_id):
-    project_id = project_id
-    sample_document = request.FILES['file']
-    destination = f'./static/sample_document/{project_id}/{sample_document.name}'
-    if os.path.exists(destination):
-        os.remove(destination)
-    z = zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED)
-    z.close()
-    try:
-        with open(destination,'wb') as f:
-            for chunk in sample_document.chunks():
-                f.write(chunk)
-        Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
-        path = f'./static/sample_document/{project_id}'
-        num = 0
-        for i in Z.namelist():
-            num += 1
-            try:
-                new_name = i.encode('cp437').decode('gbk')
-            except:
-                new_name = i.encode('cp437').decode('utf-8')
-            Z.extract(i,path=path)
-            os.rename(path+f'/{i}',path+f'/{new_name}')
-        data = {'code': 200, 'msg': '写入成功'}
-    except Exception:
-        os.remove(destination)
-        data = {'code': 404, 'msg': '写入失败'}
-    return JsonResponse(data)
-
-
-# def write_data(request, project_id, task_num):
+# def write_data(request, project_id):
 #     project_id = project_id
 #     sample_document = request.FILES['file']
 #     destination = f'./static/sample_document/{project_id}/{sample_document.name}'
@@ -222,26 +202,92 @@ def write_data(request, project_id):
 #         os.remove(destination)
 #     z = zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED)
 #     z.close()
-#     with open(destination,'wb') as f:
-#         for chunk in sample_document.chunks():
-#             f.write(chunk)
-#     Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
-#     path = f'./static/sample_document/{project_id}'
-#     num = 0
-#     for i in Z.namelist():
-#         num += 1
-#         try:
-#             new_name = i.encode('cp437').decode('gbk')
-#         except:
-#             new_name = i.encode('cp437').decode('utf-8')
-#         Z.extract(i,path=path)
-#         os.rename(path+f'/{i}',path+f'/{new_name}')
-#     if num < 10 * int(task_num):
-#         data = {'code':404, 'msg' : '无法分配任务'}
-#         os.remove(path)
-#     else:
+#     try:
+#         with open(destination,'wb') as f:
+#             for chunk in sample_document.chunks():
+#                 f.write(chunk)
+#         Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
+#         path = f'./static/sample_document/{project_id}'
+#         num = 0
+#         for i in Z.namelist():
+#             num += 1
+#             try:
+#                 new_name = i.encode('cp437').decode('gbk')
+#             except:
+#                 new_name = i.encode('cp437').decode('utf-8')
+#             Z.extract(i,path=path)
+#             os.rename(path+f'/{i}',path+f'/{new_name}')
 #         data = {'code': 200, 'msg': '写入成功'}
+#     except Exception:
+#         os.remove(destination)
+#         data = {'code': 404, 'msg': '写入失败'}
 #     return JsonResponse(data)
+
+
+def write_data(request, project_id):
+    global task_num
+    global flag
+    sample_document = request.FILES['file']
+    destination = f'./static/sample_document/{project_id}/{sample_document.name}'
+    if os.path.exists(destination):
+        os.remove(destination)
+    z = zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED)
+    z.close()
+    with open(destination,'wb') as f:
+        for chunk in sample_document.chunks():
+            f.write(chunk)
+    Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
+    path = f'./static/sample_document/{project_id}'
+    num = 0
+    for i in Z.namelist():
+        try:
+            new_name = i.encode('cp437').decode('gbk')
+        except:
+            new_name = i.encode('cp437').decode('utf-8')
+        type = new_name.split('.')[-1]
+        if type not in ['jpg','jpeg','png']:
+            continue
+        else:
+            num += 1
+            Z.extract(i,path=path)
+            os.rename(path+f'/{i}',path+f'/{num}.{type}')
+    Z.close()
+    if flag == 0:
+        task_should = math.floor(num/task_num)
+        if task_should < 10:
+            data = {'code':404, 'msg':'无法分配任务','path':path}
+            shutil.rmtree(path)
+        else:
+            for i in os.listdir(path):
+                try:
+                    type = i.split('.')[1]
+                    if type not in ['jpg','jpeg','png']:
+                        continue
+                    num = int(i.split('.')[0])
+                    id = math.ceil(num/task_should)
+                    if id >task_num:
+                        id = task_num
+                    os.rename(path + f'/{i}', path + f'/{num}_{id}.{type}')
+                except:
+                    pass
+            pic = ''
+            for i in os.listdir(path):
+                try:
+                    type = i.split('.')[1]
+                    if type not in ['jpg','jpeg','png']:
+                        continue
+                    pic = i
+                    break
+                except:
+                    pass
+            p = Project.objects.get(project_id=project_id)
+            p.project_pic = (path+f'/{pic}')[1:]
+            p.item_per_task = task_should
+            p.save()
+            data = {'code': 200, 'msg': '写入成功'}
+    else:
+        data = {'code': 200, 'msg': '写入成功'}
+    return JsonResponse(data)
 
 
 ## TODO 预付款
@@ -253,7 +299,9 @@ def prepay(request,project_id):
     account_id = res['publisher_id']
     total = pay_per_task * task_num
     w = Wallet.objects.get(account_id=account_id)
-    if w.account_num > total:
+    print(w.account_num)
+    print(total)
+    if w.account_num >= total:
         w.account_num -= total
         w.save()
         p = Prepay()
@@ -266,6 +314,7 @@ def prepay(request,project_id):
         data = {'code': 200}
     else:
         data = {'code':404}
+    print(data)
     return data
 
 

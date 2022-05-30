@@ -31,9 +31,11 @@ class Project(models.Model):
     due_time = models.DateTimeField()
     payment_per_task = models.FloatField()
     project_status = models.IntegerField()
+    item_per_task = models.IntegerField(null=True)
     task_num = models.IntegerField()
     completed_task_num = models.IntegerField()
     project_star = models.FloatField()
+    project_pic = models.CharField(max_length=64,null=True)
 
 
 

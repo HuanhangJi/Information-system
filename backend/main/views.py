@@ -1,3 +1,5 @@
+import math
+
 from django.shortcuts import render
 import os
 import sys
@@ -7,54 +9,11 @@ from client_management.models import *
 from django.core.paginator import *
 from django.db.models import Q
 from django.http import *
+from django.shortcuts import redirect
 import json
 import os
 
 os.chdir(os.path.abspath(os.path.join(os.getcwd(),'..')))
-
-# ## TODO 主页
-# def index(request):
-#     # try:
-#         return render(request,'index/index.html')
-#     # except Exception:
-#     #     return HttpResponse('打开主页失败')
-#
-#
-# ## TODO 任务市场
-# def products(request, pIndex=1):
-#     # try:
-#         kw = request.GET.get('keyword',None)
-#         Plist = Project.objects
-#         mywhere = []
-#         if kw:
-#             mywhere.append(f'keyword={kw}')
-#             Plist = Plist.filter(Q(title__contains=kw)|Q(content__contains=kw))
-#         Plist = Plist.order_by("project_id")
-#         pIndex = int(pIndex)
-#         page = Paginator(Plist,5)
-#         try:
-#             max_page = page.num_pages
-#         except Exception:
-#             content = {'task_list': None, 'info':'暂无数据'}
-#             return render(request,'index/product.html',content)
-#         if pIndex < 1:
-#             pIndex = 1
-#         if pIndex > max_page:
-#             pIndex = max_page
-#         Plist2 = page.page(pIndex)
-#         plist = page.page_range
-#         content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'max_page':max_page,'mywhere':mywhere}
-#         return render(request,'index/product.html',content)
-#     # except Exception:
-#     #     return HttpResponse(f'打开任务市场失败')
-#
-# def product_info(request,project_id):
-#     try:
-#         p = Project()
-#         content = p.objects.get(project_id=project_id).to_dict()
-#     except Exception:
-#         content = {'info':404}
-#     return render(request, 'index/shangpin.html', content)
 
 ## TODO 判断分数
 def judge_score(star):
@@ -167,6 +126,8 @@ def jdzz_product(request, user_id=0, pIndex=1):
     Plist2 = page.page(pIndex)
     plist = page.page_range
     content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'max_page':max_page,'mywhere':mywhere}
+    for i in content['task_list']:
+        print(i.project_id)
     print({**context, **content})
     return render(request, "index/product.html", {**context, **content})
 
@@ -178,7 +139,6 @@ def jdzz_shangpin(request, project_id, user_id=0):
     p = Project.objects.get(project_id=project_id)
     info = p.to_dict()
     h = Producer.objects.get(account_id=info['account_id'])
-    h
     if info['project_type'] == 'image_block':
         type_ = '图片标注'
     elif info['project_type'] == 'text_type':
@@ -194,9 +154,12 @@ def jdzz_shangpin(request, project_id, user_id=0):
     return render(request, "index/shangpin.html", {**context, **task_info})
 
 
-def work1(request, task_id, page=1, user_id=0):
+def work1(request, user_id, task_id, page=1):
+    #检查
+    ta = Task_association.objects.filter(Q(task_id=task_id),Q(account_id=user_id))
+    if not ta.exists():
+        return JsonResponse({'info':'无该任务记录'})
     # 根据user_id从数据库调img_url
-    print(user_id)
     context = show_avatar(user_id)
     page_try = request.GET.get('page')
     # 根据task_id和page从数据库调task_info
@@ -222,38 +185,43 @@ def work1(request, task_id, page=1, user_id=0):
         task_info = {'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': '请判断以下文字中的情绪', 'jindu': '40'}
         return render(request, "index/work_1.html", {**context, **task_info})
 
-
+## TODO 修改
 def work2(request, task_id, page=1, user_id=0):
-    context = {'user_id': user_id, 'img_url': '/static/img/6159252dd42a2834f52175724d59cfe014cebf3e.png', 'page_max': 5}
-    page_try = request.GET.get('page')
-    # 根据task_id和page从数据库调task_info
-    if page_try:
-        page = int(page_try)
-        if page == 1:
-            target = '奥特曼之眼1'
-            task_img = '/static/img/built.jpeg'
-            jindu = '50'
-        elif page == 2:
-            target = '崔浩然'
-            task_img = '/static/img/chr.jpg'
-            jindu = '50'
-        elif page == 3:
-            target = '奥特曼之眼3'
-            task_img = '/static/img/3.png'
-            jindu = '70'
-        elif page == 4:
-            target = '奥特曼之眼4'
-            task_img = '/static/img/4.png'
-            jindu = '90'
-        else:
-            target = '奥特曼之眼5'
-            task_img = '/static/img/5.png'
-            jindu = '100'
-        return JsonResponse({'data': {'task_img': task_img, 'jindu': jindu, 'new_page': page, 'target': target}})
-    else:
-        task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': '10',
-                     'task_img': '/static/img/built.jpeg'}
-        return render(request, "index/work_2.html", {**context, **task_info})
+    #检查
+    ta = Task_association.objects.filter(Q(task_id=task_id),Q(account_id=user_id))
+    if not ta.exists():
+        return JsonResponse({'info':'无该任务记录'})
+    context = show_avatar(user_id)
+    project_id = task_id.split('_')[0]
+    task_num = task_id.split('_')[1]
+    path = f'./static/sample_document/{project_id}'
+    pic_list = []
+    for item in os.listdir(path):
+        try:
+            id = item.split('.')[0].split("_")[1]
+            if id == task_num:
+                pic_list.append(item)
+        except:
+            pass
+    n = len(pic_list)
+    p = Project.objects.get(project_id=project_id)
+    start = int(p.item_per_task) * (int(task_num)-1)+1
+    jindu = math.floor(float(page/n)*100)
+    if jindu>100:
+        jindu=100
+    number = start + page - 1
+    if number < start:
+        number = start
+    if number > start+n-1:
+        number = start+n-1
+    img = f'/static/sample_document/{project_id}/{number}_{task_num}.jpg'
+    task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': jindu,
+                 'task_img': img}
+    return render(request, "index/work_2.html", {**context, **task_info})
+
+def work3(request,task_id,user_id):
+    return redirect('work2',task_id=task_id,user_id=user_id,page=1)
+
 
 
 def work1_post(request):
@@ -280,18 +248,26 @@ def work2_post(request):
     return JsonResponse({})
 
 def get_task(request,account_id,project_id):
+    if int(account_id) == 0:
+        return JsonResponse({'code':403,'msg':'请先登陆'})
+    try:
+        Consumer.objects.get(account_id=account_id)
+    except:
+        return JsonResponse({'code':402,'msg':'发布者错误'})
     tasks = Task.objects.filter(Q(project_id=project_id),(Q(task_status=0)))
     Project.objects.get(project_id=project_id).project_status = 1
     task_num = tasks.count()
-    if task_num >=1:
+    if task_num >= 1:
         task = tasks.first()
         task.task_status = 1
+        id = task.task_id
         task.save()
         ta = Task_association()
         ta.account_id = account_id
         ta.project_id = project_id
+        ta.task_id = id
         ta.save()
-        return JsonResponse({'code': 200})
+        return JsonResponse({'code': 200,'task_id':id})
     else:
-        return JsonResponse({'code':404})
+        return JsonResponse({'code':404,'msg':'网络繁忙'})
 

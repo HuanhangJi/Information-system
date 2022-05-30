@@ -20,7 +20,7 @@ class UserInfo(models.Model):
         abstract = True
 
 
-#完成者类
+#标注者类
 class Consumer(UserInfo):
     level = models.IntegerField()
     experience = models.IntegerField()
