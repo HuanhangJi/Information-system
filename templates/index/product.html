@@ -110,14 +110,15 @@
                         
                         {% for task in task_list %}
                         <!-- 单件商品 -->
+
                         <div class="item" id="shangpin1">
                                 <div class="row">
                                     <div class="col-md-3" style="margin: 20px 0;">
-                                        <a href={{url1}} target="_blank"><img id="wenbentu1" src={{ task.project_pic }}></a>
+                                        <a href="/jdzz_shangpin/{{user_id}}/{{ task.project_id }}/" target="_blank"><img id="wenbentu1" src={{ task.project_pic }}></a>
                                     </div>
                                     <div class="col-md-9" style="margin:20px 0">
                                         <div class="item-heading">
-                                            <h4 style="display:inline"><a id="wenbenming1" href={{url1}}  target="_blank" style="margin: top 2px;">{{ task.project_name }}</a></h4>
+                                            <h4 style="display:inline"><a id="wenbenming1" href="/jdzz_shangpin/{{user_id}}/{{ task.project_id }}/"  target="_blank" style="margin: top 2px;">{{ task.project_name }}</a></h4>
                                             <!-- 小标签先去掉 -->
                                             <!-- <span class="layui-badge" style="margin-right: 1px;">新</span>
                                             <span class="label label-warning" id="wenbenbiao1">文本</span> -->
@@ -139,7 +140,7 @@
                                         <div class="item-content">
                                             <div class="text" style="margin-top: 10px; width: 80%;">
                                                 <span style="color: #727f8f;">数据类型：</span><span>{{ task.project_type }}</span>
-                                                <span style="color: #727f8f;margin-left:50px">截止时间：</span><span>{{ task.time }}</span>
+                                                <span style="color: #727f8f;margin-left:50px">截止时间：</span><span>{{ task.due_time }}</span>
                                             </div>
                                             <div class="item-footer">
                                                 <!-- <a href="#" class="text-muted"><i class="icon-comments"></i> 243</a> &nbsp; <span class="text-muted">2022-03-29 16:14:37</span> -->
@@ -148,6 +149,7 @@
                                     </div>    
                                 </div>
                         </div>
+                        {% endfor %}
 
     
                     </div>
@@ -167,8 +169,13 @@
                       ,layer = layui.layer;      
                       laypage.render({
                           elem: 'demo2'
-                          ,count: 100
+                          ,count: {{number}}
                           ,theme: '#1E9FFF'
+                          ,limit: {{limit}}
+                          ,curr: '{{pIndex}}'
+                          ,jump : function(obj, first) {if (!first) {var parId=$("#parId").val();
+                           var pIndex=obj.curr;
+                           window.location.href="/jdzz_product/{{user_id}}/"+pIndex+'/';}}
                       });
                       });
                   </script>

@@ -72,8 +72,10 @@ def project_add(request):
         global flag
         if project_type == 'image_block':
             flag = 0
+            project_type = '图片识别标注'
         else:
             flag = 1
+            project_type = '文本标注'
         description = res['description']
         due_time = res['due_time']
         pay_per_task = res['pay_per_task']

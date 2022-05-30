@@ -87,7 +87,7 @@ def show_avatar(user_id):
     if dic['flag'] == 1:
         context = {'user_id': user_id, 'img_url': f'/static/avatar/{dic["pid"]}'}
     else:
-        context = {'user_id': user_id, 'img_url': '/static/avatar/avatar/default/default_avatar.jpeg'}
+        context = {'user_id': user_id, 'img_url': '/static/avatar/default/default_avatar.jpeg'}
     return context
 
 
@@ -110,14 +110,18 @@ def jdzz_product(request, user_id=0, pIndex=1):
     # 从数据库调任务信息
 # try:
     kw = request.GET.get('keyword',None)
-    Plist = Project.objects
+    Plist = Project.objects.exclude(project_status=5)
     mywhere = []
     if kw:
         mywhere.append(f'keyword={kw}')
         Plist = Plist.filter(Q(title__contains=kw)|Q(content__contains=kw))
     Plist = Plist.order_by("project_id")
+    n = len(Plist)
+    if n > 200:
+        n = 200
     pIndex = int(pIndex)
-    page = Paginator(Plist,5)
+    limit = 5
+    page = Paginator(Plist,limit)
     max_page = page.num_pages
     if pIndex < 1:
         pIndex = 1
@@ -125,7 +129,7 @@ def jdzz_product(request, user_id=0, pIndex=1):
         pIndex = max_page
     Plist2 = page.page(pIndex)
     plist = page.page_range
-    content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'max_page':max_page,'mywhere':mywhere}
+    content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'number':n,'mywhere':mywhere,'limit':limit}
     for i in content['task_list']:
         print(i.project_id)
     print({**context, **content})
@@ -139,15 +143,9 @@ def jdzz_shangpin(request, project_id, user_id=0):
     p = Project.objects.get(project_id=project_id)
     info = p.to_dict()
     h = Producer.objects.get(account_id=info['account_id'])
-    if info['project_type'] == 'image_block':
-        type_ = '图片标注'
-    elif info['project_type'] == 'text_type':
-        type_ = '文本标注'
-    else:
-        return JsonResponse({'code':404})
     task_info = {'task_id': project_id, 'biaoti': info['project_name'], 'fabuzhe': h.nickname,
                  'renwuhao': project_id,
-                 'leixing': type_, 'nandu': judge_diff(info['project_star']),
+                 'leixing': info['project_type'], 'nandu': judge_diff(info['project_star']),
                  'shijian': info['due_time'], 'star1': info['project_star'],
                  'exp': judge_score(info['project_star']),
                  'jingbi': info['payment_per_task']*0.8*100, 'time_guji': judge_time(info['project_star']), 'miaoshu': info['description']}
