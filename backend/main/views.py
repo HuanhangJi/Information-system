@@ -167,16 +167,8 @@ def jdzz_product(request, user_id=0, pIndex=1):
     Plist2 = page.page(pIndex)
     plist = page.page_range
     content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'max_page':max_page,'mywhere':mywhere}
-    print(content['task_list'])
-    infos = []
-    for i in content['task_list']:
-        info = i.to_dict()
-        shangpin_info = {'name': f'{info["project_name"]}', 'star':f'{info["project_star"]}', 'url': f'/jdzz_shangpin/\
-{user_id}/{info["project_id"]}'}
-        infos.append(shangpin_info)
-        print(shangpin_info['url'])
-    print({**context, **{'info':infos}})
-    return render(request, "index/product.html", {**context, **{'info':infos}})
+    print({**context, **content})
+    return render(request, "index/product.html", {**context, **content})
 
 
 def jdzz_shangpin(request, project_id, user_id=0):
