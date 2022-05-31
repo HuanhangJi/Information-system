@@ -182,9 +182,11 @@ def work1(request, user_id, task_id, page=1):
     else:
         project_id = task_id.split('_')[0]
         task_num = task_id.split('_')[1]
+        content = 'AAAAAAAAAA' * 100
+        choice_dict = {'choice_1':'开心','choice_1':'生气','choice_1':'难过','choice_1':'其他'}
         path = f'/static/sample_document/{project_id}/{task_num}.txt'
-        task_info = {'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': '请判断以下文字中的情绪', 'jindu': '40'}
-        return render(request, "index/work_1.html", {**context, **task_info})
+        task_info = {'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': '请判断以下文字中的情绪', 'jindu': '40','content': content,'yaoqiu':'AA就选AA'*20}
+        return render(request, "index/work_1.html", {**context, **task_info,**choice_dict})
 
 def work2(request,user_id,task_id,page = 1):
     context = show_avatar(user_id)
@@ -229,6 +231,42 @@ def work2(request,user_id,task_id,page = 1):
                      'task_img': img,'page_max':n,}
         return render(request, "index/work_2.html",{**context,**task_info})
 
+def work3(request, user_id, task_id, page=1):
+    #检查
+    ta = Task_association.objects.filter(Q(task_id=task_id),Q(account_id=user_id))
+    if not ta.exists():
+        return JsonResponse({'info':'无该任务记录'})
+    # 根据user_id从数据库调img_url
+    context = show_avatar(user_id)
+    page_try = request.GET.get('page')
+    # 根据task_id和page从数据库调task_info
+    if page_try:
+        page = int(page_try)
+        if page == 1:
+            content = '/static/img/1.png'
+            jindu = '50'
+        elif page == 2:
+            content = '/static/img/2.png'
+            jindu = '50'
+        elif page == 3:
+            content = '/static/img/3.png'
+            jindu = '70'
+        elif page == 4:
+            content = '/static/img/4.png'
+            jindu = '90'
+        else:
+            content = '任务结束'
+            jindu = '100'
+        return JsonResponse({'data': {'content': content, 'jindu': jindu, 'new_page': page}})
+    else:
+        project_id = task_id.split('_')[0]
+        task_num = task_id.split('_')[1]
+        content = '/static/img/logo.svg'
+        jindu = 0
+        choice_dict = {'choice_1':'猫','choice_1':'狗','choice_1':'鸡','choice_1':'钝角'}
+        path = f'/static/sample_document/{project_id}/{task_num}.txt'
+        task_info = {'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': '请为以下图片正确分类', 'jindu': jindu,'content': content,'yaoqiu':'AA就选AA'*20}
+        return render(request, "index/work_1.html", {**context, **task_info,**choice_dict})
 
 
 def work1_post(request):
@@ -253,6 +291,17 @@ def work2_post(request):
     print(task_id)
     print(page)
     print(result)
+    # if page = page_max:
+    #     .....
+    return JsonResponse({})
+
+def work3_post(request):
+    data = json.loads(request.body, strict=False)
+    choice = data["choice"]
+    user_id = data["user_id"]
+    task_id = data["task_id"]
+    page = data["page"]
+    print(choice)
     # if page = page_max:
     #     .....
     return JsonResponse({})
