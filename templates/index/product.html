@@ -26,14 +26,14 @@
         <!-- 左部分 -->
         <div class="col-md-7" style="margin:0 20%; height: 100%;">
 
-            <!-- 项目标签栏 -->
-            <div class="col-md-12"> 
+             <!-- 项目标签栏 -->
+             <div class="col-md-12"> 
                 <ul class="nav nav-secondary nav-justified shaixuan" style="margin-top:90px;">
                     <li class="active"><a href="#" ><font size = '1'>所有项目</font></a></li>
-                    <li><a href="#"><font size = '1'>推荐项目</font></a></li>
+                    <!-- <li><a href="#"><font size = '1'>推荐项目</font></a></li>
                     <li><a href="#"><font size = '1'>我的项目</font></a></li>
-                    <li><a href="#"><font size = '1'>我喜欢的</font><span class="label label-badge label-success">4</span></a></li>
-                    <li>
+                    <li><a href="#"><font size = '1'>我喜欢的</font><span class="label label-badge label-success">4</span></a></li> -->
+                    <!-- <li>
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#"><font size = '1'>更多</font> <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                           <li><a href="#">任务</a></li>
@@ -41,7 +41,7 @@
                           <li><a href="#">需求</a></li>
                           <li><a href="#">用例</a></li>
                         </ul>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
 
@@ -195,7 +195,7 @@
     <div class="footer" style="margin-top:0px ;">
         <div class="container">
             <div class="copyright">
-                <img src="/static/img/title.svg" alt="logo" />
+                <img src="/static/img/logo.svg" alt="logo" style="height: 30px;"/>
                 <p>
                     【京冬众质】 - 北航最好的盗版数据标注平台<br />
                 &copy; 2022年
@@ -235,21 +235,21 @@
     <!-- 顶部固定导航栏 -->
     <ul class="layui-nav" style="z-index: 5;box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);background-color: white;text-align:center;position: fixed;top: 0px;width: 100%;">   
         <!--头顶大LOGO-->
-        <div style="float: left;vertical-align: middle;line-height: 60px;margin-left: 15px;"><a href="/jdzz/{{user_id}}"><img src="/static/img/title.svg" style="height: 20px;"></a></div>
+        <div style="float: left;vertical-align: middle;line-height: 60px;margin-left: 15px;"><a href="/jdzz/{{user_id}}"><img src="/static/img/logo.svg" style="height: 30px;"></a></div>
         <li class="layui-nav-item" style="float:right;" id="log_in_0">
-          <a id='denglu' href="" style="color:black;margin-right: 30px;"> 登录 </a>
+          <a id='denglu' href="http://localhost:8001" style="color:black;margin-right: 30px;"> 登录 </a>
           <dl class="layui-nav-child" style="margin-right: 50px;">
-              <dd><a href="" style="color: black;">我的任务</a></dd>
-              <dd><a href="" style="color: black;">账号设置</a></dd>
-              <dd><a href="" style="color: black;">支持与服务</a></dd>
+              <dd><a href="http://localhost:8001" style="color: black;">我的任务</a></dd>
+              <dd><a href="http://localhost:8001" style="color: black;">账号设置</a></dd>
+              <dd><a href="http://localhost:8001" style="color: black;">支持与服务</a></dd>
           </dl>
       </li>
       <li class="layui-nav-item" style="float:right;display: none;" id="log_in_1">
-          <a href="" style="color: black"><img src={{img_url}} class="layui-nav-img">我</a>
+          <a href="http://localhost:8001" style="color: black"><img src={{img_url}} class="layui-nav-img">我</a>
           <dl class="layui-nav-child">
-              <dd><a href="" style="color: black;">我的任务</a></dd>
-              <dd><a href="" style="color: black;">账号设置</a></dd>
-              <dd><a href="" style="color: black;">支持与服务</a></dd>
+              <dd><a href="http://localhost:8001" style="color: black;">我的任务</a></dd>
+              <dd><a href="http://localhost:8001" style="color: black;">账号设置</a></dd>
+              <dd><a href="http://localhost:8001" style="color: black;">支持与服务</a></dd>
           </dl>
       </li>
         <li class="layui-nav-item  layui-this" style="float:right">
