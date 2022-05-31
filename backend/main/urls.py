@@ -15,7 +15,7 @@ urlpatterns = [
     path('jdzz_work2_post/', views.work2_post),  # 接收图片的标注结果
     path('jdzz_work3_post/', views.work3_post), # 接收图片分类的标注结果
     path('get_task/<int:account_id>/<int:project_id>/', views.get_task),
-    # path('commit_task/<int:account_id>/<int:project_id>/<int:page>', views.commit_task),
+    path('commit_task/<int:account_id>/<int:project_id>/<int:page>', views.commit_task),
     # path('testview', views.post1, name='testview'),  #Ajax加载工作台内容
     # path('',index,name='index'), #主页
     # path('products/<int:pIndex>/', products, name='products'),#任务市场

@@ -223,11 +223,10 @@ def work2(request,user_id,task_id,page = 1):
             number = start + n - 1
         img = f'/static/sample_document/{project_id}/{number}_{task_num}.jpg'
         print({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
-
         return JsonResponse({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
     else:
         img = f'/static/sample_document/{project_id}/{start}_{task_num}.jpg'
-        task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': math.floor(float(1 / n) * 100),
+        task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': 0,
                      'task_img': img,'page_max':n+1}
         return render(request, "index/work_2.html",{**context,**task_info})
 
@@ -287,12 +286,7 @@ def work2_post(request):
     user_id = data["user_id"]
     task_id = data["task_id"]
     page = data["page"]
-    print(user_id)
-    print(task_id)
-    print(page)
-    print(result)
-    # if page = page_max:
-    #     .....
+    store_data(user_id,task_id,page,result)
     return JsonResponse({})
 
 def work3_post(request):
@@ -305,6 +299,7 @@ def work3_post(request):
     # if page = page_max:
     #     .....
     return JsonResponse({})
+
 
 def get_task(request,account_id,project_id):
     if int(account_id) == 0:
@@ -329,4 +324,47 @@ def get_task(request,account_id,project_id):
         return JsonResponse({'code': 200,'task_id':id})
     else:
         return JsonResponse({'code':404,'msg':'网络繁忙'})
+
+
+def store_data(user_id, task_id, page, result):
+    path = f'./static/data/account_{user_id}_task_{task_id}'
+    print()
+    print(f'page:{page}')
+    if not os.path.exists(path):
+        os.mkdir(path)
+    if os.listdir(path) == []:
+        data = {}
+        data[str(page)] = result
+        with open(f'{path}/data.json','w') as f:
+            json.dump(data,f)
+    else:
+        with open(f'{path}/data.json','r') as f:
+            data = json.load(f)
+            data[str(page)] = result
+        print(f'data:{data}')
+        with open(f'{path}/data.json','w') as f:
+            json.dump(data,f)
+    print()
+
+def commit_task(request, user_id, task_id, page):
+    path = f'./static/data/account_{user_id}_task_{task_id}/data.json'
+    miss = []
+    if os.path.exists(path):
+        with open(path, 'r') as f:
+            data = json.load(f)
+            keys = data.keys()
+            for i in range(1, page + 1):
+                if str(i) not in keys:
+                    miss.append(str(i))
+        if miss == []:
+            t = Task.objects.get(task_id=task_id)
+            t.task_status = 2
+            t.save()
+            return JsonResponse({'code': 200})
+        else:
+            miss_data = ' '.join(miss)
+            print(miss_data)
+            return JsonResponse({'code': 403, 'miss_data': miss_data})
+    else:
+        return JsonResponse({'code': 404})
 
