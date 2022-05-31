@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%;">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,11 +20,11 @@
     <script src="/static/js/fanhui.js"></script>
     <link rel="stylesheet" href="/static/css/product.css">
 </head>
-<body style="overflow-x:hidden;">
-    <div class="row">
+<body style="overflow-x:hidden;height: 100%;">
+    <div class="row" style=" min-height: 100%;">
 
         <!-- 左部分 -->
-        <div class="col-md-7" style="margin:0 20%;">
+        <div class="col-md-7" style="margin:0 20%; height: 100%;">
 
             <!-- 项目标签栏 -->
             <div class="col-md-12"> 
@@ -114,7 +114,7 @@
                         <div class="item" id="shangpin1">
                                 <div class="row">
                                     <div class="col-md-3" style="margin: 20px 0;">
-                                        <a href="/jdzz_shangpin/{{user_id}}/{{ task.project_id }}/" target="_blank"><img id="wenbentu1" src={{ task.project_pic }}></a>
+                                        <a href="/jdzz_shangpin/{{user_id}}/{{ task.project_id }}/" target="_blank"><img id="wenbentu1" style="height:170px;width:230px;" src={{ task.project_pic }}></a>
                                     </div>
                                     <div class="col-md-9" style="margin:20px 0">
                                         <div class="item-heading">

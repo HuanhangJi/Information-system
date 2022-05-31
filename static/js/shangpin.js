@@ -14,5 +14,16 @@ function lingqu() {
                             x = document.getElementById("lingqu");
                             x.innerHTML = "领取成功";
                             x.className = "btn btn-lg btn-success disabled";
-                            window.open('//{{user_id}}/{{task_id}}/','_self');
+//                            window.open('/get_task/'+user_id+'/'+renwuhao,'_self');
+                            $.ajax({
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                headers: { "X-CSRFToken": token_csrf },
+                                url: '/get_task/'+user_id+'/'+renwuhao+'/',
+                                dataType: "json",
+                                data: '',
+                                success: function () {
+                                console.log("任务领取成功");
+                                }
+                                });
                         };

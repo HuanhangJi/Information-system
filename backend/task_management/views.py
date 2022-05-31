@@ -247,8 +247,9 @@ def write_data(request, project_id):
         except:
             new_name = i.encode('cp437').decode('utf-8')
         type = new_name.split('.')[-1]
-        if type not in ['jpg','jpeg','png']:
-            continue
+        if flag == 0:
+            if type not in ['jpg','jpeg','png']:
+                continue
         else:
             num += 1
             Z.extract(i,path=path)
@@ -287,7 +288,10 @@ def write_data(request, project_id):
             p.item_per_task = task_should
             p.save()
             data = {'code': 200, 'msg': '写入成功'}
-    else:
+    if flag == 1:
+        p = Project.objects.get(project_id=project_id)
+        p.project_pic = f'/static/sample_document/txt_pic/txt_defalut_pic.png'
+        p.save()
         data = {'code': 200, 'msg': '写入成功'}
     return JsonResponse(data)
 
@@ -322,6 +326,7 @@ def prepay(request,project_id):
 
 ## TODO 标注者接收任务
 def get_task(request):
+
     project_id = request.POST['project_id']
     account_id = request.POST['account_id']
     tasks = Task.objects.filter(Q(project_id=project_id)|Q(task_status=0))

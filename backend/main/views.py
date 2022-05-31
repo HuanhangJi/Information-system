@@ -180,15 +180,20 @@ def work1(request, user_id, task_id, page=1):
             jindu = '100'
         return JsonResponse({'data': {'content': content, 'jindu': jindu, 'new_page': page}})
     else:
+        project_id = task_id.split('_')[0]
+        task_num = task_id.split('_')[1]
+        path = f'/static/sample_document/{project_id}/{task_num}.txt'
         task_info = {'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': '请判断以下文字中的情绪', 'jindu': '40'}
         return render(request, "index/work_1.html", {**context, **task_info})
 
-## TODO 修改
-def work2(request, task_id, page=1, user_id=0):
-    #检查
-    ta = Task_association.objects.filter(Q(task_id=task_id),Q(account_id=user_id))
+def work2(request,user_id,task_id,page = 1):
+    context = show_avatar(user_id)
+    page_try = request.GET.get('page')
+    print()
+    # 根据task_id和page从数据库调task_info
+    ta = Task_association.objects.filter(Q(task_id=task_id), Q(account_id=user_id))
     if not ta.exists():
-        return JsonResponse({'info':'无该任务记录'})
+        return JsonResponse({'info': 'no ta info!'})
     context = show_avatar(user_id)
     project_id = task_id.split('_')[0]
     task_num = task_id.split('_')[1]
@@ -203,22 +208,26 @@ def work2(request, task_id, page=1, user_id=0):
             pass
     n = len(pic_list)
     p = Project.objects.get(project_id=project_id)
-    start = int(p.item_per_task) * (int(task_num)-1)+1
-    jindu = math.floor(float(page/n)*100)
-    if jindu>100:
-        jindu=100
-    number = start + page - 1
-    if number < start:
-        number = start
-    if number > start+n-1:
-        number = start+n-1
-    img = f'/static/sample_document/{project_id}/{number}_{task_num}.jpg'
-    task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': jindu,
-                 'task_img': img}
-    return render(request, "index/work_2.html", {**context, **task_info})
+    start = int(p.item_per_task) * (int(task_num) - 1) + 1
+    print(f'page_try:{page_try}')
+    if page_try:
+        jindu = math.floor(float(int(page_try) / n) * 100)
+        if jindu > 100:
+            jindu = 100
+        number = start + int(page_try) - 1
+        if number < start:
+            number = start
+        if number > start + n - 1:
+            number = start + n - 1
+        img = f'/static/sample_document/{project_id}/{number}_{task_num}.jpg'
+        print({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
 
-def work3(request,task_id,user_id):
-    return redirect('work2',task_id=task_id,user_id=user_id,page=1)
+        return JsonResponse({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
+    else:
+        img = f'/static/sample_document/{project_id}/{start}_{task_num}.jpg'
+        task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': math.floor(float(1 / n) * 100),
+                     'task_img': img,'page_max':n,}
+        return render(request, "index/work_2.html",{**context,**task_info})
 
 
 
@@ -239,7 +248,10 @@ def work2_post(request):
     result = data["result"]
     user_id = data["user_id"]
     task_id = data["task_id"]
-    page = ["page"]
+    page = data["page"]
+    print(user_id)
+    print(task_id)
+    print(page)
     print(result)
     # if page = page_max:
     #     .....
@@ -247,11 +259,11 @@ def work2_post(request):
 
 def get_task(request,account_id,project_id):
     if int(account_id) == 0:
-        return JsonResponse({'code':403,'msg':'请先登陆'})
+        return redirect('http://127.0.0.1:8001')
     try:
         Consumer.objects.get(account_id=account_id)
     except:
-        return JsonResponse({'code':402,'msg':'发布者错误'})
+        return JsonResponse({'code':402,'msg':'接收者错误'})
     tasks = Task.objects.filter(Q(project_id=project_id),(Q(task_status=0)))
     Project.objects.get(project_id=project_id).project_status = 1
     task_num = tasks.count()

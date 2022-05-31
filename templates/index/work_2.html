@@ -9,7 +9,7 @@
         var user_id = {{user_id}};
         var csrf = '{{ csrf_token }}';
         var jindu = '{{ jindu }}';
-        var task_id = {{task_id}};
+        var task_id = '{{task_id}}';
         var page = {{page}};
         var page_max = {{page_max}};
         var task_img = '{{task_img}}';
@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="/static/css/rainbow.css"> -->
     <link rel="stylesheet" href="/static/css/jquery.imageLabel.min.css">
     <link rel="stylesheet" href="/static/css/edit.css">
-    <link rel="shortcut icon" href="/static/img/title.svg">
+    <link rel="shortcut icon" href="/static/img/logo.svg">
     <link rel="stylesheet" href="/static/css/work2.css">
 
 </head>
@@ -128,7 +128,7 @@
     <div class="footer" style="margin-top:0px;height: 60%;">
         <div class="container">
             <div class="copyright">
-                <img src="/static/img/title.svg" style="height: 20px;" alt="logo" />
+                <img src="/static/img/logo.svg" style="height: 30px;" alt="logo" />
                 <p>
                     【京冬众质】 - 北航最好的盗版数据标注平台<br />
                 &copy; 2022年
@@ -168,7 +168,7 @@
     <div class="row">
         <ul class="layui-nav" style="z-index: 5;box-shadow: 0px 2px 3px rgb(151 151 151 / 60%);background-color: white;text-align:center;position: fixed;top: 0px;right:0px;width: 100%;">
           <!--头顶大LOGO-->
-          <div style="float: left;vertical-align: middle;line-height: 60px;margin-left: 15px;"><a href="/jdzz/{{user_id}}"><img src="/static/img/title.svg" style="height: 20px;"></a></div>
+          <div style="float: left;vertical-align: middle;line-height: 60px;margin-left: 15px;"><a href="/jdzz/{{user_id}}"><img src="/static/img/logo.svg" style="height: 30px;"></a></div>
           <li class="layui-nav-item" style="float:right;" id="log_in_0">
               <a id='denglu' href="" style="color:black;margin-right: 30px;"> 登录 </a>
               <dl class="layui-nav-child" style="margin-right: 50px;">
