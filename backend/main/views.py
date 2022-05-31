@@ -1,5 +1,4 @@
 import math
-
 from django.shortcuts import render
 import os
 import sys
@@ -187,9 +186,7 @@ def work1(request, user_id, task_id, page=1):
         return render(request, "index/work_1.html", {**context, **task_info})
 
 def work2(request,user_id,task_id,page = 1):
-    context = show_avatar(user_id)
     page_try = request.GET.get('page')
-    print()
     # 根据task_id和page从数据库调task_info
     ta = Task_association.objects.filter(Q(task_id=task_id), Q(account_id=user_id))
     if not ta.exists():
@@ -209,9 +206,8 @@ def work2(request,user_id,task_id,page = 1):
     n = len(pic_list)
     p = Project.objects.get(project_id=project_id)
     start = int(p.item_per_task) * (int(task_num) - 1) + 1
-    print(f'page_try:{page_try}')
     if page_try:
-        jindu = math.floor(float(int(page_try) / n) * 100)
+        jindu = math.floor(float((int(page_try)-1) / n) * 100)
         if jindu > 100:
             jindu = 100
         number = start + int(page_try) - 1
@@ -220,13 +216,11 @@ def work2(request,user_id,task_id,page = 1):
         if number > start + n - 1:
             number = start + n - 1
         img = f'/static/sample_document/{project_id}/{number}_{task_num}.jpg'
-        print({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
-
         return JsonResponse({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
     else:
         img = f'/static/sample_document/{project_id}/{start}_{task_num}.jpg'
-        task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': math.floor(float(1 / n) * 100),
-                     'task_img': img,'page_max':n,}
+        task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': 0,
+                     'task_img': img,'page_max':n+1}
         return render(request, "index/work_2.html",{**context,**task_info})
 
 
@@ -249,13 +243,30 @@ def work2_post(request):
     user_id = data["user_id"]
     task_id = data["task_id"]
     page = data["page"]
-    print(user_id)
-    print(task_id)
-    print(page)
-    print(result)
-    # if page = page_max:
-    #     .....
+    store_data(user_id,task_id,page,result)
     return JsonResponse({})
+
+
+def store_data(user_id, task_id, page, result):
+    path = f'./static/data/account_{user_id}_task_{task_id}'
+    print()
+    print(f'page:{page}')
+    if not os.path.exists(path):
+        os.mkdir(path)
+    if os.listdir(path) == []:
+        data = {}
+        data[str(page)] = result
+        with open(f'{path}/data.json','w') as f:
+            json.dump(data,f)
+    else:
+        with open(f'{path}/data.json','r') as f:
+            data = json.load(f)
+            data[str(page)] = result
+        print(f'data:{data}')
+        with open(f'{path}/data.json','w') as f:
+            json.dump(data,f)
+    print()
+
 
 def get_task(request,account_id,project_id):
     if int(account_id) == 0:
@@ -280,4 +291,31 @@ def get_task(request,account_id,project_id):
         return JsonResponse({'code': 200,'task_id':id})
     else:
         return JsonResponse({'code':404,'msg':'网络繁忙'})
+
+
+def commit_task(request,user_id,task_id,page):
+    path = f'./static/data/account_{user_id}_task_{task_id}/data.json'
+    miss = []
+    if os.path.exists(path):
+        with open(path,'r') as f:
+            data = json.load(f)
+            keys = data.keys()
+            for i in range(1,page+1):
+                if str(i) not in keys:
+                    miss.append(str(i))
+        if miss == []:
+            t = Task.objects.get(task_id=task_id)
+            t.task_status = 2
+            t.save()
+            return JsonResponse({'code':200})
+        else:
+            miss_data = ' '.join(miss)
+            print(miss_data)
+            return JsonResponse({'code':403,'miss_data':miss_data})
+    else:
+        return JsonResponse({'code':404})
+
+
+
+
 

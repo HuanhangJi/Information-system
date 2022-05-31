@@ -255,6 +255,7 @@ def write_data(request, project_id):
             Z.extract(i,path=path)
             os.rename(path+f'/{i}',path+f'/{num}.{type}')
     Z.close()
+    #图片画框任务
     if flag == 0:
         task_should = math.floor(num/task_num)
         if task_should < 10:
@@ -288,9 +289,23 @@ def write_data(request, project_id):
             p.item_per_task = task_should
             p.save()
             data = {'code': 200, 'msg': '写入成功'}
+    #文本任务
     if flag == 1:
         p = Project.objects.get(project_id=project_id)
         p.project_pic = f'/static/sample_document/txt_pic/txt_defalut_pic.png'
+        task_num = p.task_num
+        n = 0
+        with open('total.txt','w') as fp:
+            for i in range(1,num+1):
+                try:
+                    f = open(f'{i}.txt','r',encoding='utf-8-sig')
+                except:
+                    f = open(f'{i}.txt','r',encoding='gb18030')
+                for line in f:
+                    n+=1
+                    fp.write(line)
+        task_should = math.floor(n/task_num)
+        p.item_per_task = task_should
         p.save()
         data = {'code': 200, 'msg': '写入成功'}
     return JsonResponse(data)
@@ -298,15 +313,11 @@ def write_data(request, project_id):
 
 ## TODO 预付款
 def prepay(request,project_id):
-    res = get_res(request)
-    print(project_id)
     pay_per_task = float(res['pay_per_task'])
     task_num = int(res['task_num'])
     account_id = res['publisher_id']
     total = pay_per_task * task_num
     w = Wallet.objects.get(account_id=account_id)
-    print(w.account_num)
-    print(total)
     if w.account_num >= total:
         w.account_num -= total
         w.save()
@@ -316,34 +327,10 @@ def prepay(request,project_id):
         p.project_id = project_id
         p.account_id = account_id
         p.save()
-        print(1)
         data = {'code': 200}
     else:
         data = {'code':404}
-    print(data)
     return data
-
-
-## TODO 标注者接收任务
-def get_task(request):
-
-    project_id = request.POST['project_id']
-    account_id = request.POST['account_id']
-    tasks = Task.objects.filter(Q(project_id=project_id)|Q(task_status=0))
-    Project.objects.get(project_id=project_id).project_status = 1
-    task_num = tasks.count()
-    if task_num >=1:
-        task = tasks.first()
-        task.task_status = 1
-        task.save()
-        ta = Task_association()
-        ta.task_id = task.task_id
-        ta.account_id = account_id
-        ta.project_id = project_id
-        ta.save()
-        return JsonResponse({'code': 200})
-    else:
-        return JsonResponse({'code':404})
 
 
 ## TODO 标注者取消任务

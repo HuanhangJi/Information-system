@@ -5,7 +5,7 @@ from django.db import models
 class Task(models.Model):
     task_id = models.CharField(max_length=25,primary_key=True)
     project_id = models.CharField(max_length=25)
-    task_status = models.CharField(max_length=20)
+    task_status = models.CharField(max_length=20)#0表示未接收，1表示被接收，2表示提交审核，3表示任务通过
     # original_data = models.FileField(upload_to='data')
     # processed_data = models.FileField(upload_to='data')
     score = models.IntegerField()
@@ -30,7 +30,7 @@ class Project(models.Model):
     # sample_document = models.FileField(upload_to='sample_document')
     due_time = models.DateTimeField()
     payment_per_task = models.FloatField()
-    project_status = models.IntegerField()
+    project_status = models.IntegerField()#0表示发布
     item_per_task = models.IntegerField(null=True)
     task_num = models.IntegerField()
     completed_task_num = models.IntegerField()
