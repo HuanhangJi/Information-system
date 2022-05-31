@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fe95a52c-35f2-4785-ba2e-df8f7322a1d8" name="变更" comment="变更">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/main/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/main/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main/views.py" afterDir="false" />
-    </list>
+    <list default="true" id="fe95a52c-35f2-4785-ba2e-df8f7322a1d8" name="变更" comment="变更" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,6 +27,8 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/85839/Desktop/naive-ui-admin-main",
+    "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -87,6 +85,7 @@
       <option name="presentableId" value="Default" />
       <updated>1648566481881</updated>
       <workItem from="1653996041446" duration="1674000" />
+      <workItem from="1653999854210" duration="143000" />
     </task>
     <servers />
   </component>

@@ -73,7 +73,7 @@ function choice1(){
     };
 function choice2(){
     var token_csrf = csrf;
-    var JSON_data = { "choice": 'choice12','user_id':user_id,'task_id':task_id,'page':page };
+    var JSON_data = { "choice": 'choice2','user_id':user_id,'task_id':task_id,'page':page };
     $.ajax({
         type: "POST",
         contentType: "application/json; charset=utf-8",
@@ -88,7 +88,7 @@ function choice2(){
     };
 function choice3(){
     var token_csrf = csrf;
-    var JSON_data = { "choice": 'choice13','user_id':user_id,'task_id':task_id,'page':page };
+    var JSON_data = { "choice": 'choice3','user_id':user_id,'task_id':task_id,'page':page };
     $.ajax({
         type: "POST",
         contentType: "application/json; charset=utf-8",

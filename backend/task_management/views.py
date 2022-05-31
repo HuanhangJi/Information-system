@@ -295,15 +295,20 @@ def write_data(request, project_id):
         p.project_pic = f'/static/sample_document/txt_pic/txt_defalut_pic.png'
         task_num = p.task_num
         n = 0
-        with open('total.txt','w') as fp:
-            for i in range(1,num+1):
-                try:
-                    f = open(f'{i}.txt','r',encoding='utf-8-sig')
-                except:
-                    f = open(f'{i}.txt','r',encoding='gb18030')
-                for line in f:
-                    n+=1
-                    fp.write(line)
+        try:
+            with open(f'{path}/total.txt','w',encoding='gb18030') as fp:
+                for i in range(1,num+1):
+                    with open(f'{path}/{i}.txt','r',encoding='gb18030') as f:
+                        for line in f:
+                            n += 1
+                            fp.write(line)
+        except:
+            with open(f'{path}/total.txt','w',encoding='gb18030') as fp:
+                for i in range(1,num+1):
+                    with open(f'{path}/{i}.txt','r',encoding='gbk') as f:
+                        for line in f:
+                            n += 1
+                            fp.write(line)
         task_should = math.floor(n/task_num)
         p.item_per_task = task_should
         p.save()
@@ -313,6 +318,7 @@ def write_data(request, project_id):
 
 ## TODO 预付款
 def prepay(request,project_id):
+    res = get_res(request)
     pay_per_task = float(res['pay_per_task'])
     task_num = int(res['task_num'])
     account_id = res['publisher_id']
