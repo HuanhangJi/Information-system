@@ -2,6 +2,9 @@
 $(document).ready(function(){
     if (user_id != 0){$("#log_in_0").css('display','none');$("#log_in_1").css('display','inline');};
     if (page == 1){$("#previous").attr('disabled','"disabled"');};
+    $('#neirong').text(content);
+    $('#miaoshu').click();
+    $('#miaoshu').css('background-color','#dedede');
 });
 
 // 设置任务进度

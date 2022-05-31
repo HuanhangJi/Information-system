@@ -10,21 +10,26 @@
     <link rel="stylesheet" href="/static/layui-v2.6.8/layui/css/layui.css">
     <script src="/static/layui-v2.6.8/layui/layui.js"></script>
     <script src="/static/js/footer.js"></script>
-    <link rel="shortcut icon" href="/static/img/title.svg">
+    <link rel="shortcut icon" href="/static/img/logo.svg">
     <link rel="stylesheet" href="/static/dist/css/zui.min.css">
+    <link rel="stylesheet" href="/static/css/guding1.css">
+    <link rel="stylesheet" href="/static/css/guding2.css">
     <script src="/static/dist/js/zui.min.js"></script>
     <link rel="stylesheet" href="/static/css/work1.css">
     <script src="/static/js/work1.js"></script>
+    <script src="/static/js/guding.js"></script>
     <script>
         var csrf = '{{ csrf_token }}';
         var jindu = '{{ jindu }}';
         var user_id = {{user_id}};
-        var task_id = {{task_id}};
+        var task_id = '{{task_id}}';
         var page = {{page}};
         var page_max = {{page_max}};
+        var content = '{{content}}';
     </script>
 </head>
 <body style="background-color: #f0f2f5;overflow-x:hidden;height:100%;"  class="demo_2">
+    <main>
     <!-- 提交成功弹窗 -->
     <div class="modal fade"  id="myModal">
         <div class="modal-dialog">
@@ -61,7 +66,6 @@
             <div class="container-fluid col-md-12" style="width: 100%;height: auto;background-color: #f7fafc;border-radius: 5px 5px 0px 0px;border-top: 1px solid #fff;
                 border-top-left-radius: 4px;border-top-right-radius: 4px;padding: 30px 40px 15px 20px;background: #F7FAFC;border-bottom: 1px solid #ededed;">
                 <span style="font-size: 30px;">任务号：<span id="renwuhao">{{renwuhtask_idao}}</span></span>
-                <div style="font-size: 22px;color: #00a4ff;margin-top: 10px;" id="miaoshu">{{miaoshu}}</div>
                 <!--进度条-->   
                 <div class="progress progress-striped active" style="margin-top: 15px;">
                     <div id="jindu2" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
@@ -70,12 +74,17 @@
                 <span style="font-size: 22px;margin-top: 10px;">任务进度：</span>
                 <span style="font-size: 22px;margin-top: 10px;color: #999999;" id="jindu">{{jindu}}</span>
                 <span style="font-size: 22px;margin-top: 10px;color: #999999;">/100</span>
+                <p>
+                    <!-- <button type="button" class="btn" data-toggle="collapse" data-target="#collapseExample">标注规则</button> -->
+                    <a href="#collapseExample" data-toggle="collapse" class="btn btn-link" style="font-size: 22px;color: #00a4ff;margin-top: 10px;background-color:#dedede" id="miaoshu">显示标注规则</a>
+
+                </p>
             </div>
 
             <!-- 任务展示区域 -->
             <div class="row" style="padding: 30px 30px;height:auto;">
                 <div class="col-md-12">
-                    <div id="neirong" style="min-height:300px;margin-top: 30px;font-size: 20px;margin-bottom: 10px;padding-top: 10px; padding-bottom: 20px;">新系统真难用</div>
+                    <div id="neirong" style="min-height:300px;margin-top: 30px;font-size: 20px;margin-bottom: 10px;padding-top: 10px; padding-bottom: 20px;white-space:normal;word-break:break-all;overflow:hidden;"></div>
                 </div>
                 <div class="col-md-12">
                 </div>
