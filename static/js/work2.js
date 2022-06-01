@@ -35,7 +35,7 @@ function previous_task(){
                 };
             $("#task_img").attr("src",data['task_img']);
             $("#target").text(data['target']);
-            $("#jindu").text(data['jindu']);
+            $("#jindu").text(data['new_page']);
             $("#jindu2").attr("style","width: "+data['jindu']+"%");
             },
     });
@@ -56,7 +56,7 @@ function next_task(){
             if (page == page_max){$("#next").attr('disabled','"disabled"');$('#imgform').css('display','none');$('#end').removeAttr('style','display');};
             $("#task_img").attr("src",data['task_img']);
             $("#target").text(data['target']);
-            $("#jindu").text(data['jindu']);
+            $("#jindu").text(data['new_page']);
             $("#jindu2").attr("style","width: "+data['jindu']+"%");
             },
     });

@@ -9,7 +9,7 @@ $(document).ready(function(){
 
 // 设置任务进度
 $(document).ready(function(){
-    $("#jindu").text(jindu);
+    $("#jindu").text(new_page);
     $('#jindu2').attr('aria-valuenow',jindu);
     $("#jindu2").css("width", jindu+'%');
     });
@@ -31,7 +31,7 @@ function previous_task(){
                 $('#end').css('display','none');
                 };
             $("#neirong").attr("src",data['content']);
-            $("#jindu").text(data['jindu']);
+            $("#jindu").text(data['new_page']);
             $("#jindu2").attr("style","width: "+data['jindu']+"%");
             },
     });
@@ -51,7 +51,7 @@ function next_task(){
             if ((page != 1) && ($("#previous").attr('disabled') =="disabled")){$("#previous").removeAttr('disabled');};
             if (page == page_max){$("#next").attr('disabled','"disabled"');$('#choices .btn-primary').css('display','none');$('#end').removeAttr('style','display');};
             $("#neirong").attr("src",data['content']);
-            $("#jindu").text(data['jindu']);
+            $("#jindu").text(data['new_page']);
             $("#jindu2").attr("style","width: "+data['jindu']+"%");
             },
     });
@@ -126,7 +126,8 @@ function end_task(){
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function (res) { //data为地址传过来的数据
-            console.log(res)
+            if (res['code']!=200){$('#myModal2').text(res['msg']);$('#myModal2').css("color",'red')}
+            else {$('#myModal2').css("color",'#0b68fb')}
             }
         });
 }

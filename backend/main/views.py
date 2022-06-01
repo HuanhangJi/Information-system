@@ -208,6 +208,9 @@ def work1(request, user_id, task_id, page=1):
                 if count == start+page-1:
                     content = line
                 count += 1
+            if count < start+page-1:
+                content = '！！任务已经结束，请直接跳转到结尾提交任务！！'
+                return JsonResponse({'data': {'content': content, 'jindu': 100, 'new_page': page}})
         jindu = math.floor((page-1)/int(page_max)*100)
         print({'data': {'content': content, 'jindu': jindu, 'new_page': page}})
         return JsonResponse({'data': {'content': content, 'jindu': jindu, 'new_page': page}})
@@ -223,14 +226,13 @@ def work1(request, user_id, task_id, page=1):
                 choices = line.split(';')[0].split(',')
                 break
         choice_dict = {'choice_1':choices[0],'choice_2':choices[1],'choice_3':choices[2],'choice_4':choices[3]}
-        task_info = {'page_max':page_max+1,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption, 'jindu': 0,'content': f'{content}'[:-1],'yaoqiu':descreption}
+        task_info = {'new_page':page, 'page_max':page_max+1,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption, 'jindu': 0,'content': f'{content}'[:-1],'yaoqiu':descreption}
         print(task_info)
         return render(request, "index/work_1.html", {**context, **task_info,**choice_dict})
 
 def work2(request,user_id,task_id,page = 1):
     context = show_avatar(user_id)
     page_try = request.GET.get('page')
-    print()
     # 根据task_id和page从数据库调task_info
     ta = Task_association.objects.filter(Q(task_id=task_id), Q(account_id=user_id))
     if not ta.exists():
@@ -265,7 +267,7 @@ def work2(request,user_id,task_id,page = 1):
         return JsonResponse({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
     else:
         img = f'/static/sample_document/{project_id}/{start}_{task_num}.jpg'
-        task_info = {'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': 0,
+        task_info = {'new_page':page,'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': 0,
                      'task_img': img,'page_max':n+1}
         return render(request, "index/work_2.html",{**context,**task_info})
 
@@ -406,6 +408,32 @@ def store_data_2(user_id, task_id, page, result):
 
 
 def commit_task_2(request, user_id, task_id, page):
+    path = f'./static/data/account_{user_id}_task_{task_id}/data.json'
+    print(path)
+    miss = []
+    if os.path.exists(path):
+        with open(path, 'r') as f:
+            data = json.load(f)
+            keys = data.keys()
+            for i in range(1, page + 1):
+                if str(i) not in keys:
+                    miss.append(str(i))
+        if miss == []:
+            t = Task.objects.get(task_id=task_id)
+            t.task_status = 2
+            t.save()
+            msg = '标注全部提交！'
+            return JsonResponse({'code': 200,'msg': msg})
+        else:
+            miss_data = ' '.join(miss)
+            msg = f'{miss_data}页的标注数据未标注！'
+            return JsonResponse({'code': 403, 'msg': msg})
+    else:
+        msg = f'无标注数据'
+        return JsonResponse({'code': 404, 'msg': msg})
+
+
+def commit_task_1(request, user_id, task_id, page):
     path = f'./static/data/account_{user_id}_task_{task_id}/data.json'
     print(path)
     miss = []

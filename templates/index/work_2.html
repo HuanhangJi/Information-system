@@ -15,6 +15,7 @@
         var task_img = '{{task_img}}';
         var screen_height = window.screen.height * window.devicePixelRatio;
         var max_img_height = screen_height*0.5;
+        var new_page = '{{new_page}}'
     </script>
     <script src="/static/js/work2.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
@@ -67,9 +68,9 @@
                     <div id="jindu2" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: {{jindu}}%">
                     </div>
                 </div>
-                <span style="font-size: 22px;margin-top: 10px;">任务进度：</span>
-                <span style="font-size: 22px;margin-top: 10px;color: #999999;" id="jindu">{{jindu}}</span>
-                <span style="font-size: 22px;margin-top: 10px;color: #999999;">/100</span>
+                <span style="font-size: 22px;margin-top: 10px;">页数：</span>
+                <span style="font-size: 22px;margin-top: 10px;color: #999999;" id="jindu">{{new_page}}</span>
+                <span style="font-size: 22px;margin-top: 10px;color: #999999;">/{{page_max}}</span>
             </div>
 
             <!-- 任务展示区域 -->
