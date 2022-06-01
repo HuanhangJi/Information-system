@@ -57,7 +57,7 @@ function next_task(){
     });
 };
 function choice1(){
-    var token_csrf = csrf;
+    var token_csrf = csrf_token;
     var JSON_data = { "choice": 'choice1','user_id':user_id,'task_id':task_id,'page':page };
     $.ajax({
         type: "POST",
@@ -72,7 +72,7 @@ function choice1(){
         });
     };
 function choice2(){
-    var token_csrf = csrf;
+    var token_csrf = csrf_token;
     var JSON_data = { "choice": 'choice2','user_id':user_id,'task_id':task_id,'page':page };
     $.ajax({
         type: "POST",
@@ -87,7 +87,7 @@ function choice2(){
         });
     };
 function choice3(){
-    var token_csrf = csrf;
+    var token_csrf = csrf_token;
     var JSON_data = { "choice": 'choice3','user_id':user_id,'task_id':task_id,'page':page };
     $.ajax({
         type: "POST",
@@ -102,7 +102,7 @@ function choice3(){
         });
     };
 function choice4(){
-    var token_csrf = csrf;
+    var token_csrf = csrf_token;
     var JSON_data = { "choice": 'choice4','user_id':user_id,'task_id':task_id,'page':page };
     $.ajax({
         type: "POST",
@@ -116,4 +116,18 @@ function choice4(){
             }
         });
     };
+function end_task(){
+    var JSON_data = {};
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        headers: { "X-CSRFToken": csrf_token },
+        url: "/commit_task_3/"+user_id+'/'+task_id+'/'+page+'/',
+        dataType: "json",
+        data: JSON.stringify(JSON_data), //传进views里的数据
+        success: function (res) { //data为地址传过来的数据
+            console.log(res)
+            }
+        });
+}
 

@@ -23,6 +23,11 @@
     <link rel="shortcut icon" href="/static/img/title.svg">
     <script src="/static/js/fanhui.js"></script>
     <link rel="stylesheet" href="/static/css/product.css">
+    <style>
+        .layui-dropdown-menu{padding-left: 0px;}
+        .layui-menu-body-title{text-align: center;}
+        .layui-btn-primary:hover{border-color: #2932e1;}
+    </style>
 </head>
 <body style="overflow-x:hidden;height: 100%;">
     <div class="row" style=" min-height: 100%;">
@@ -81,29 +86,17 @@
                     ,data: [{
                       title: '所有类型'
                     },{
-                      title: '文本'
+                      title: '文本标注'
                     },{
-                      title: '图片'
+                      title: '图片分类标注'
                     },{
-                      title: '音频'
-                    },{
-                      title: '视频'
+                      title: '图片框选标注'
                     }]
                     ,click: function(obj){
                       $("#caidan1").text(obj.title);
                       $("#caidan1").append('<i class="layui-icon layui-icon-down layui-font-12"></i>');
                       var JSON_data = { "choice":'obj.title','user_id':'{{user_id}}','task_id':'{{task_id}}','page':1 };
-                      $.ajax({
-                          type: "POST",
-                          contentType: "application/json; charset=utf-8",
-                          headers: { "X-CSRFToken":'{{ csrf_token }}'},
-                          url: "/jdzz_product/{{user_id}}/1/?caidan1="+obj.title+'&&caidan2={{caidan2}}&&caidan3={{caidan3}}&&sousuo={{souzuo}}',
-                          dataType: "json",
-                          data: JSON.stringify(JSON_data), //传进views里的数据    
-                          success: function (res) { //data为地址传过来的数据
-                              console.log(res['data'])
-                              }
-                          });
+                      window.open("/jdzz_product/{{user_id}}/1/?caidan1="+obj.title+'&caidan2={{caidan2}}&caidan3={{caidan3}}&sousuo={{sousuo}}','_self');
                     }
                   });
                 dropdown.render({
@@ -122,18 +115,8 @@
                     ,click: function(obj){
                       $("#caidan2").text(obj.title);
                       $("#caidan2").append('<i class="layui-icon layui-icon-down layui-font-12"></i>');
-                      var JSON_data = { "choice":'obj.title','user_id':'{{user_id}}','task_id':'{{task_id}}','page':1 };
-                      $.ajax({
-                          type: "POST",
-                          contentType: "application/json; charset=utf-8",
-                          headers: { "X-CSRFToken":'{{ csrf_token }}'},
-                          url: "/jdzz_product/{{user_id}}/1/?caidan2="+obj.title+'&&caidan1={{caidan1}}&&caidan3={{caidan3}}&&sousuo={{souzuo}}',
-                          dataType: "json",
-                          data: JSON.stringify(JSON_data), //传进views里的数据    
-                          success: function (res) { //data为地址传过来的数据
-                              console.log(res['data'])
-                              }
-                          });
+                      window.open("/jdzz_product/{{user_id}}/1/?caidan2="+obj.title+'&caidan1={{caidan1}}&caidan3={{caidan3}}&sousuo={{sousuo}}','_self');
+
                     }
                   });
                 dropdown.render({
@@ -154,18 +137,7 @@
                     ,click: function(obj){
                       $("#caidan3").text(obj.title);
                       $("#caidan3").append('<i class="layui-icon layui-icon-down layui-font-12"></i>');
-                      var JSON_data = { "choice":'obj.title','user_id':'{{user_id}}','task_id':'{{task_id}}','page':1 };
-                      $.ajax({
-                          type: "POST",
-                          contentType: "application/json; charset=utf-8",
-                          headers: { "X-CSRFToken":'{{ csrf_token }}'},
-                          url: "/jdzz_product/{{user_id}}/1/?caidan3="+obj.title+'&&caidan2={{caidan2}}&&caidan1={{caidan1}}&&sousuo={{souzuo}}',
-                          dataType: "json",
-                          data: JSON.stringify(JSON_data), //传进views里的数据    
-                          success: function (res) { //data为地址传过来的数据
-                              console.log(res['data'])
-                              }
-                          });
+                      window.open("/jdzz_product/{{user_id}}/1/?caidan3="+obj.title+'&caidan2={{caidan2}}&caidan1={{caidan1}}&sousuo={{sousuo}}','_self');
                     }
                 })
               })
@@ -179,32 +151,17 @@
                         <label for="inputSearchExample4" class="input-control-icon-left search-icon"><i class="icon icon-search"></i></label>
                       </div>
                       <span class="input-group-btn">
-                        <button class="btn btn-primary" type="button">搜索</button>
+                        <button class="btn btn-primary" type="button" onclick="sousuo()">搜索</button>
                       </span>
                     </div>
               </div>
   
-              <script>
-                $('#inputSearchExample4').searchBox({
-                    escToClear: true, // 设置点击 ESC 键清空搜索框
-                    onSearchChange: function(searchKey, isEmpty) {
-                      if (searchKey!=''){
-                        var JSON_data = { "sousuo":'obj.title','user_id':'{{user_id}}','task_id':'{{task_id}}','page':1 };
-                        $.ajax({
-                          type: "POST",
-                          contentType: "application/json; charset=utf-8",
-                          headers: { "X-CSRFToken":'{{ csrf_token }}'},
-                          url: "/jdzz_product/{{user_id}}/0/?sousuo="+searchKey+'&&caidan2={{caidan2}}&&caidan3={{caidan3}}&&caidan1={{caidan1}}',
-                          dataType: "json",
-                          data: JSON.stringify(JSON_data), //传进views里的数据    
-                          success: function (res) { //data为地址传过来的数据
-                              console.log(res['data'])
-                              }
-                          });
-                      };
-                    }
-                });
-              </script>
+            <script>
+              function sousuo() {
+                   window.open("/jdzz_product/{{user_id}}/1/?sousuo="+$('#inputSearchExample4').val()+'&caidan2={{caidan2}}&caidan1={{caidan1}}&caidan3={{caidan3}}','_self');
+              };
+
+            </script>
 
             <!-- 商品列表 -->
             <div class="col-md-12">
@@ -286,7 +243,7 @@
                           ,curr: '{{pIndex}}'
                           ,jump : function(obj, first) {if (!first) {var parId=$("#parId").val();
                            var pIndex=obj.curr;
-                           window.location.href="/jdzz_product/{{user_id}}/"+pIndex+'/';}}
+                           window.location.href="/jdzz_product/{{user_id}}/"+pIndex+'/'+'?caidan3={{caidan3}}&caidan2={{caidan2}}&caidan1={{caidan1}}&sousuo={{sousuo}}';}}
                       });
                       });
                   </script>

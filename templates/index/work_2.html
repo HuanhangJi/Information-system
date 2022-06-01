@@ -7,7 +7,7 @@
     <script src="/static/js/jquery-3.6.0.js"></script>
     <script>
         var user_id = {{user_id}};
-        var csrf = '{{ csrf_token }}';
+        var csrf_token = '{{ csrf_token }}';
         var jindu = '{{ jindu }}';
         var task_id = '{{task_id}}';
         var page = {{page}};
@@ -40,7 +40,7 @@
                 <h4 class="modal-title">任务提交确认</h4>
             </div>
             <div class="modal-body">
-                <h1 style="color: #0b68fb;">提交任务成功！:)</h1>
+                <h1 style="color: #0b68fb;" id="myModal2">提交任务成功！:)</h1>
                 <!-- <p>提交任务成功！</p> -->
             </div>
             <div class="modal-footer">

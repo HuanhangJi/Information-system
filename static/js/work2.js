@@ -63,7 +63,7 @@ function next_task(){
 };
 // 提交图片标注结果
 function post_result(t){
-    var token_csrf = csrf;
+    var token_csrf = csrf_token;
     var JSON_data = { "result":t,'user_id':user_id,'task_id':task_id,'page':page };
     $.ajax({
         type: "POST",
@@ -96,3 +96,18 @@ function end_window(){
     window.close();
     // var img_div = $('.imageLabel-box-active').html();
 };
+function end_task(){
+    var JSON_data = {};
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        headers: { "X-CSRFToken": csrf_token },
+        url: "/commit_task_2/"+user_id+'/'+task_id+'/'+page+'/',
+        dataType: "json",
+        data: JSON.stringify(JSON_data), //传进views里的数据
+        success: function (res) { //data为地址传过来的数据
+            if (res['code']!=200){$('#myModal2').text(res['msg']);$('#myModal2').css("color",'red')}
+            else {$('#myModal2').css("color",'#0b68fb')}
+            }
+        });
+}

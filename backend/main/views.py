@@ -109,12 +109,39 @@ def jdzz_product(request, user_id=0, pIndex=1):
     context = show_avatar(user_id)
     # 从数据库调任务信息
 # try:
-    kw = request.GET.get('keyword',None)
+    kw = request.GET.get('sousuo','')
+    money = request.GET.get('caidan2', '所有报酬')
+    type_ = request.GET.get('caidan1', '所有类型')
+    star = request.GET.get('caidan3', '所有星级')
     Plist = Project.objects.exclude(project_status=5)
-    mywhere = []
-    if kw:
-        mywhere.append(f'keyword={kw}')
-        Plist = Plist.filter(Q(title__contains=kw)|Q(content__contains=kw))
+    if kw != '':
+        Plist = Plist.filter(Q(project_name__contains=kw)|Q(description__contains=kw))
+    if money != '所有报酬':
+        if money == '100币以下':
+            Plist = Plist.filter(payment_per_task__lte = 100)
+        elif money == '100币~500币':
+            Plist = Plist.filter(Q(payment_per_task__gt=100),Q(payment_per_task__lte=500))
+        elif money == '500币~1000币':
+            Plist = Plist.filter(Q(payment_per_task__gt=500),Q(payment_per_task__lte=1000))
+        elif money == '大于1000币':
+            Plist = Plist.filter(payment_per_task__gt=1000)
+        else:
+            money = '所有报酬'
+    if type_ != '所有类型':
+        if type_ == '文本标注':
+            Plist = Plist.filter(project_type='文本标注')
+        elif type_ == '图片识别标注':
+            Plist = Plist.filter(project_type='图片识别标注')
+        elif type_ == '图片分类标注':
+            Plist = Plist.filter(project_type='图片分类标注')
+        else:
+            type_ = '所有类型'
+    if star != '所有星级':
+        try:
+            star_ = int(star[0])
+            Plist = Plist.filter(project_star__lte=star_)
+        except:
+            star = '所有星级'
     Plist = Plist.order_by("project_id")
     n = len(Plist)
     if n > 200:
@@ -129,7 +156,8 @@ def jdzz_product(request, user_id=0, pIndex=1):
         pIndex = max_page
     Plist2 = page.page(pIndex)
     plist = page.page_range
-    content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'number':n,'mywhere':mywhere,'limit':limit}
+    content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'number':n,'sousuo':kw,'limit':limit,
+                'caidan1':type_,'caidan2':money,'caidan3':star}
     for i in content['task_list']:
         print(i.project_id)
     print({**context, **content})
@@ -377,8 +405,9 @@ def store_data_2(user_id, task_id, page, result):
             json.dump(data,f)
 
 
-def commit_task(request, user_id, task_id, page):
+def commit_task_2(request, user_id, task_id, page):
     path = f'./static/data/account_{user_id}_task_{task_id}/data.json'
+    print(path)
     miss = []
     if os.path.exists(path):
         with open(path, 'r') as f:
@@ -391,11 +420,13 @@ def commit_task(request, user_id, task_id, page):
             t = Task.objects.get(task_id=task_id)
             t.task_status = 2
             t.save()
-            return JsonResponse({'code': 200})
+            msg = '标注全部提交！'
+            return JsonResponse({'code': 200,'msg': msg})
         else:
             miss_data = ' '.join(miss)
-            print(miss_data)
-            return JsonResponse({'code': 403, 'miss_data': miss_data})
+            msg = f'{miss_data}页的标注数据未标注！'
+            return JsonResponse({'code': 403, 'msg': msg})
     else:
-        return JsonResponse({'code': 404})
+        msg = f'无标注数据'
+        return JsonResponse({'code': 404, 'msg': msg})
 

@@ -250,6 +250,9 @@ def write_data(request, project_id):
         if flag == 0:
             if type not in ['jpg','jpeg','png']:
                 continue
+            num += 1
+            Z.extract(i, path=path)
+            os.rename(path + f'/{i}', path + f'/{num}.{type}')
         else:
             num += 1
             Z.extract(i,path=path)
@@ -288,7 +291,7 @@ def write_data(request, project_id):
             p.project_pic = (path+f'/{pic}')[1:]
             p.item_per_task = task_should
             p.save()
-            data = {'code': 200, 'msg': '写入成功'}
+    data = {'code': 200, 'msg': '写入成功'}
     #文本任务
     if flag == 1:
         p = Project.objects.get(project_id=project_id)
