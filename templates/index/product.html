@@ -7,6 +7,10 @@
     <script src="/static/js/jquery-3.6.0.js"></script>
     <script>
         var user_id = '{{user_id}}';
+        var caican1 = '{{caidan1}}';
+        var caican2 = '{{caidan2}}';
+        var caican3 = '{{caidan3}}';
+        var sousuo = '{{sousuo}}';
     </script>
     <script src="/static/js/product.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css"> 
@@ -57,43 +61,150 @@
             </div> -->
 
             <!-- 筛选 -->
-            <div class="col-md-3" style="margin: 30px 0px 20px 0px;width: 125px;">
-                <select class="form-control" >
-                    <option value="">所有类型</option>
-                    <option value="apple" >文本</option>
-                    <option value="banana">图片</option>
-                    <option value="orange">音频</option>
-                    <option value="orange">视频</option>
-                  </select>
+            <div class="col-md-2" style="margin: 30px 0px 20px 0px;">
+                <button class="layui-btn layui-btn-primary" id="caidan1" style="width:10em">{{caidan1}}<i class="layui-icon layui-icon-down layui-font-12"></i>
+                </button>
+              </div>
+                <div class="col-md-2" style="margin: 30px 0px 20px 0px;">
+                  <button class="layui-btn layui-btn-primary" id="caidan2" style="width:10em">{{caidan2}}<i class="layui-icon layui-icon-down layui-font-12"></i>
+                  </button>
+              </div>
+              <div class="col-md-3" style="margin: 30px 0px 20px 0px;">
+                <button class="layui-btn layui-btn-primary" id="caidan3" style="width:10em">{{caidan3}}<i class="layui-icon layui-icon-down layui-font-12"></i>
+                </button>
             </div>
-            <div class="col-md-3" style="margin: 30px 0px 20px 0px;width: 125px;">
-                <select class="form-control">
-                    <option value="">所有报酬</option>
-                    <option value="apple">0 ~ 100 s币</option>
-                    <option value="banana">100 ~ 1000 s币</option>
-                    <option value="orange">1000s币以上</option>
-                  </select>
-            </div>
-            <div class="col-md-3" style="margin: 30px 0px 20px 0px;width: 125px;">
-                <select class="form-control">
-                    <option value="">所有星级</option>
-                    <option value="apple">0星</option>
-                    <option value="banana">1星</option>
-                    <option value="orange">2星</option>
-                  </select>
-            </div>
-            <!-- 搜索 -->
-            <div class="col-md-3" style="margin: 30px 0px 20px 0px;margin-right: 10px;float: right;z-index: 3;">
-                <div class="input-group">
-                    <div class="input-control search-box search-box has-icon-left has-icon-right search-example" id="searchboxExample">
-                      <input id="inputSearchExample4" type="search" class="form-control search-input" placeholder="奥特曼">
-                      <label for="inputSearchExample4" class="input-control-icon-left search-icon"><i class="icon icon-search"></i></label>
+            <script>
+              layui.use('dropdown', function(){
+                var dropdown = layui.dropdown;
+                dropdown.render({
+                    elem: '#caidan1'
+                    ,data: [{
+                      title: '所有类型'
+                    },{
+                      title: '文本'
+                    },{
+                      title: '图片'
+                    },{
+                      title: '音频'
+                    },{
+                      title: '视频'
+                    }]
+                    ,click: function(obj){
+                      $("#caidan1").text(obj.title);
+                      $("#caidan1").append('<i class="layui-icon layui-icon-down layui-font-12"></i>');
+                      var JSON_data = { "choice":'obj.title','user_id':'{{user_id}}','task_id':'{{task_id}}','page':1 };
+                      $.ajax({
+                          type: "POST",
+                          contentType: "application/json; charset=utf-8",
+                          headers: { "X-CSRFToken":'{{ csrf_token }}'},
+                          url: "/jdzz_product/{{user_id}}/1/?caidan1="+obj.title+'&&caidan2={{caidan2}}&&caidan3={{caidan3}}&&sousuo={{souzuo}}',
+                          dataType: "json",
+                          data: JSON.stringify(JSON_data), //传进views里的数据    
+                          success: function (res) { //data为地址传过来的数据
+                              console.log(res['data'])
+                              }
+                          });
+                    }
+                  });
+                dropdown.render({
+                    elem: '#caidan2'
+                    ,data: [{
+                      title: '所有报酬'
+                    },{
+                      title: '100币以下'
+                    },{
+                      title: '100币~500币'
+                    },{
+                      title: '500币~1000币'
+                    },{
+                      title: '1000币以上'
+                    }]
+                    ,click: function(obj){
+                      $("#caidan2").text(obj.title);
+                      $("#caidan2").append('<i class="layui-icon layui-icon-down layui-font-12"></i>');
+                      var JSON_data = { "choice":'obj.title','user_id':'{{user_id}}','task_id':'{{task_id}}','page':1 };
+                      $.ajax({
+                          type: "POST",
+                          contentType: "application/json; charset=utf-8",
+                          headers: { "X-CSRFToken":'{{ csrf_token }}'},
+                          url: "/jdzz_product/{{user_id}}/1/?caidan2="+obj.title+'&&caidan1={{caidan1}}&&caidan3={{caidan3}}&&sousuo={{souzuo}}',
+                          dataType: "json",
+                          data: JSON.stringify(JSON_data), //传进views里的数据    
+                          success: function (res) { //data为地址传过来的数据
+                              console.log(res['data'])
+                              }
+                          });
+                    }
+                  });
+                dropdown.render({
+                    elem: '#caidan3'
+                    ,data: [{
+                      title: '所有星级'
+                    },{
+                      title: '1星'
+                    },{
+                      title: '2星'
+                    },{
+                      title: '3星'
+                    },{
+                      title: '4星'
+                    },{
+                      title: '5星'
+                    }]
+                    ,click: function(obj){
+                      $("#caidan3").text(obj.title);
+                      $("#caidan3").append('<i class="layui-icon layui-icon-down layui-font-12"></i>');
+                      var JSON_data = { "choice":'obj.title','user_id':'{{user_id}}','task_id':'{{task_id}}','page':1 };
+                      $.ajax({
+                          type: "POST",
+                          contentType: "application/json; charset=utf-8",
+                          headers: { "X-CSRFToken":'{{ csrf_token }}'},
+                          url: "/jdzz_product/{{user_id}}/1/?caidan3="+obj.title+'&&caidan2={{caidan2}}&&caidan1={{caidan1}}&&sousuo={{souzuo}}',
+                          dataType: "json",
+                          data: JSON.stringify(JSON_data), //传进views里的数据    
+                          success: function (res) { //data为地址传过来的数据
+                              console.log(res['data'])
+                              }
+                          });
+                    }
+                })
+              })
+              </script>
+  
+              <!-- 搜索 -->
+              <div class="col-md-3" style="margin: 30px 0px 20px 0px;float: right;z-index: 3;">
+                  <div class="input-group">
+                      <div class="input-control search-box search-box has-icon-left has-icon-right search-example" id="searchboxExample">
+                        <input id="inputSearchExample4" type="search" class="form-control search-input" placeholder="{{sousuo}}">
+                        <label for="inputSearchExample4" class="input-control-icon-left search-icon"><i class="icon icon-search"></i></label>
+                      </div>
+                      <span class="input-group-btn">
+                        <button class="btn btn-primary" type="button">搜索</button>
+                      </span>
                     </div>
-                    <span class="input-group-btn">
-                      <button class="btn btn-primary" type="button">搜索</button>
-                    </span>
-                  </div>
-            </div>
+              </div>
+  
+              <script>
+                $('#inputSearchExample4').searchBox({
+                    escToClear: true, // 设置点击 ESC 键清空搜索框
+                    onSearchChange: function(searchKey, isEmpty) {
+                      if (searchKey!=''){
+                        var JSON_data = { "sousuo":'obj.title','user_id':'{{user_id}}','task_id':'{{task_id}}','page':1 };
+                        $.ajax({
+                          type: "POST",
+                          contentType: "application/json; charset=utf-8",
+                          headers: { "X-CSRFToken":'{{ csrf_token }}'},
+                          url: "/jdzz_product/{{user_id}}/0/?sousuo="+searchKey+'&&caidan2={{caidan2}}&&caidan3={{caidan3}}&&caidan1={{caidan1}}',
+                          dataType: "json",
+                          data: JSON.stringify(JSON_data), //传进views里的数据    
+                          success: function (res) { //data为地址传过来的数据
+                              console.log(res['data'])
+                              }
+                          });
+                      };
+                    }
+                });
+              </script>
 
             <!-- 商品列表 -->
             <div class="col-md-12">

@@ -76,7 +76,7 @@
                 <span style="font-size: 22px;margin-top: 10px;color: #999999;">/100</span>
                 <p>
                     <!-- <button type="button" class="btn" data-toggle="collapse" data-target="#collapseExample">标注规则</button> -->
-                    <a href="#collapseExample" data-toggle="collapse" class="btn btn-link" style="font-size: 22px;color: #00a4ff;margin-top: 10px;background-color:#dedede" id="miaoshu">显示标注规则</a>
+                    <a href="#collapseExample" data-toggle="collapse" class="btn btn-link" style="font-size: 22px;color: #00a4ff;margin-top: 10px;background-color:#dedede" id="miaoshu">隐藏标注规则</a>
 
                 </p>
             </div>
@@ -187,6 +187,8 @@
     <script>
         document.getElementById('miaoshu').addEventListener('click',function(){
         $('#miaoshu').css('background-color','');
+        if ($('#miaoshu').text()=='显示标注规则'){$('#miaoshu').text('隐藏标注规则')}
+        else if ($('#miaoshu').text()=='隐藏标注规则'){$('#miaoshu').text('显示标注规则')}
         })
     </script>
     <script>
