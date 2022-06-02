@@ -97,8 +97,8 @@
             <div class="container-fluid col-md-12" style="width: 100%;height: auto;background-color: #f7fafc;border-radius: 5px 5px 0px 0px;border-top: 1px solid #fff;
                 border-top-left-radius: 4px;border-top-right-radius: 4px;padding: 30px 40px 40px 30px;background: #F7FAFC;border-bottom: 1px solid #ededed;">
                 <div class="row" >
-                    <div class="col-md-3"><button id="previous" class="btn btn-lg btn-success" type="button" onclick="previous_task()">上一题</button></div>
-                    <div class="col-md-6" style="text-align: center;" id="choices">
+                    <div class="col-md-2"><button id="previous" class="btn btn-lg btn-success" type="button" onclick="previous_task()">上一题</button></div>
+                    <div class="col-md-8" style="text-align: center;" id="choices">
                         <button class="btn btn-lg btn-primary" type="button" onclick="choice1()" id="choice1" style="display:None;">{{choice_1}}</button>
                         <button class="btn btn-lg btn-primary" type="button" onclick="choice2()" id="choice2" style="display:None;">{{choice_2}}</button>
                         <button class="btn btn-lg btn-primary" type="button" onclick="choice3()" id="choice3" style="display:None;">{{choice_3}}</button>
@@ -111,7 +111,7 @@
                         <!-- <button id="end" type="button" class="btn" data-moveable="true" data-toggle="modal" data-target="#myModal">提交任务</button> -->
                         <button id="end" class="btn btn-lg btn-primary" type="button" onclick="end_task()" style="margin-right: 10px;display: none;" data-moveable="inside" data-toggle="modal" data-target="#myModal">提交任务</button>
                     </div>
-                    <div class="col-md-3"style="right: 0px;">
+                    <div class="col-md-2"style="right: 0px;">
                         <button id="next" class="btn btn-lg btn-success pull-right" type="button" onclick="next_task()">下一题</button>
                     </div>
                 </div>
