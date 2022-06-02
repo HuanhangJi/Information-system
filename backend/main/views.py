@@ -225,9 +225,13 @@ def work1(request, user_id, task_id, page=1):
             for line in fp1:
                 choices = line.split(';')[0].split(',')
                 break
-        choice_dict = {'choice_1':choices[0],'choice_2':choices[1],'choice_3':choices[2],'choice_4':choices[3]}
-        task_info = {'new_page':page, 'page_max':page_max+1,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption, 'jindu': 0,'content': f'{content}'[:-1],'yaoqiu':descreption,'choice_num'=len(choice_dict)}
+        choices_num = len(choices)
+        choice_dict = {}
+        for i in range(choices_num):
+            choice_dict[f'choice_{i+1}'] = choices[i]
+        task_info = {'new_page':page,'page_max':page_max+1,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption,'jindu': 0,'content': f'{content}'[:-1],'yaoqiu':descreption,'choice_num':choices_num}
         print(task_info)
+        print(choice_dict)
         return render(request, "index/work_1.html", {**context, **task_info,**choice_dict})
 
 def work2(request,user_id,task_id,page = 1):
@@ -305,7 +309,7 @@ def work3(request, user_id, task_id, page=1):
         jindu = 0
         choice_dict = {'choice_1':'猫','choice_2':'狗','choice_3':'鸡','choice_4':'钝角'}
         path = f'/static/sample_document/{project_id}/{task_num}.txt'
-        task_info = {'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': '请为以下图片正确分类', 'jindu': jindu,'content': content,'yaoqiu':'AA就选AA'*20,'choice_num'=len(choice_dict)}
+        task_info = {'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': '请为以下图片正确分类', 'jindu': jindu,'content': content,'yaoqiu':'AA就选AA'*20,'choice_num':len(choice_dict)}
         return render(request, "index/work_1.html", {**context, **task_info,**choice_dict})
 
 
