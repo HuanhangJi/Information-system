@@ -5,6 +5,16 @@ $(document).ready(function(){
     $('#neirong').text(content);
     $('#miaoshu').click();
     $('#miaoshu').css('background-color','#dedede');
+    // 设置选项数量
+    if (choice_num>0){$('#choice1').removeAttr('style','display');}
+    if (choice_num>1){$('#choice2').removeAttr('style','display');}
+    if (choice_num>2){$('#choice3').removeAttr('style','display');}
+    if (choice_num>3){$('#choice4').removeAttr('style','display');}
+    if (choice_num>4){$('#choice5').removeAttr('style','display');}
+    if (choice_num>5){$('#choice6').removeAttr('style','display');}
+    if (choice_num>6){$('#choice7').removeAttr('style','display');}
+    if (choice_num>7){$('#choice8').removeAttr('style','display');}
+    if (choice_num>8){$('#choice9').removeAttr('style','display');}
 });
 
 // 设置任务进度
@@ -104,6 +114,81 @@ function choice3(){
 function choice4(){
     var token_csrf = csrf_token;
     var JSON_data = { "choice": 'choice4','user_id':user_id,'task_id':task_id,'page':page };
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        headers: { "X-CSRFToken": token_csrf },
+        url: "/jdzz_work1_post/",
+        dataType: "json",
+        data: JSON.stringify(JSON_data), //传进views里的数据
+        success: function () { //data为地址传过来的数据
+            next_task();
+            }
+        });
+    };
+function choice5(){
+    var token_csrf = csrf_token;
+    var JSON_data = { "choice": 'choice5','user_id':user_id,'task_id':task_id,'page':page };
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        headers: { "X-CSRFToken": token_csrf },
+        url: "/jdzz_work1_post/",
+        dataType: "json",
+        data: JSON.stringify(JSON_data), //传进views里的数据
+        success: function () { //data为地址传过来的数据
+            next_task();
+            }
+        });
+    };
+function choice6(){
+    var token_csrf = csrf_token;
+    var JSON_data = { "choice": 'choice6','user_id':user_id,'task_id':task_id,'page':page };
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        headers: { "X-CSRFToken": token_csrf },
+        url: "/jdzz_work1_post/",
+        dataType: "json",
+        data: JSON.stringify(JSON_data), //传进views里的数据
+        success: function () { //data为地址传过来的数据
+            next_task();
+            }
+        });
+    };
+function choice7(){
+    var token_csrf = csrf_token;
+    var JSON_data = { "choice": 'choice7','user_id':user_id,'task_id':task_id,'page':page };
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        headers: { "X-CSRFToken": token_csrf },
+        url: "/jdzz_work1_post/",
+        dataType: "json",
+        data: JSON.stringify(JSON_data), //传进views里的数据
+        success: function () { //data为地址传过来的数据
+            next_task();
+            }
+        });
+    };
+function choice8(){
+    var token_csrf = csrf_token;
+    var JSON_data = { "choice": 'choice8','user_id':user_id,'task_id':task_id,'page':page };
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        headers: { "X-CSRFToken": token_csrf },
+        url: "/jdzz_work1_post/",
+        dataType: "json",
+        data: JSON.stringify(JSON_data), //传进views里的数据
+        success: function () { //data为地址传过来的数据
+            next_task();
+            }
+        });
+    };
+function choice9(){
+    var token_csrf = csrf_token;
+    var JSON_data = { "choice": 'choice9','user_id':user_id,'task_id':task_id,'page':page };
     $.ajax({
         type: "POST",
         contentType: "application/json; charset=utf-8",

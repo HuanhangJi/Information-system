@@ -26,7 +26,8 @@
         var page = {{page}};
         var page_max = {{page_max}};
         var content = '{{content}}';
-        var new_page = '{{new_page}}'
+        var new_page = '{{new_page}}';
+        var choice_num = {{choice_num}};
     </script>
 </head>
 <body style="background-color: #f0f2f5;overflow-x:hidden;height:100%;"  class="demo_2">
@@ -98,10 +99,15 @@
                 <div class="row" >
                     <div class="col-md-3"><button id="previous" class="btn btn-lg btn-success" type="button" onclick="previous_task()">上一题</button></div>
                     <div class="col-md-6" style="text-align: center;" id="choices">
-                        <button class="btn btn-lg btn-primary" type="button" onclick="choice1()">{{choice_1}}</button>
-                        <button class="btn btn-lg btn-primary" type="button" onclick="choice2()">{{choice_2}}</button>
-                        <button class="btn btn-lg btn-primary" type="button" onclick="choice3()">{{choice_3}}</button>
-                        <button class="btn btn-lg btn-primary" type="button" onclick="choice4()">{{choice_4}}</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice1()" id="choice1" style="display:None;">{{choice_1}}</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice2()" id="choice2" style="display:None;">{{choice_2}}</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice3()" id="choice3" style="display:None;">{{choice_3}}</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice4()" id="choice4" style="display:None;">{{choice_4}}</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice5()" id="choice5" style="display:None;">{{choice_5}}</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice6()" id="choice6" style="display:None;">{{choice_6}}</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice7()" id="choice7" style="display:None;">{{choice_7}}</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice8()" id="choice8" style="display:None;">{{choice_8}}</button>
+                        <button class="btn btn-lg btn-primary" type="button" onclick="choice9()" id="choice9" style="display:None;">{{choice_9}}</button>
                         <!-- <button id="end" type="button" class="btn" data-moveable="true" data-toggle="modal" data-target="#myModal">提交任务</button> -->
                         <button id="end" class="btn btn-lg btn-primary" type="button" onclick="end_task()" style="margin-right: 10px;display: none;" data-moveable="inside" data-toggle="modal" data-target="#myModal">提交任务</button>
                     </div>
