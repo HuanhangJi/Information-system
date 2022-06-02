@@ -263,7 +263,7 @@ def write_data(request, project_id):
         task_should = math.floor(num/task_num)
         if task_should < 10:
             p = Project.objects.get(project_id=project_id)
-            p.project_status = 404
+            p.project_status = 6
             data = {'code':404, 'msg':'无法分配任务','path':path}
             shutil.rmtree(path)
         else:

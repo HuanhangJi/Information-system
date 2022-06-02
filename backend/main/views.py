@@ -113,7 +113,7 @@ def jdzz_product(request, user_id=0, pIndex=1):
     money = request.GET.get('caidan2', '所有报酬')
     type_ = request.GET.get('caidan1', '所有类型')
     star = request.GET.get('caidan3', '所有星级')
-    Plist = Project.objects.exclude(project_status=5)
+    Plist = Project.objects.exclude(project_status__gte=5)
     if kw != '':
         Plist = Plist.filter(Q(project_name__contains=kw)|Q(description__contains=kw))
     if money != '所有报酬':
@@ -158,9 +158,6 @@ def jdzz_product(request, user_id=0, pIndex=1):
     plist = page.page_range
     content = {'task_list':Plist2,'plist':plist,'pIndex':pIndex,'number':n,'sousuo':kw,'limit':limit,
                 'caidan1':type_,'caidan2':money,'caidan3':star}
-    for i in content['task_list']:
-        print(i.project_id)
-    print({**context, **content})
     return render(request, "index/product.html", {**context, **content})
 
 
@@ -212,7 +209,6 @@ def work1(request, user_id, task_id, page=1):
                 content = '！！任务已经结束，请直接跳转到结尾提交任务！！'
                 return JsonResponse({'data': {'content': content, 'jindu': 100, 'new_page': page}})
         jindu = math.floor((page-1)/int(page_max)*100)
-        print({'data': {'content': content, 'jindu': jindu, 'new_page': page}})
         return JsonResponse({'data': {'content': content, 'jindu': jindu, 'new_page': page}})
     else:
         with open(path+'/total.txt','r',encoding='gb18030') as fp:
@@ -253,7 +249,6 @@ def work2(request,user_id,task_id,page = 1):
     n = len(pic_list)
     p = Project.objects.get(project_id=project_id)
     start = int(p.item_per_task) * (int(task_num) - 1) + 1
-    print(f'page_try:{page_try}')
     if page_try:
         jindu = math.floor(float(int(page_try) / n) * 100)
         if jindu > 100:
@@ -263,11 +258,18 @@ def work2(request,user_id,task_id,page = 1):
             number = start
         if number > start + n - 1:
             number = start + n - 1
-        img = f'/static/sample_document/{project_id}/{number}_{task_num}.jpg'
-        print({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
+        img = ''
+        for pic in pic_list:
+            if int(pic.split('_')[0]) == number:
+                img = f'/static/sample_document/{project_id}/{pic}'
+                break
         return JsonResponse({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
     else:
-        img = f'/static/sample_document/{project_id}/{start}_{task_num}.jpg'
+        img = ''
+        for pic in pic_list:
+            if int(pic.split('_')[0]) == start:
+                img = f'/static/sample_document/{project_id}/{pic}'
+                break
         task_info = {'new_page':page,'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': 0,
                      'task_img': img,'page_max':n+1}
         return render(request, "index/work_2.html",{**context,**task_info})
@@ -305,9 +307,13 @@ def work3(request, user_id, task_id, page=1):
         number = start + int(page_try) - 1
         if number < start:
             number = start
-        if number > start + n - 1:
+        elif number > start + n - 1:
             number = start + n - 1
-        img = f'/static/sample_document/{project_id}/{number}_{task_num}.jpg'
+        img = ''
+        for pic in pic_list:
+            if int(pic.split('_')[0]) == number:
+                img = f'/static/sample_document/{project_id}/{pic}'
+                break
         return JsonResponse({'data': {'content': img, 'jindu': jindu, 'new_page': page}})
     else:
         with open(f'{path}/text_tags_{project_id}.txt','r') as fp1:
@@ -318,10 +324,13 @@ def work3(request, user_id, task_id, page=1):
         choice_dict = {}
         for i in range(choices_num):
             choice_dict[f'choice_{i+1}'] = choices[i]
-        content = f'/static/sample_document/{project_id}/{start}_{task_num}.jpg'
+        img = ''
+        for pic in pic_list:
+            if int(pic.split('_')[0]) == start:
+                img = f'/static/sample_document/{project_id}/{pic}'
+                break
         jindu = 0
-        task_info = {'page_max':n+1,'new_page':page,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption, 'jindu': jindu,'content': content,'yaoqiu':'AA就选AA'*20,'choice_num':choices_num}
-        print(task_info)
+        task_info = {'page_max':n+1,'new_page':page,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption, 'jindu': jindu,'content': img,'yaoqiu':'AA就选AA'*20,'choice_num':choices_num}
         return render(request, "index/work_3.html", {**context, **task_info,**choice_dict})
 
 
@@ -331,9 +340,7 @@ def work1_post(request):
     user_id = data["user_id"]
     task_id = data["task_id"]
     page = data["page"]
-    print(choice)
     store_data_1(user_id, task_id, page, choice)
-    #     .....
     return JsonResponse({})
 
 
@@ -395,12 +402,10 @@ def store_data_1(user_id, task_id, page, choice):
         data[str(page)] = tags[int(choice[-1])-1]
         with open(f'{path}/data.json','w') as f:
             json.dump(data,f)
-            print(data)
     else:
         with open(f'{path}/data.json','r') as f:
             data = json.load(f)
             data[str(page)] = tags[int(choice[-1])-1]
-            print(data)
         with open(f'{path}/data.json','w') as f:
             json.dump(data,f)
 
@@ -436,25 +441,22 @@ def store_data_3(user_id, task_id, page, choice):
         data[str(page)] = tags[int(choice[-1])-1]
         with open(f'{path}/data.json','w') as f:
             json.dump(data,f)
-            print(data)
     else:
         with open(f'{path}/data.json','r') as f:
             data = json.load(f)
             data[str(page)] = tags[int(choice[-1])-1]
-            print(data)
         with open(f'{path}/data.json','w') as f:
             json.dump(data,f)
 
 
 def commit_task_2(request, user_id, task_id, page):
     path = f'./static/data/account_{user_id}_task_{task_id}/data.json'
-    print(path)
     miss = []
     if os.path.exists(path):
         with open(path, 'r') as f:
             data = json.load(f)
             keys = data.keys()
-            for i in range(1, page + 1):
+            for i in range(1, page):
                 if str(i) not in keys:
                     miss.append(str(i))
         if miss == []:
@@ -474,13 +476,12 @@ def commit_task_2(request, user_id, task_id, page):
 
 def commit_task_1(request, user_id, task_id, page):
     path = f'./static/data/account_{user_id}_task_{task_id}/data.json'
-    print(path)
     miss = []
     if os.path.exists(path):
         with open(path, 'r') as f:
             data = json.load(f)
             keys = data.keys()
-            for i in range(1, page + 1):
+            for i in range(1, page):
                 if str(i) not in keys:
                     miss.append(str(i))
         if miss == []:
