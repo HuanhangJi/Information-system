@@ -9,7 +9,7 @@ urlpatterns = [
     path('jdzz_work1/<int:user_id>/<str:task_id>/', views.work1),  # 文字工作台
     # path('jdzz_work2/<int:user_id>/<str:task_id>/<int:page>', views.work2,name='work2'),  # 图片工作台
     path('jdzz_work2/<int:user_id>/<str:task_id>/', views.work2,name='work2'),  # 图片工作台
-    path('jdzz_work3/<int:user_id>/<int:task_id>/', views.work3),# 图片分类工作台
+    path('jdzz_work3/<int:user_id>/<str:task_id>/', views.work3),# 图片分类工作台
     # path('jdzz_work2/<int:user_id>/<str:task_id>', views.work3),  # 图片工作台
     path('jdzz_work1_post/', views.work1_post),  # 接收文字的标注结果
     path('jdzz_work2_post/', views.work2_post),  # 接收图片的标注结果

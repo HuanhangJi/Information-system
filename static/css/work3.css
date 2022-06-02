@@ -1,9 +1,8 @@
-* {padding: 0;margin: 0}
 a{text-decoration:none;color:black;} 
 a:hover{text-decoration:none;color:black;} 
 .zhuanti a:hover{text-decoration:none;color:#2932e1;} 
 .shaixuan li a{font-size: 3;}
-.footer {height: 200px;background-color:#1a1a1a;margin-top: 15px;}
+.footer {height: 200px;background-color:#1a1a1a;}
 .footer .container {padding-top: 20px;}
 .container {position: relative;width: 1200px; margin: auto;background-color: transparent;}
 .copyright {float: left;}
@@ -15,93 +14,3 @@ a:hover{text-decoration:none;color:black;}
 .links dl dd a {font-size: 12px;color: #b1b1b1;}
 .btn-primary{background-color: #0a67fb;}
 .btn-primary:hover{background-color: #3280fc;}
-.top-tab {background-color: #333;padding: 10px;margin-bottom: 50px}
-.top-tab a {display: flex;align-items: center;color: #fff}
-#imgform {margin: 0 auto;width: 500px}
-.shadow:hover{box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);border-radius: 20px;}
-.shadow{border-radius: 0 0 20px 20px;}
-#图片悬停
-.container {
-  margin: auto;
-  padding: 0 1rem;
-  max-width: 71.25rem;
-  width: 100%;
-}
-
-.img-container {
-  width: 100%;
-  height: 500px;
-  cursor: pointer;
-  overflow: hidden;
-  border-radius:6px;
-}
-.img-container:hover .img-content-hover {
-  display: block;
-  border-radius:6px;
-}
-
-img {
-  width: 100%;
-  height: 50%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  transform: scale(1);
-  transition: all 0.3s ease-in-out;
-  border-radius:6px;
-  border-radius: 0 0 20px 20px;
-}
-img:hover {
-    border-radius:6px;
-    transform: scale(1.05);
-    box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);border-radius: 20px;
-}
-
-.img-content-hover {
-  z-index: 1;
-  position: absolute;
-  top: 0;
-  left: 0;
-  white-space: nowrap;
-  display: none;
-  padding: 1rem;
-  background: #fff;
-  font-weight: 400;
-  margin-top: 1.25rem;
-  margin-left: -2rem;
-  border-radius:6px;
-  box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);border-radius: 20px;
-}
-
-.img-content {
-  display: none;
-}
-
-.social, .copyright {
-  margin: 1rem;
-}
-
-.social li {
-  display: inline-block;
-}
-
-@media screen and (max-width: 1024px) {
-  img:hover {
-    transform: none;
-    border-radius:6px;
-    box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);border-radius: 20px;
-  }
-
-  .img-container {
-    height: 100%;
-  }
-  .img-container:hover .img-content-hover {
-    display: none;
-    border-radius:6px;
-    box-shadow: 0px 3px 5px rgb(151 151 151 / 80%);border-radius: 20px;
-  }
-
-  .img-content {
-    display: block;
-    padding: 1rem 0;
-  }
-}

@@ -262,6 +262,8 @@ def write_data(request, project_id):
     if flag == 0:
         task_should = math.floor(num/task_num)
         if task_should < 10:
+            p = Project.objects.get(project_id=project_id)
+            p.project_status = 404
             data = {'code':404, 'msg':'无法分配任务','path':path}
             shutil.rmtree(path)
         else:
@@ -291,7 +293,7 @@ def write_data(request, project_id):
             p.project_pic = (path+f'/{pic}')[1:]
             p.item_per_task = task_should
             p.save()
-    data = {'code': 200, 'msg': '写入成功'}
+            data = {'code': 200, 'msg': '写入成功'}
     #文本任务
     if flag == 1:
         p = Project.objects.get(project_id=project_id)

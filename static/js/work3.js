@@ -37,8 +37,19 @@ function previous_task(){
             if (page == 1){$("#previous").attr('disabled','"disabled"');};
             if ((page != page_max) && ($("#next").attr('disabled') =="disabled")){
                 $("#next").removeAttr('disabled');
-                $('.btn-primary').removeAttr('style','display');
+                $('choices').removeAttr('style','display');
                 $('#end').css('display','none');
+                if (choice_num>0){$('#choice1').removeAttr('style','display');}
+                if (choice_num>1){$('#choice2').removeAttr('style','display');}
+                if (choice_num>2){$('#choice3').removeAttr('style','display');}
+                if (choice_num>3){$('#choice4').removeAttr('style','display');}
+                if (choice_num>4){$('#choice5').removeAttr('style','display');}
+                if (choice_num>5){$('#choice6').removeAttr('style','display');}
+                if (choice_num>6){$('#choice7').removeAttr('style','display');}
+                if (choice_num>7){$('#choice8').removeAttr('style','display');}
+                if (choice_num>8){$('#choice9').removeAttr('style','display');}
+                $('#neirong2').css('display','none');
+                $('#neirong').removeAttr('style','display')
                 };
             $("#neirong").attr("src",data['content']);
             $("#jindu").text(data['new_page']);
@@ -59,13 +70,30 @@ function next_task(){
             data = res['data'];
             page = data['new_page'];
             if ((page != 1) && ($("#previous").attr('disabled') =="disabled")){$("#previous").removeAttr('disabled');};
-            if (page == page_max){$("#next").attr('disabled','"disabled"');$('#choices .btn-primary').css('display','none');$('#end').removeAttr('style','display');};
             $("#neirong").attr("src",data['content']);
+            if (page == page_max){$('#neirong2').removeAttr('style','display');$('#neirong2').css('color','#00a4ff');$('#neirong2').css('font-size','25px');
+            $("#neirong").css('display','none');$("#next").attr('disabled','"disabled"');$('#choices .btn-primary').css('display','none');$('#end').removeAttr('style','display');};
+
             $("#jindu").text(data['new_page']);
             $("#jindu2").attr("style","width: "+data['jindu']+"%");
             },
     });
 };
+function choice1(){
+    var token_csrf = csrf_token;
+    var JSON_data = { "choice": 'choice1','user_id':user_id,'task_id':task_id,'page':page };
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        headers: { "X-CSRFToken": token_csrf },
+        url: "/jdzz_work3_post/",
+        dataType: "json",
+        data: JSON.stringify(JSON_data), //传进views里的数据
+        success: function () { //data为地址传过来的数据
+            next_task();
+            }
+        });
+    };
 function choice2(){
     var token_csrf = csrf_token;
     var JSON_data = { "choice": 'choice2','user_id':user_id,'task_id':task_id,'page':page };
@@ -73,7 +101,7 @@ function choice2(){
         type: "POST",
         contentType: "application/json; charset=utf-8",
         headers: { "X-CSRFToken": token_csrf },
-        url: "/jdzz_work1_post/",
+        url: "/jdzz_work3_post/",
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function () { //data为地址传过来的数据
@@ -88,7 +116,7 @@ function choice3(){
         type: "POST",
         contentType: "application/json; charset=utf-8",
         headers: { "X-CSRFToken": token_csrf },
-        url: "/jdzz_work1_post/",
+        url: "/jdzz_work3_post/",
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function () { //data为地址传过来的数据
@@ -103,7 +131,7 @@ function choice4(){
         type: "POST",
         contentType: "application/json; charset=utf-8",
         headers: { "X-CSRFToken": token_csrf },
-        url: "/jdzz_work1_post/",
+        url: "/jdzz_work3_post/",
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function () { //data为地址传过来的数据
@@ -118,7 +146,7 @@ function choice5(){
         type: "POST",
         contentType: "application/json; charset=utf-8",
         headers: { "X-CSRFToken": token_csrf },
-        url: "/jdzz_work1_post/",
+        url: "/jdzz_work3_post/",
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function () { //data为地址传过来的数据
@@ -133,7 +161,7 @@ function choice6(){
         type: "POST",
         contentType: "application/json; charset=utf-8",
         headers: { "X-CSRFToken": token_csrf },
-        url: "/jdzz_work1_post/",
+        url: "/jdzz_work3_post/",
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function () { //data为地址传过来的数据
@@ -148,7 +176,7 @@ function choice7(){
         type: "POST",
         contentType: "application/json; charset=utf-8",
         headers: { "X-CSRFToken": token_csrf },
-        url: "/jdzz_work1_post/",
+        url: "/jdzz_work3_post/",
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function () { //data为地址传过来的数据
@@ -163,7 +191,7 @@ function choice8(){
         type: "POST",
         contentType: "application/json; charset=utf-8",
         headers: { "X-CSRFToken": token_csrf },
-        url: "/jdzz_work1_post/",
+        url: "/jdzz_work3_post/",
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function () { //data为地址传过来的数据
@@ -178,7 +206,7 @@ function choice9(){
         type: "POST",
         contentType: "application/json; charset=utf-8",
         headers: { "X-CSRFToken": token_csrf },
-        url: "/jdzz_work1_post/",
+        url: "/jdzz_work3_post/",
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function () { //data为地址传过来的数据
@@ -192,7 +220,7 @@ function end_task(){
         type: "POST",
         contentType: "application/json; charset=utf-8",
         headers: { "X-CSRFToken": csrf_token },
-        url: "/commit_task_3/"+user_id+'/'+task_id+'/'+page+'/',
+        url: "/commit_task_1/"+user_id+'/'+task_id+'/'+page+'/',
         dataType: "json",
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function (res) { //data为地址传过来的数据
