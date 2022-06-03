@@ -36,6 +36,7 @@ class Project(models.Model):
     completed_task_num = models.IntegerField()
     project_star = models.FloatField()
     project_pic = models.CharField(max_length=64,null=True)
+    project_target = models.CharField(max_length=64, null=True)
 
 
 

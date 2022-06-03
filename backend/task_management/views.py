@@ -73,15 +73,19 @@ def project_add(request):
         if project_type == 'image_block':
             flag = 0
             project_type = '图片识别标注'
-        else:
+        elif project_type == 'text_type':
             flag = 1
-            project_type = '文本标注'
+            project_type = '文本类型标注'
+        else:
+            flag = 2
+            project_type = '图片类型标注'
         description = res['description']
         due_time = res['due_time']
         pay_per_task = res['pay_per_task']
         global task_num
         task_num = res['task_num']
         project_star = res['project_star']
+        project_target = res['project_target']
         text_tags = res['text_tags']
         p = Project()
         id = project_id_pool.objects.first()
@@ -93,7 +97,7 @@ def project_add(request):
             if os.path.exists(f'./static/sample_document/{project_id}'):
                 shutil.rmtree(f'./static/sample_document/{project_id}')
             os.mkdir(f'./static/sample_document/{project_id}')
-            if flag == 1:
+            if flag != 0:
                 with open(f'./static/sample_document/{project_id}/text_tags_{project_id}.txt','w',encoding='utf-8') as fp:
                     n = len(text_tags)
                     for i in range(n):
@@ -114,6 +118,7 @@ def project_add(request):
             p.description = description
             p.project_name = project_name
             p.project_star = project_star
+            p.project_target = project_target
             # p.sample_document = sample_document
             p.save()
             for i in range(1,task_num+1):
@@ -258,12 +263,13 @@ def write_data(request, project_id):
             Z.extract(i,path=path)
             os.rename(path+f'/{i}',path+f'/{num}.{type}')
     Z.close()
-    #图片画框任务
-    if flag == 0:
+    #图片任务
+    if flag != 0:
         task_should = math.floor(num/task_num)
         if task_should < 10:
             p = Project.objects.get(project_id=project_id)
             p.project_status = 6
+            p.save()
             data = {'code':404, 'msg':'无法分配任务','path':path}
             shutil.rmtree(path)
         else:
@@ -294,6 +300,7 @@ def write_data(request, project_id):
             p.item_per_task = task_should
             p.save()
             data = {'code': 200, 'msg': '写入成功'}
+        return JsonResponse(data)
     #文本任务
     if flag == 1:
         p = Project.objects.get(project_id=project_id)
@@ -318,7 +325,7 @@ def write_data(request, project_id):
         p.item_per_task = task_should
         p.save()
         data = {'code': 200, 'msg': '写入成功'}
-    return JsonResponse(data)
+        return JsonResponse(data)
 
 
 ## TODO 预付款
@@ -409,3 +416,39 @@ def completed_task(request):
     if p.task_num == p.completed_task_num:
         p.project_status = 2
         p.save()
+
+
+def judge_status(status):
+    if status == 0:
+        return '已发布'
+    if status == 1:
+        return '已开始'
+    if status == 5:
+        return '已结束'
+
+
+## TODO 任务管理面板
+def project_management(request):
+    res = get_res(request)
+    account_id = res['account_id']
+    plist = Project.objects.filter(account_id=account_id).exclude(project_status=6)
+    missions = []
+    for project in plist:
+        data = {}
+        data['mission_id'] = project.project_id
+        data['name'] = project.project_name
+        data['status'] = project.project_status
+        data['end_time'] = project.due_time
+        data['level'] = project.project_star
+        p = Prepay.objects.get(project_id=project.project_id)
+        data['money'] = p.prepay_amount
+        data['edit'] = 'true'
+        data['edit_text'] = "修改"
+        missions.append(data)
+    print(missions)
+    return JsonResponse({'code':200,'data':missions})
+
+
+
+
+
