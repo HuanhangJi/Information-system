@@ -371,6 +371,7 @@ def get_task(request,account_id,project_id):
     except:
         return JsonResponse({'code':402,'msg':'接收者错误'})
     tasks = Task.objects.filter(Q(project_id=project_id),(Q(task_status=0)))
+    print(project_id)
     Project.objects.get(project_id=project_id).project_status = 1
     task_num = tasks.count()
     if task_num >= 1:

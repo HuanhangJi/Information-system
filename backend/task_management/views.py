@@ -4,6 +4,7 @@ from django.http import *
 from .models import *
 import os
 import sys
+import random
 sys.path.append(os.path.abspath('..'))
 os.chdir(os.path.abspath(os.getcwd()))
 from client_management.models import *
@@ -440,7 +441,33 @@ def judge_status_reverse(status):
 def project_management(request):
     res = get_res(request)
     account_id = res['account_id']
+    where = res['params']
     plist = Project.objects.filter(account_id=account_id).exclude(project_status=6)
+    print(where)
+    if where is not None:
+        name = where['name']
+        status = where['status']
+        end_time = where['end_time']
+        level_min = where['level_min']
+        level_max= where['level_max']
+        price_min = where['price_min']
+        price_max = where['price_max']
+        if name != '':
+            plist = plist.filter(project_name__contains=name)
+        if status != '':
+            plist = plist.filter(project_status=judge_status_reverse(status))
+        if end_time is not None:
+            t = time.localtime(end_time / 1000 + 8 * 60 * 60)
+            due_time = time.strftime("%Y-%m-%d %H:%M:%S", t)
+            plist = plist.filter(due_time__lte=due_time)
+        if level_max is not None:
+            plist = plist.filter(project_star__lte=level_max)
+        if level_min is not None:
+            plist = plist.filter(project_star__gte=level_min)
+        if price_max is not None:
+            plist = plist.filter(payment_per_task__lte=price_max)
+        if price_min is not None:
+            plist = plist.filter(project_name__gte=price_min)
     missions = []
     for project in plist:
         data = {}
@@ -451,15 +478,13 @@ def project_management(request):
         time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S")))*1000
         data['end_time'] = time_s
         data['level'] = project.project_star
-        p = Prepay.objects.get(project_id=project.project_id)
-        data['money'] = p.prepay_amount
+        data['money'] = project.payment_per_task
         data['edit'] = True
         data['edit_text'] = "修改"
         missions.append(data)
     return JsonResponse({'code':200,'data':missions})
 
-
-## TODO 任务管理面板
+#更新项目列表
 def project_management_update(request):
     res = get_res(request)
     data = res['data']
@@ -467,11 +492,65 @@ def project_management_update(request):
     p = Project.objects.get(project_id=project_id)
     p.project_name = data['name']
     p.project_status = judge_status_reverse(data['state'])
-    t = time.localtime(int(data['end_time']) / 1000)
+    t = time.localtime(((int(data['end_time']))/ 1000)+8*60*60)
     due_time = time.strftime("%Y-%m-%d %H:%M:%S", t)
     p.due_time = str(due_time)
     p.save()
     return JsonResponse({'code':200})
+
+
+#任务验收
+def acceptance_check(request):
+    res = get_res(request)
+    task_id = res['task_id']
+    project_id = task_id.split('_')[0]
+    num = task_id.split('_')[1]
+    p = Project.objects.get(project_id=project_id)
+    type = p.project_type
+    ta = Task_association.objects.get(task_id=task_id)
+    consumer = ta.account_id
+    path = f'./static/data/account_{consumer}_task_{task_id}/data.json'
+    with open(path,'r') as f:
+        data = json.load(f)
+    sample = random.sample(data.keys(), 10)
+    da = []
+    if type == '文本标注':
+        for item in sample:
+            da.append(data[item])
+        path2 = f'./static/sample_document/{project_id}/total.txt'
+        p = Project.objects.get(project_id=project_id)
+        start = int(p.item_per_task) * (num - 1)
+        txt = []
+        for i in sample:
+            txt.append(get_text(path2, start + int(i)))
+        call = dict(zip(txt, da))
+    else:
+        path2 = f'http://localhost:8000/static/sample_document/10000099/'
+        p = Project.objects.get(project_id=project_id)
+        start = int(p.item_per_task) * (num - 1)
+        pic_path = []
+        for i in sample:
+            pic_name = f'{start + int(i)}_{num}'
+            pics = os.listdir(f'./static/sample_document/{project_id}/')
+            for pic in pics:
+                if pic.split('.')[0] == pic_name:
+                    pic_path.append(path2 + pic)
+        call = dict(zip(pic_path, da))
+    return JsonResponse(call)
+
+def get_text(path,index):
+    with open(path,'r',encoding='gbk') as fp:
+        count = 1
+        for line in fp:
+            if count == index:
+                break
+            count += 1
+    return line[:-1]
+
+
+
+
+
 
 
 
