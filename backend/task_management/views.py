@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath('..'))
 os.chdir(os.path.abspath(os.getcwd()))
 from client_management.models import *
 from django.db.models import Q
-from django.shortcuts import render
+import shutil
 import json
 import time
 import zipfile
@@ -263,7 +263,7 @@ def write_data(request, project_id):
             os.rename(path+f'/{i}',path+f'/{num}.{type}')
     Z.close()
     #图片任务
-    if flag != 0:
+    if flag != 1:
         task_should = math.floor(num/task_num)
         if task_should < 10:
             p = Project.objects.get(project_id=project_id)
@@ -437,7 +437,7 @@ def judge_status_reverse(status):
     if status == '暂停':
         return 10
 
-## TODO 任务管理面板
+## TODO 发布者任务管理面板
 def project_management(request):
     res = get_res(request)
     account_id = res['account_id']
@@ -483,6 +483,78 @@ def project_management(request):
         data['edit_text'] = "修改"
         missions.append(data)
     return JsonResponse({'code':200,'data':missions})
+
+
+def task_management(request):
+    res = get_res(request)
+    account_id = res['account_id']
+    where = res['params']
+    ta = Task_association.objects.get(account_id=account_id)
+    missions = []
+    name = ''
+    status = ''
+    publisher = ''
+    end_time = None
+    level_min = None
+    level_max = None
+    price_min = None
+    price_max = None
+    if where is not None:
+        name = where['name']
+        status = where['status']
+        end_time = where['end_time']
+        level_min = where['level_min']
+        level_max = where['level_max']
+        price_min = where['price_min']
+        price_max = where['price_max']
+        publisher = where['publisher']
+    for task in ta:
+        data = {}
+        task_id = task.task_id
+        project_id = task.project_id
+        p = Project.objects.get(project_id=project_id)
+        if name != '':
+            s = p.project_name.find(name)
+            if s == -1:
+                continue
+        if status != '':
+            if p.project_status != judge_status_reverse(status):
+                continue
+        if end_time is not None:
+            t = time.localtime(end_time / 1000 + 8 * 60 * 60)
+            due_time = time.strftime("%Y-%m-%d %H:%M:%S", t)
+            if p.due_time > due_time:
+                continue
+        if level_max is not None:
+            if p.project_star > level_max:
+                continue
+        if level_min is not None:
+            if p.project_star < level_min:
+                continue
+        if price_max is not None:
+            if p.payment_per_task > price_max:
+                continue
+        if price_min is not None:
+            if p.payment_per_task < price_min:
+                continue
+        if publisher != '':
+            d = Producer.objects.get(account_id=p.account_id)
+            if d.nickname.find(publisher) == -1:
+                continue
+        data['task_id'] = task_id
+        data['name'] = p.project_name
+        data['pulisher'] = Producer.objects.get(account_id=p.account_id).nickname
+        data['state'] = judge_status(p.project_status)
+        time_ = str(p.due_time)[:-6]
+        time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S")))*1000
+        data['end_time'] = time_s
+        data['level'] = p.project_star
+        data['money'] = p.payment_per_task
+        data['edit'] = True
+        data['edit_text'] = "修改"
+        missions.append(data)
+    return JsonResponse({'code': 200, 'data': missions})
+
 
 #更新项目列表
 def project_management_update(request):
@@ -546,12 +618,3 @@ def get_text(path,index):
                 break
             count += 1
     return line[:-1]
-
-
-
-
-
-
-
-
-
