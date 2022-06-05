@@ -11,7 +11,8 @@ urlpatterns = [
     path('project_management/', project_management, name='project_management'),
     path('task_management/', task_management, name='task_management'),
     path('project_management_update/', project_management_update, name='project_management_update'),
-    path('acceptance_check/',  acceptance_check, name=' text_acceptance_check'),
+    path('acceptance_check/', acceptance_check, name=' text_acceptance_check'),
+    path('give_up_task/', give_up_task, name='give_up_task'),
 ]
 
 

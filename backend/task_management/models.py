@@ -28,6 +28,7 @@ class Project(models.Model):
     project_type = models.CharField(max_length=20)
     description = models.CharField(max_length=1024)
     # sample_document = models.FileField(upload_to='sample_document')
+    start_time = models.DateTimeField(null=True)
     due_time = models.DateTimeField()
     payment_per_task = models.FloatField()
     project_status = models.IntegerField()#0表示发布,6为发布失败

@@ -80,6 +80,7 @@ def project_add(request):
             project_type = '图片类型标注'
         description = res['description']
         due_time = res['due_time']
+        start_time = res['start_time']
         pay_per_task = res['pay_per_task']
         global task_num
         task_num = res['task_num']
@@ -113,6 +114,9 @@ def project_add(request):
             t = time.localtime(due_time/1000)
             due_time = time.strftime("%Y-%m-%d %H:%M:%S",t)
             p.due_time = str(due_time)
+            t = time.localtime(start_time/1000)
+            start_time = time.strftime("%Y-%m-%d %H:%M:%S",t)
+            p.start_time = str(start_time)
             p.completed_task_num = 0
             p.description = description
             p.project_name = project_name
@@ -353,9 +357,9 @@ def prepay(request,project_id):
 ## TODO 标注者取消任务
 def give_up_task(request):
     res = get_res(request)
-    account_id = request.session['user']['account_id']
+    account_id = res['account_id']
     task_id = res['task_id']
-    ta = Task_association.objects.filter(Q(account_id=account_id)|Q(task_id=task_id))
+    ta = Task_association.objects.filter(Q(account_id=account_id),Q(task_id=task_id))
     ta.delete()
     t = Task.objects.get(task_id=task_id)
     t.task_status = 0
@@ -481,6 +485,7 @@ def project_management(request):
         data['money'] = project.payment_per_task
         data['edit'] = True
         data['edit_text'] = "修改"
+        data['start_time'] = project.start_time
         missions.append(data)
     return JsonResponse({'code':200,'data':missions})
 
@@ -489,12 +494,13 @@ def task_management(request):
     res = get_res(request)
     account_id = res['account_id']
     where = res['params']
-    ta = Task_association.objects.get(account_id=account_id)
+    ta = Task_association.objects.filter(account_id=account_id)
     missions = []
     name = ''
     status = ''
     publisher = ''
     end_time = None
+    start_time = None
     level_min = None
     level_max = None
     price_min = None
@@ -503,11 +509,12 @@ def task_management(request):
         name = where['name']
         status = where['status']
         end_time = where['end_time']
+        start_time = where['start_time']
         level_min = where['level_min']
         level_max = where['level_max']
         price_min = where['price_min']
         price_max = where['price_max']
-        publisher = where['publisher']
+        publisher = where['poster_name']
     for task in ta:
         data = {}
         task_id = task.task_id
@@ -521,9 +528,10 @@ def task_management(request):
             if p.project_status != judge_status_reverse(status):
                 continue
         if end_time is not None:
-            t = time.localtime(end_time / 1000 + 8 * 60 * 60)
-            due_time = time.strftime("%Y-%m-%d %H:%M:%S", t)
-            if p.due_time > due_time:
+            if p.due_time.replace(tzinfo=None) > datetime.datetime.fromtimestamp(end_time / 1000):
+                continue
+        if start_time is not None:
+            if p.due_time.replace(tzinfo=None) < datetime.datetime.fromtimestamp(start_time / 1000):
                 continue
         if level_max is not None:
             if p.project_star > level_max:
@@ -541,17 +549,18 @@ def task_management(request):
             d = Producer.objects.get(account_id=p.account_id)
             if d.nickname.find(publisher) == -1:
                 continue
-        data['task_id'] = task_id
+        data['mission_id'] = task_id
         data['name'] = p.project_name
-        data['pulisher'] = Producer.objects.get(account_id=p.account_id).nickname
+        data['poster'] = Producer.objects.get(account_id=p.account_id).nickname
         data['state'] = judge_status(p.project_status)
         time_ = str(p.due_time)[:-6]
         time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S")))*1000
         data['end_time'] = time_s
         data['level'] = p.project_star
         data['money'] = p.payment_per_task
-        data['edit'] = True
-        data['edit_text'] = "修改"
+        time_ = str(p.start_time)[:-6]
+        time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S")))*1000
+        data['start_time'] = time_s
         missions.append(data)
     return JsonResponse({'code': 200, 'data': missions})
 
