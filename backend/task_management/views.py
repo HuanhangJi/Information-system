@@ -561,6 +561,12 @@ def task_management(request):
         time_ = str(p.start_time)[:-6]
         time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S")))*1000
         data['start_time'] = time_s
+        if p.project_type == '文本类型标注':
+            data['task_type'] = 1
+        elif p.project_type == '图片识别标注':
+            data['task_type'] = 2
+        else:
+            data['task_type'] = 3
         missions.append(data)
     return JsonResponse({'code': 200, 'data': missions})
 
