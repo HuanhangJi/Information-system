@@ -365,7 +365,7 @@ def work3_post(request):
 
 def get_task(request,account_id,project_id):
     if int(account_id) == 0:
-        return redirect('http://127.0.0.1:8001')
+        return HttpResponseRedirect('http://10.128.161.108:8001/')
     try:
         Consumer.objects.get(account_id=account_id)
     except:

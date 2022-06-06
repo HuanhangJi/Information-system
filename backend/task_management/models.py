@@ -5,7 +5,7 @@ from django.db import models
 class Task(models.Model):
     task_id = models.CharField(max_length=25,primary_key=True)
     project_id = models.CharField(max_length=25)
-    task_status = models.CharField(max_length=20)#0表示未接收，1表示被接收，2表示提交审核，3表示任务通过
+    task_status = models.CharField(max_length=20)#0表示未接收，1表示被接收，2表示提交审核，3表示任务通过，4表示审核未通过
     # original_data = models.FileField(upload_to='data')
     # processed_data = models.FileField(upload_to='data')
     score = models.IntegerField()
@@ -89,8 +89,12 @@ class Task_association(models.Model):#数据库修改
     project_id = models.CharField(max_length=25)
     # ta_id = models.CharField(max_length=25,primary_key=True,auto_created=True)
 
-
-
 # 项目id库
 class project_id_pool(models.Model):
     project_id = models.CharField(max_length=20,primary_key=True)
+
+
+class task_error(models.Model):
+    task_id = models.CharField(max_length=20)
+    error = models.CharField(max_length=60)
+    error_value = models.CharField(max_length=60)

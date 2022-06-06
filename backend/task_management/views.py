@@ -495,6 +495,8 @@ def task_management(request):
     account_id = res['account_id']
     where = res['params']
     ta = Task_association.objects.filter(account_id=account_id)
+    if list(ta) == []:
+        return JsonResponse({'code': 200, 'data': []})
     missions = []
     name = ''
     status = ''
@@ -520,6 +522,8 @@ def task_management(request):
         task_id = task.task_id
         project_id = task.project_id
         p = Project.objects.get(project_id=project_id)
+        if p.project_status >= 5:
+            pass
         if name != '':
             s = p.project_name.find(name)
             if s == -1:
@@ -528,10 +532,11 @@ def task_management(request):
             if p.project_status != judge_status_reverse(status):
                 continue
         if end_time is not None:
-            if p.due_time.replace(tzinfo=None) > datetime.datetime.fromtimestamp(end_time / 1000):
+            if p.due_time.replace(tzinfo=None) <= datetime.datetime.fromtimestamp(end_time / 1000):
                 continue
         if start_time is not None:
-            if p.due_time.replace(tzinfo=None) < datetime.datetime.fromtimestamp(start_time / 1000):
+
+            if p.due_time.replace(tzinfo=None) >= datetime.datetime.fromtimestamp(start_time / 1000):
                 continue
         if level_max is not None:
             if p.project_star > level_max:
@@ -585,11 +590,11 @@ def project_management_update(request):
     p.save()
     return JsonResponse({'code':200})
 
-
 #任务验收
 def acceptance_check(request):
     res = get_res(request)
     task_id = res['task_id']
+    sample_num = int(res['sample_num'])
     project_id = task_id.split('_')[0]
     num = task_id.split('_')[1]
     p = Project.objects.get(project_id=project_id)
@@ -599,7 +604,7 @@ def acceptance_check(request):
     path = f'./static/data/account_{consumer}_task_{task_id}/data.json'
     with open(path,'r') as f:
         data = json.load(f)
-    sample = random.sample(data.keys(), 10)
+    sample = random.sample(data.keys(), sample_num)
     da = []
     if type == '文本标注':
         for item in sample:
@@ -610,9 +615,14 @@ def acceptance_check(request):
         txt = []
         for i in sample:
             txt.append(get_text(path2, start + int(i)))
-        call = dict(zip(txt, da))
+        call = []
+        for i in range(sample_num):
+            data = {}
+            data['content'] = txt[i]
+            data['value'] = da[i]
+            call.append(data)
     else:
-        path2 = f'http://localhost:8000/static/sample_document/10000099/'
+        path2 = f'http://localhost:8000/static/sample_document/{project_id}/'
         p = Project.objects.get(project_id=project_id)
         start = int(p.item_per_task) * (num - 1)
         pic_path = []
@@ -622,8 +632,13 @@ def acceptance_check(request):
             for pic in pics:
                 if pic.split('.')[0] == pic_name:
                     pic_path.append(path2 + pic)
-        call = dict(zip(pic_path, da))
-    return JsonResponse(call)
+        call = []
+        for i in range(sample_num):
+            data = {}
+            data['content'] = pic_path[i]
+            data['value'] = da[i]
+            call.append(data)
+    return JsonResponse({'code':200,'data':call,'mission_target':p.project_target,'task_id':task_id})
 
 def get_text(path,index):
     with open(path,'r',encoding='gbk') as fp:
@@ -633,3 +648,58 @@ def get_text(path,index):
                 break
             count += 1
     return line[:-1]
+
+def acceptance_show(request):
+    res = get_res(request)
+    project_id = res['project_id']
+    p = Project.objects.get(project_id=project_id)
+    ta = Task_association.objects.filter(project_id=project_id)
+    if list(ta) == []:
+        return JsonResponse({'code':200,'data':''})
+    info = []
+    for i in ta:
+        task_consumer = i.account_id
+        c = Consumer.objects.get(account_id=task_consumer)
+        nickname = c.nickname
+        level = c.level
+        tel = c.tel
+        pay = p.payment_per_task
+        email = c.mail_add
+        data = {}
+        data['name'] = nickname
+        data['level'] = level
+        data['pay'] = pay
+        data['tel'] = tel
+        if email is None:
+            email=''
+        data['email']=email
+        info.append(data)
+    return JsonResponse({'code': 200,'data':info})
+
+def error_append(request):
+    res = get_res(request)
+    task_id = res['task_id']
+    if_accept = res['if_accept']
+    wrong_item_list = res['wrong_item_list']
+    if if_accept == 1:
+        return JsonResponse({'code':200})
+    else:
+        t = Task.objects.get(task_id=task_id)
+        t.task_status=4
+        t.save()
+        for item in wrong_item_list:
+            te = task_error()
+            te.task_id = task_id
+            te.error = item['content']
+            te.error_value = item['value']
+            te.save()
+        return JsonResponse({'code': 200})
+
+
+
+
+
+
+
+
+
