@@ -634,15 +634,22 @@ def acceptance_check(request):
                 if pic.split('.')[0] == pic_name:
                     pic_path.append(path2 + pic)
         call = []
-        for i in range(sample_num):
-            path3 ='http://localhost:8000/static/acceptance/'
-            data = {}
-            data['content1'] = pic_path[i]
-            data['value'] = da[i]
-            path_pic = '.'+pic_path[i][21:]
-            rectangle_pic(path_pic,f'./static/acceptance/{project_id}_{pic_path[i][45:]}',da[i])
-            data['content2'] = path3 + f'{project_id}_{pic_path[i][45:]}'
-            call.append(data)
+        if type == '图片识别标注':
+            for i in range(sample_num):
+                path3 ='http://localhost:8000/static/acceptance/'
+                data = {}
+                data['content1'] = pic_path[i]
+                data['value'] = da[i]
+                path_pic = '.'+pic_path[i][21:]
+                rectangle_pic(path_pic,f'./static/acceptance/{project_id}_{pic_path[i][45:]}',da[i])
+                data['content2'] = path3 + f'{project_id}_{pic_path[i][45:]}'
+                call.append(data)
+        else:
+            for i in range(sample_num):
+                data = {}
+                data['content'] = pic_path[i]
+                data['value'] = da[i]
+                call.append(data)
     return JsonResponse({'code':200,'data':call,'mission_target':p.project_target,'task_id':task_id})
 
 def get_text(path,index):
