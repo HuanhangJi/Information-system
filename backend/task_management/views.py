@@ -5,6 +5,7 @@ from .models import *
 import os
 import sys
 import random
+from PIL import Image, ImageDraw
 sys.path.append(os.path.abspath('..'))
 os.chdir(os.path.abspath(os.getcwd()))
 from client_management.models import *
@@ -606,9 +607,9 @@ def acceptance_check(request):
         data = json.load(f)
     sample = random.sample(data.keys(), sample_num)
     da = []
+    for item in sample:
+        da.append(data[item])
     if type == '文本标注':
-        for item in sample:
-            da.append(data[item])
         path2 = f'./static/sample_document/{project_id}/total.txt'
         p = Project.objects.get(project_id=project_id)
         start = int(p.item_per_task) * (num - 1)
@@ -634,9 +635,13 @@ def acceptance_check(request):
                     pic_path.append(path2 + pic)
         call = []
         for i in range(sample_num):
+            path3 ='http://localhost:8000/static/acceptance/'
             data = {}
-            data['content'] = pic_path[i]
+            data['content1'] = pic_path[i]
             data['value'] = da[i]
+            path_pic = '.'+pic_path[i][21:]
+            rectangle_pic(path_pic,f'./static/acceptance/{project_id}_{pic_path[i][45:]}',da[i])
+            data['content2'] = path3 + f'{project_id}_{pic_path[i][45:]}'
             call.append(data)
     return JsonResponse({'code':200,'data':call,'mission_target':p.project_target,'task_id':task_id})
 
@@ -648,6 +653,21 @@ def get_text(path,index):
                 break
             count += 1
     return line[:-1]
+
+
+def rectangle_pic(path1,path2,index):
+    img_fpath = path1
+    img = Image.open(img_fpath)
+    width = img.size[0]  # 获取宽度
+    height = img.size[1]  # 获取长度
+    a = ImageDraw.ImageDraw(img)
+    x1 = index['x'] * width
+    y1 = index['y'] * height
+    x2 = index['ex'] * width
+    y2 = index['ey'] * height
+    a.rectangle(((x1, y1), (x2, y2)), fill=None, outline='red', width=5)
+    img.save(path2)
+
 
 def acceptance_show(request):
     res = get_res(request)
