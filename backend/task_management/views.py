@@ -487,6 +487,13 @@ def project_management(request):
         data['edit'] = True
         data['edit_text'] = "修改"
         data['start_time'] = project.start_time
+        if project.project_type == '文本类型标注':
+            data['project_type'] = 1
+        elif project.project_type == '图片识别标注':
+            data['project_type'] = 2
+        else:
+            data['project_type'] = 3
+        data['target'] = project.project_target
         missions.append(data)
     return JsonResponse({'code':200,'data':missions})
 
@@ -696,10 +703,11 @@ def acceptance_show(request):
         data['name'] = nickname
         data['level'] = level
         data['pay'] = pay
-        data['tel'] = tel
+        data['phone_num'] = tel
         if email is None:
             email=''
         data['email']=email
+        data['task_id'] = i.task_id
         info.append(data)
     return JsonResponse({'code': 200,'data':info})
 
