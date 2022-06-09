@@ -256,7 +256,7 @@ def write_data(request, project_id):
         except:
             new_name = i.encode('cp437').decode('utf-8')
         type = new_name.split('.')[-1]
-        if flag == 0:
+        if flag != 1:
             if type not in ['jpg','jpeg','png']:
                 continue
             num += 1
@@ -368,24 +368,8 @@ def give_up_task(request):
     return JsonResponse({'code': 200})
 
 
-## TODO 标注者提交任务
-def commit_task(request):
-    res = get_res(request)
-    processed_data = request.FILES['processed_data']
-    task_id = res['task_id']
-    type = processed_data.name.split('.').pop()
-    project_id = task_id.split('.')[0]
-    write_data(processed_data,task_id+'.'+type,project_id)
-    t = Task.objects.get(task_id=task_id)
-    t.task_status = 2
-    t.save()
-    return JsonResponse({'code': 200})
-
-
 ## TODO task提交成功后付款与升级
-def completed_task(request):
-    res = get_res(request)
-    task_id = res['task_id']
+def completed_task(task_id):
     project_id = task_id.split('_')[0]
     t = Task.objects.get(task_id=task_id)
     ta = Task_association.objects.get(task_id=task_id)
@@ -397,20 +381,20 @@ def completed_task(request):
     r = Reward_record()
     web = Web_account()
     web.task_id = task_id
-    t.task_status = 3
     t.save()
     r.reward_amount = p.payment_per_task
-    r.ta_id = ta.ta_id
+    r.task_id = task_id
     r.reward_time = datetime.datetime.now()
     r.save()
     pre.prepay_balance -= p.payment_per_task
     pre.save()
-    t.completed_task_num += 1
-    t.save()
+    p.completed_task_num += 1
     w.account_num += float(p.payment_per_task)*0.8
     web.PAF_time = datetime.datetime.now()
     web.PAF_amount = float(p.payment_per_task)*0.2
     web.PAF_type = p.project_type
+    if web.PAF_balance is None:
+        web.PAF_balance = 0
     web.PAF_balance += web.PAF_amount
     web.save()
     w.save()
@@ -419,7 +403,7 @@ def completed_task(request):
     c.save()
     if p.task_num == p.completed_task_num:
         p.project_status = 2
-        p.save()
+    p.save()
 
 
 def judge_status(status):
@@ -448,7 +432,20 @@ def project_management(request):
     account_id = res['account_id']
     where = res['params']
     plist = Project.objects.filter(account_id=account_id).exclude(project_status=6)
-    print(where)
+    now = datetime.datetime.now()
+    for item in plist:
+        if now>item.start_time.replace(tzinfo=None):
+            item.project_status=1
+        if now>item.due_time.replace(tzinfo=None):
+            item.project_status=5
+            project_id = item.project_id
+            account_id = item.project_id
+            w = Wallet.objects.get(account_id=account_id)
+            p = Prepay.objects.get(project_id=project_id)
+            w.account_num += p.prepay_balance
+            w.save()
+            p.delete()
+        item.save()
     if where is not None:
         name = where['name']
         status = where['status']
@@ -528,6 +525,7 @@ def task_management(request):
     for task in ta:
         data = {}
         task_id = task.task_id
+        t = Task.objects.get(task_id=task_id)
         project_id = task.project_id
         p = Project.objects.get(project_id=project_id)
         if p.project_status >= 5:
@@ -565,7 +563,7 @@ def task_management(request):
         data['mission_id'] = task_id
         data['name'] = p.project_name
         data['poster'] = Producer.objects.get(account_id=p.account_id).nickname
-        data['state'] = judge_status(p.project_status)
+        data['state'] = judge_task(t.task_status)
         time_ = str(p.due_time)[:-6]
         time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S")))*1000
         data['end_time'] = time_s
@@ -604,7 +602,7 @@ def acceptance_check(request):
     task_id = res['task_id']
     sample_num = int(res['sample_num'])
     project_id = task_id.split('_')[0]
-    num = task_id.split('_')[1]
+    num = int(task_id.split('_')[1])
     p = Project.objects.get(project_id=project_id)
     type = p.project_type
     ta = Task_association.objects.get(task_id=task_id)
@@ -616,7 +614,7 @@ def acceptance_check(request):
     da = []
     for item in sample:
         da.append(data[item])
-    if type == '文本标注':
+    if type == '文本类型标注':
         path2 = f'./static/sample_document/{project_id}/total.txt'
         p = Project.objects.get(project_id=project_id)
         start = int(p.item_per_task) * (num - 1)
@@ -645,11 +643,11 @@ def acceptance_check(request):
             for i in range(sample_num):
                 path3 ='http://localhost:8000/static/acceptance/'
                 data = {}
-                data['content1'] = pic_path[i]
-                data['value'] = da[i]
+                data['content'] = pic_path[i]
                 path_pic = '.'+pic_path[i][21:]
-                rectangle_pic(path_pic,f'./static/acceptance/{project_id}_{pic_path[i][45:]}',da[i])
-                data['content2'] = path3 + f'{project_id}_{pic_path[i][45:]}'
+                print(pic_path[i],"651")
+                rectangle_pic(path_pic,f'./static/acceptance/{project_id}_{pic_path[i].split("/")[-1]}',da[i])
+                data['value'] = path3 + f'{project_id}_{pic_path[i].split("/")[-1]}'
                 call.append(data)
         else:
             for i in range(sample_num):
@@ -675,13 +673,14 @@ def rectangle_pic(path1,path2,index):
     width = img.size[0]  # 获取宽度
     height = img.size[1]  # 获取长度
     a = ImageDraw.ImageDraw(img)
-    x1 = index['x'] * width
-    y1 = index['y'] * height
-    x2 = index['ex'] * width
-    y2 = index['ey'] * height
-    a.rectangle(((x1, y1), (x2, y2)), fill=None, outline='red', width=5)
+    for item in index:
+        x1 = item['x'] * width
+        y1 = item['y'] * height
+        x2 = item['ex'] * width
+        y2 = item['ey'] * height
+        print(path1,path2)
+        a.rectangle(((x1, y1), (x2, y2)), fill=None, outline='red', width=5)
     img.save(path2)
-
 
 def acceptance_show(request):
     res = get_res(request)
@@ -708,6 +707,10 @@ def acceptance_show(request):
             email=''
         data['email']=email
         data['task_id'] = i.task_id
+        if i.task_status !=2 or i.task_status !=4:
+            data['task_status'] = 0
+        else:
+            data['task_status'] = 1
         info.append(data)
     return JsonResponse({'code': 200,'data':info})
 
@@ -716,21 +719,39 @@ def error_append(request):
     task_id = res['task_id']
     if_accept = res['if_accept']
     wrong_item_list = res['wrong_item_list']
+    t = Task.objects.get(task_id=task_id)
     if if_accept == 1:
+        t.task_status = 3
+        t.save()
+        completed_task(task_id)
         return JsonResponse({'code':200})
     else:
-        t = Task.objects.get(task_id=task_id)
         t.task_status=4
         t.save()
         for item in wrong_item_list:
-            te = task_error()
-            te.task_id = task_id
-            te.error = item['content']
-            te.error_value = item['value']
-            te.save()
+            if item!={}:
+                te = task_error()
+                te.task_id = task_id
+                te.error = item['content']
+                te.error_value = item['value']
+                te.save()
         return JsonResponse({'code': 200})
 
-
+#0表示未接收，1表示被接收，2表示提交审核，3表示任务通过，4表示审核未通过
+def judge_task(status):
+    s = 0
+    status = int(status)
+    if status == 0:
+        s = '未接收'
+    if status == 1:
+        s = '已领取'
+    if status == 2:
+        s = '提交审核'
+    if status == 3:
+        s = '任务通过'
+    if status == 4:
+        s = '审核未通过'
+    return s
 
 
 

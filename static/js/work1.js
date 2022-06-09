@@ -37,7 +37,17 @@ function previous_task(){
             if (page == 1){$("#previous").attr('disabled','"disabled"');};
             if ((page != page_max) && ($("#next").attr('disabled') =="disabled")){
                 $("#next").removeAttr('disabled');
-                $('.btn-primary').removeAttr('style','display');
+                $('#choices').removeAttr('style','display');
+                if (choice_num>0){$('#choice1').removeAttr('style','display');}
+                if (choice_num>1){$('#choice2').removeAttr('style','display');}
+                if (choice_num>2){$('#choice3').removeAttr('style','display');}
+                if (choice_num>3){$('#choice4').removeAttr('style','display');}
+                if (choice_num>4){$('#choice5').removeAttr('style','display');}
+                if (choice_num>5){$('#choice6').removeAttr('style','display');}
+                if (choice_num>6){$('#choice7').removeAttr('style','display');}
+                if (choice_num>7){$('#choice8').removeAttr('style','display');}
+                if (choice_num>8){$('#choice9').removeAttr('style','display');}
+                $('#choices').css('text-align','center');
                 $('#end').css('display','none');
                 };
             $("#neirong").text(data['content']);

@@ -49,7 +49,8 @@ function previous_task(){
                 if (choice_num>7){$('#choice8').removeAttr('style','display');}
                 if (choice_num>8){$('#choice9').removeAttr('style','display');}
                 $('#neirong2').css('display','none');
-                $('#neirong').removeAttr('style','display')
+                $('#neirong').removeAttr('style','display');
+                $('#neirong').css('height','300px');
                 };
             $("#neirong").attr("src",data['content']);
             $("#jindu").text(data['new_page']);
@@ -73,7 +74,6 @@ function next_task(){
             $("#neirong").attr("src",data['content']);
             if (page == page_max){$('#neirong2').removeAttr('style','display');$('#neirong2').css('color','#00a4ff');$('#neirong2').css('font-size','25px');
             $("#neirong").css('display','none');$("#next").attr('disabled','"disabled"');$('#choices .btn-primary').css('display','none');$('#end').removeAttr('style','display');};
-
             $("#jindu").text(data['new_page']);
             $("#jindu2").attr("style","width: "+data['jindu']+"%");
             },

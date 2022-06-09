@@ -1,3 +1,4 @@
+import datetime
 import math
 
 from django.shortcuts import render
@@ -101,7 +102,8 @@ def jdzz(request, user_id='0'):
         context = {'user_id': user_id, 'img_url': '/static/avatar/default/default_avatar.jpeg'}
     return render(request, "index/index.html", context)
 
-
+def refresh_data(project_list):
+    pass
 
 # 任务市场
 def jdzz_product(request, user_id=0, pIndex=1):
@@ -113,27 +115,44 @@ def jdzz_product(request, user_id=0, pIndex=1):
     money = request.GET.get('caidan2', '所有报酬')
     type_ = request.GET.get('caidan1', '所有类型')
     star = request.GET.get('caidan3', '所有星级')
-    Plist = Project.objects.exclude(project_status__gte=5)
+    Plist = Project.objects.exclude(project_status=6)
+    now = datetime.datetime.now()
+    for item in Plist:
+        if now>item.start_time.replace(tzinfo=None):
+            item.project_status=1
+        if now>item.due_time.replace(tzinfo=None):
+            item.project_status=5
+            project_id = item.project_id
+            account_id = item.project_id
+            w = Wallet.objects.get(account_id=account_id)
+            p = Prepay.objects.get(project_id=project_id)
+            w.account_num += p.prepay_balance
+            w.save()
+            p.delete()
+        item.save()
+    Plist = Plist.exclude(project_status=5)
+    Plist = Plist.exclude(project_status=0)
+    Plist = Plist.exclude(project_status=10)
     if kw != '':
         Plist = Plist.filter(Q(project_name__contains=kw)|Q(description__contains=kw))
     if money != '所有报酬':
-        if money == '100币以下':
-            Plist = Plist.filter(payment_per_task__lte = 100)
-        elif money == '100币~500币':
-            Plist = Plist.filter(Q(payment_per_task__gt=100),Q(payment_per_task__lte=500))
-        elif money == '500币~1000币':
-            Plist = Plist.filter(Q(payment_per_task__gt=500),Q(payment_per_task__lte=1000))
-        elif money == '大于1000币':
-            Plist = Plist.filter(payment_per_task__gt=1000)
+        if money == '5币以下':
+            Plist = Plist.filter(payment_per_task__lte=5)
+        elif money == '5币~20币':
+            Plist = Plist.filter(Q(payment_per_task__gt=5),Q(payment_per_task__lte=20))
+        elif money == '20币~50币':
+            Plist = Plist.filter(Q(payment_per_task__gt=20),Q(payment_per_task__lte=50))
+        elif money == '50币以上':
+            Plist = Plist.filter(payment_per_task__gt=50)
         else:
             money = '所有报酬'
     if type_ != '所有类型':
-        if type_ == '文本标注':
-            Plist = Plist.filter(project_type='文本标注')
+        if type_ == '文本类型标注':
+            Plist = Plist.filter(project_type='文本类型标注')
         elif type_ == '图片识别标注':
             Plist = Plist.filter(project_type='图片识别标注')
-        elif type_ == '图片分类标注':
-            Plist = Plist.filter(project_type='图片分类标注')
+        elif type_ == '图片类型标注':
+            Plist = Plist.filter(project_type='图片类型标注')
         else:
             type_ = '所有类型'
     if star != '所有星级':
@@ -173,7 +192,7 @@ def jdzz_shangpin(request, project_id, user_id=0):
                  'leixing': info['project_type'], 'nandu': judge_diff(info['project_star']),
                  'shijian': info['due_time'], 'star1': info['project_star'],
                  'exp': judge_score(info['project_star']),
-                 'jingbi': info['payment_per_task']*0.8*100, 'time_guji': judge_time(info['project_star']), 'miaoshu': info['description']}
+                 'jingbi': round(info['payment_per_task']*0.8,1), 'time_guji': judge_time(info['project_star']), 'miaoshu': info['description']}
     return render(request, "index/shangpin.html", {**context, **task_info})
 
 
@@ -217,7 +236,7 @@ def work1(request, user_id, task_id, page=1):
                     content = line
                     break
                 count += 1
-        with open(f'{path}/text_tags_{project_id}.txt','r') as fp1:
+        with open(f'{path}/text_tags_{project_id}.txt','r',encoding='utf-8') as fp1:
             for line in fp1:
                 choices = line.split(';')[0].split(',')
                 break
@@ -263,14 +282,14 @@ def work2(request,user_id,task_id,page = 1):
             if int(pic.split('_')[0]) == number:
                 img = f'/static/sample_document/{project_id}/{pic}'
                 break
-        return JsonResponse({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': '奥特曼之眼'}})
+        return JsonResponse({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': p.project_target}})
     else:
         img = ''
         for pic in pic_list:
             if int(pic.split('_')[0]) == start:
                 img = f'/static/sample_document/{project_id}/{pic}'
                 break
-        task_info = {'new_page':page,'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': '奥特曼之眼', 'jindu': 0,
+        task_info = {'new_page':page,'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': p.project_target, 'jindu': 0,
                      'task_img': img,'page_max':n+1}
         return render(request, "index/work_2.html",{**context,**task_info})
 
@@ -316,7 +335,7 @@ def work3(request, user_id, task_id, page=1):
                 break
         return JsonResponse({'data': {'content': img, 'jindu': jindu, 'new_page': page}})
     else:
-        with open(f'{path}/text_tags_{project_id}.txt','r') as fp1:
+        with open(f'{path}/text_tags_{project_id}.txt','r',encoding='utf-8') as fp1:
             for line in fp1:
                 choices = line.split(';')[0].split(',')
                 break
@@ -330,7 +349,8 @@ def work3(request, user_id, task_id, page=1):
                 img = f'/static/sample_document/{project_id}/{pic}'
                 break
         jindu = 0
-        task_info = {'page_max':n+1,'new_page':page,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption, 'jindu': jindu,'content': img,'yaoqiu':'AA就选AA'*20,'choice_num':choices_num}
+        print(img)
+        task_info = {'page_max':n+1,'new_page':page,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption, 'jindu': jindu,'content': img,'yaoqiu':p.project_target,'choice_num':choices_num}
         return render(request, "index/work_3.html", {**context, **task_info,**choice_dict})
 
 
@@ -362,16 +382,27 @@ def work3_post(request):
     store_data_3(user_id, task_id, page, choice)
     return JsonResponse({})
 
+def star_level(star,level):
+    if int(star) < int(level)+2:
+        i = 1
+    else:
+        i = 0
+    return i
+
+
 
 def get_task(request,account_id,project_id):
-    if int(account_id) == 0:
-        return HttpResponseRedirect('http://10.128.161.108:8001/')
     try:
-        Consumer.objects.get(account_id=account_id)
+        c = Consumer.objects.get(account_id=account_id)
     except:
         return JsonResponse({'code':402,'msg':'接收者错误'})
     tasks = Task.objects.filter(Q(project_id=project_id),(Q(task_status=0)))
-    Project.objects.get(project_id=project_id).project_status = 1
+    p = Project.objects.get(project_id=project_id)
+    status = star_level(p.project_star, c.level)
+    if not status:
+        return JsonResponse({'code':403,'msg':'标注着等级不足，无法领取任务'})
+    p.project_status = 1
+    p.save()
     task_num = tasks.count()
     if task_num >= 1:
         task = tasks.first()
@@ -391,7 +422,7 @@ def store_data_1(user_id, task_id, page, choice):
     path = f'./static/data/account_{user_id}_task_{task_id}'
     project_id = task_id.split('_')[0]
     path2 = f'./static/sample_document/{project_id}/text_tags_{project_id}.txt'
-    with open(path2,'r') as f:
+    with open(path2,'r',encoding='utf-8') as f:
         for line in f:
             tags = line.split(';')[0].split(',')
             break

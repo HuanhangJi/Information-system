@@ -86,11 +86,11 @@
                     ,data: [{
                       title: '所有类型'
                     },{
-                      title: '文本标注'
+                      title: '文本类型标注'
                     },{
-                      title: '图片分类标注'
+                      title: '图片类型标注'
                     },{
-                      title: '图片框选标注'
+                      title: '图片识别标注'
                     }]
                     ,click: function(obj){
                       $("#caidan1").text(obj.title);
@@ -104,13 +104,13 @@
                     ,data: [{
                       title: '所有报酬'
                     },{
-                      title: '100币以下'
+                      title: '5币以下'
                     },{
-                      title: '100币~500币'
+                      title: '5币~20币'
                     },{
-                      title: '500币~1000币'
+                      title: '20币~50币'
                     },{
-                      title: '1000币以上'
+                      title: '50币以上'
                     }]
                     ,click: function(obj){
                       $("#caidan2").text(obj.title);
@@ -186,7 +186,7 @@
                                     </div>
                                     <div class="col-md-9" style="margin:20px 0">
                                         <div class="item-heading">
-                                            <h4 style="display:inline"><a id="wenbenming1" href="/jdzz_shangpin/{{user_id}}/{{ task.project_id }}/"  target="_blank" style="margin: top 2px;">{{ task.project_name }}</a></h4>
+                                            <h4 style="display:inline"><a id="wenbenming1" href="/jdzz_shangpin/{{user_id}}/{{ task.project_id }}/"  target="_blank" style="margin: top 2px;font-size:25px">{{ task.project_name }}</a></h4>
                                             <!-- 小标签先去掉 -->
                                             <!-- <span class="layui-badge" style="margin-right: 1px;">新</span>
                                             <span class="label label-warning" id="wenbenbiao1">文本</span> -->
@@ -206,9 +206,12 @@
                                             </script>
                                         </div>
                                         <div class="item-content">
+                                            <div class="text" style="margin-top: 20px; width: 80%;">
+                                                <span style="color: #727f8f;font-size:20px">数据类型：</span><span  style='font-size:20px'>{{ task.project_type }}</span>
+                                                <span style="color: #727f8f;margin-left:50px;font-size:20px">截止时间：</span><span style='font-size:20px'>{{ task.due_time }}</span>
+                                            </div>
                                             <div class="text" style="margin-top: 10px; width: 80%;">
-                                                <span style="color: #727f8f;">数据类型：</span><span>{{ task.project_type }}</span>
-                                                <span style="color: #727f8f;margin-left:50px">截止时间：</span><span>{{ task.due_time }}</span>
+                                                <span style="color: #727f8f;font-size:20px">报酬：</span><span style='font-size:20px'>{{ task.payment_per_task }}&nbsp币</span>
                                             </div>
                                             <div class="item-footer">
                                                 <!-- <a href="#" class="text-muted"><i class="icon-comments"></i> 243</a> &nbsp; <span class="text-muted">2022-03-29 16:14:37</span> -->

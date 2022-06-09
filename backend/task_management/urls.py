@@ -14,7 +14,7 @@ urlpatterns = [
     path('acceptance_check/', acceptance_check, name=' text_acceptance_check'),
     path('give_up_task/', give_up_task, name='give_up_task'),
     path('acceptance_show/', acceptance_show, name='acceptance_show'),
-    path('error_append', error_append, name='error_append'),
+    path('error_append/', error_append, name='error_append'),
 ]
 
 

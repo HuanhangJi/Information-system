@@ -5,7 +5,7 @@ from django.db import models
 class Task(models.Model):
     task_id = models.CharField(max_length=25,primary_key=True)
     project_id = models.CharField(max_length=25)
-    task_status = models.CharField(max_length=20)#0表示未接收，1表示被接收，2表示提交审核，3表示任务通过，4表示审核未通过
+    task_status = models.CharField(max_length=20)#0表示未接收，1表示已接收，2表示提交审核，3表示任务通过，4表示审核未通过
     # original_data = models.FileField(upload_to='data')
     # processed_data = models.FileField(upload_to='data')
     score = models.IntegerField()
@@ -31,7 +31,7 @@ class Project(models.Model):
     start_time = models.DateTimeField(null=True)
     due_time = models.DateTimeField()
     payment_per_task = models.FloatField()
-    project_status = models.IntegerField()#0表示发布,6为发布失败
+    project_status = models.IntegerField()#0表示未开始,1表示已经开始,2代表完全领取,5表示已结束,6为发布失败,10是暂停
     item_per_task = models.IntegerField(null=True)
     task_num = models.IntegerField()
     completed_task_num = models.IntegerField()
@@ -67,17 +67,15 @@ class Prepay(models.Model):#数据库修改
 
 
 class Reward_record(models.Model):#数据库修改
-    ta_id = models.CharField(max_length=25)
-    # reward_id = models.CharField(max_length=25,primary_key=True, auto_created=True)
+    task_id = models.CharField(max_length=25)
     reward_amount = models.FloatField()
     reward_time = models.DateTimeField()
 
 
 
 class Web_account(models.Model):
-    # PAF_id = models.CharField(max_length=25,primary_key=True, auto_created=True)
     task_id = models.CharField(max_length=25)
-    PAF_type = models.CharField(max_length=4)
+    PAF_type = models.CharField(max_length=10)
     PAF_amount = models.FloatField()
     PAF_balance = models.FloatField()
     PAF_time = models.DateTimeField()
@@ -87,7 +85,7 @@ class Task_association(models.Model):#数据库修改
     account_id = models.CharField(max_length=25)
     task_id = models.CharField(max_length=25)
     project_id = models.CharField(max_length=25)
-    # ta_id = models.CharField(max_length=25,primary_key=True,auto_created=True)
+
 
 # 项目id库
 class project_id_pool(models.Model):
@@ -96,5 +94,5 @@ class project_id_pool(models.Model):
 
 class task_error(models.Model):
     task_id = models.CharField(max_length=20)
-    error = models.CharField(max_length=60)
-    error_value = models.CharField(max_length=60)
+    error = models.CharField(max_length=200)
+    error_value = models.CharField(max_length=200)

@@ -337,6 +337,5 @@ def wallet_info(request):
     account_id = res['account_id']
     w = Wallet.objects.get(account_id=account_id)
     account_num = w.account_num
-    print(account_num)
     return JsonResponse({'account_num':account_num})
 
