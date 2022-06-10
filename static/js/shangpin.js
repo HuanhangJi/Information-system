@@ -13,9 +13,7 @@ layui.use(['rate'], function(){
 function lingqu() {
     if (user_id==0){window.open("http://localhost:8001", '_self');}
     else{                     
-    x = document.getElementById("lingqu");
-    x.innerHTML = "领取成功";
-    x.className = "btn btn-lg btn-success disabled";
+
 //                            window.open('/get_task/'+user_id+'/'+renwuhao,'_self');
     $.ajax({
         type: "POST",
@@ -26,7 +24,9 @@ function lingqu() {
         data: '',
         success: function (res) { //data为地址传过来的数据
             if (res['code']!=200){$('#myModal2').text(res['msg']);$('#myModal2').css("color",'red')}
-            else {$('#myModal2').css("color",'#0b68fb')}
+            else { x = document.getElementById("lingqu");
+    x.innerHTML = "领取成功";
+    x.className = "btn btn-lg btn-success disabled";}
             }
         });}
                         };
