@@ -181,12 +181,9 @@ def jdzz_product(request, user_id=0, pIndex=1):
 
 
 def jdzz_shangpin(request, project_id, user_id=0):
-    if not int(user_id) == 0:
-        # 根据user_id从数据库调img_url
-        context = show_avatar(user_id)
-        # 根据task_id从数据库调取task_info
-    else:
-        context = {'user_id':0}
+    # 根据user_id从数据库调img_url
+    context = show_avatar(user_id)
+    # 根据task_id从数据库调取task_info
     p = Project.objects.get(project_id=project_id)
     info = p.to_dict()
     h = Producer.objects.get(account_id=info['account_id'])
@@ -403,7 +400,7 @@ def get_task(request,account_id,project_id):
     p = Project.objects.get(project_id=project_id)
     status = star_level(p.project_star, c.level)
     if not status:
-        return JsonResponse({'code':403,'msg':'标注者等级不足，无法领取任务'})
+        return JsonResponse({'code':403,'msg':'标注着等级不足，无法领取任务'})
     p.project_status = 1
     p.save()
     task_num = tasks.count()
