@@ -833,7 +833,6 @@ def admin_management(request):
         data = {}
         project_id = task.project_id
         p = Project.objects.get(project_id=project_id)
-        pr = Producer.objects.get(account_id=p.account_id)
         if name != '':
             s = p.project_name.find(name)
             if s == -1:
@@ -842,14 +841,14 @@ def admin_management(request):
             if task.task_id != task_id:
                 continue
         if poster_name != '':
-            if pr.nickname.find(poster_name) == -1:
+            if p.nickname.find(poster_name) == -1:
                 continue
         if project_type != '':
             if p.project_type != project_type:
                 continue
         data['mission_id'] = p.project_id
         data['name'] = p.project_name
-        data['poster_name'] = pr.nickname
+        data['poster_name'] = p.nickname
         data['state'] = judge_task(task.task_status)
         time_ = str(p.due_time)[:-6]
         time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S"))) * 1000
