@@ -14,7 +14,7 @@ urlpatterns = [
     path('api/recharge_wallet/', recharge_wallet, name='recharge_wallet'), #钱包充值
     path('api/change_user_info/',user_change,name='change_user_info'), #用户信息修改
     path('api/get_wallet_info/',wallet_info,name='get_wallet_info'),#用户信息修改
-    path('admin_login',admin_login,name='admin'),#后台，不做后台另说
+    path('admin_login/',admin_login,name='admin'),#后台，不做后台另说
     # path('admin/pro/del',pro_del,name='pro_del'),
     # path('admin/pro/query',pro_query,name='pro_query'),
 ]
