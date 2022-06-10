@@ -819,6 +819,7 @@ def get_data(request):
     return JsonResponse({'code':200,'url':f'http://localhost:8000/static/data/account_{account}_task_{task_id}/ans.zip'})
 
 # 管理员审核
+# 管理员审核
 def admin_management(request):
     res = get_res(request)
     tlist = Task.objects.filter(task_status=10)
@@ -859,11 +860,10 @@ def admin_management(request):
         time_ = str(p.start_time)[:-6]
         time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S"))) * 1000
         data['start_time'] = time_s
-        data['project_type'] = p.project_type
         data['task_id'] = task.task_id
+        data['project_type'] = p.project_type
         missions.append(data)
     return JsonResponse({'code': 200, 'data': missions})
-
 
 
 
