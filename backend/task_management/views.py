@@ -719,6 +719,8 @@ def acceptance_show(request):
             data['task_status'] = 1
         elif s == 4:
             data['task_status'] = 2
+        elif s == 10:
+            data['task_status'] = 3
         else:
             data['task_status'] = -1
         info.append(data)
@@ -736,7 +738,7 @@ def error_append(request):
         completed_task(task_id)
         return JsonResponse({'code':200})
     else:
-        t.task_status=4
+        t.task_status=10
         t.save()
         for item in wrong_item_list:
             if item!={}:
@@ -762,56 +764,14 @@ def judge_task(status):
         s = '任务通过'
     if status == 4:
         s = '审核未通过'
+    if status == 10:
+        s = '管理员审核中'
     return s
 
 
-# def get_data(request):
-#     res = get_res(request)
-#     task_id = res['task_id']
-#     project_id = task_id.split('_')[0]
-#     p = Project.objects.get(project_id=project_id)
-#     task_num = task_id.split('_')[1]
-#     path1 = f'./static/sample_document/{project_id}/map.txt'
-#     ta = Task_association.objects.get(task_id=task_id)
-#     account = ta.account_id
-#     path2 = f'./static/data/account_{account}_task_{task_id}/'
-#     path3 = path2 + 'data.json'
-#     f = open(path3,'r')
-#     data = json.load(f)
-#     start = int(p.item_per_task) * (int(task_num)-1) + 1
-#     num = 0
-#     i = 1
-#     ans = {}
-#     if p.project_type != '文本类型标注':
-#         with open(path1,'r',encoding='utf-8') as fp:
-#             for line in fp:
-#                 num += 1
-#                 if num >= start and num < start + int(p.item_per_task):
-#                     po = data[str(i)]
-#                     ans[line.split(' ')[0]] = po
-#                 if num >= start + int(p.item_per_task):
-#                     break
-#         with open(path2+'ans.json','w') as f2:
-#             json.dump(ans,f2)
-#
-#     else:
-#         with open(f'./static/sample_document/{project_id}/total.txt','r',encoding='gbk') as fp:
-#             for line in fp:
-#                 num += 1
-#                 if num >= start and num < start + int(p.item_per_task):
-#                     po = data[str(i)]
-#                     ans[line[-1]] = po
-#                 if num >= start + int(p.item_per_task):
-#                     break
-#         with open(path2+'ans.json','w') as f2:
-#             json.dump(ans,f2)
-#
-#     return JsonResponse({'code':200,'url':f'http://localhost:8000/static/data/account_{account}_task_{task_id}/ans.json'})
-
 def get_data(request):
-    # res = get_res(request)
-    # task_id = res['task_id']
-    task_id = '10000007_1'
+    res = get_res(request)
+    task_id = res['task_id']
     project_id = task_id.split('_')[0]
     p = Project.objects.get(project_id=project_id)
     task_num = task_id.split('_')[1]
@@ -836,8 +796,10 @@ def get_data(request):
                     i += 1
                 if num >= start + int(p.item_per_task):
                     break
-        with open(path2+'ans.json','w') as f2:
+        with open('ans.json','w') as f2:
             json.dump(ans,f2)
+        with zipfile.ZipFile(path2+'ans.zip', 'w',zipfile.ZIP_DEFLATED) as f:
+            f.write('ans.json')
     else:
         with open(f'./static/sample_document/{project_id}/total.txt','r',encoding='gbk') as fp:
             print(start + int(p.item_per_task))
@@ -850,11 +812,55 @@ def get_data(request):
                     i += 1
                 if num >= start + int(p.item_per_task):
                     break
-        with open(path2+'ans.json','w') as f2:
+        with open('ans.json','w') as f2:
             json.dump(ans,f2)
-    return JsonResponse({'code':200,'url':f'http://localhost:8000/static/data/account_{account}_task_{task_id}/ans.json'})
+        with zipfile.ZipFile(path2+'ans.zip', 'w',zipfile.ZIP_DEFLATED) as f:
+            f.write('ans.json')
+    return JsonResponse({'code':200,'url':f'http://localhost:8000/static/data/account_{account}_task_{task_id}/ans.zip'})
 
-
+# 管理员审核
+def admin_management(request):
+    res = get_res(request)
+    tlist = Task.objects.filter(task_status=10)
+    if list(tlist) == []:
+        return JsonResponse({'code': 200, 'data': []})
+    missions = []
+    task_id = res['task_id']
+    name = res['project_name']
+    poster_name = res['poster_name']
+    project_type = res['project_type']
+    for task in tlist:
+        data = {}
+        project_id = task.project_id
+        p = Project.objects.get(project_id=project_id)
+        if name != '':
+            s = p.project_name.find(name)
+            if s == -1:
+                continue
+        if task_id != '':
+            if task.task_id != task_id:
+                continue
+        if poster_name != '':
+            if p.nickname.find(poster_name) == -1:
+                continue
+        if project_type != '':
+            if p.project_type != project_type:
+                continue
+        data['mission_id'] = p.project_id
+        data['name'] = p.project_name
+        data['poster_name'] = p.nickname
+        data['state'] = judge_task(task.task_status)
+        time_ = str(p.due_time)[:-6]
+        time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S"))) * 1000
+        data['end_time'] = time_s
+        data['level'] = p.project_star
+        data['money'] = p.payment_per_task
+        time_ = str(p.start_time)[:-6]
+        time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S"))) * 1000
+        data['start_time'] = time_s
+        data['project_type'] = p.project_type
+        missions.append(data)
+    return JsonResponse({'code': 200, 'data': missions})
 
 
 

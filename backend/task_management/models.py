@@ -5,7 +5,7 @@ from django.db import models
 class Task(models.Model):
     task_id = models.CharField(max_length=25,primary_key=True)
     project_id = models.CharField(max_length=25)
-    task_status = models.CharField(max_length=20)#0表示未接收，1表示已接收，2表示提交审核，3表示任务通过，4表示审核未通过
+    task_status = models.CharField(max_length=20)#0表示未接收，1表示已接收，2表示提交审核，3表示任务通过，4表示审核未通过,10管理员审核中
     # original_data = models.FileField(upload_to='data')
     # processed_data = models.FileField(upload_to='data')
     score = models.IntegerField()

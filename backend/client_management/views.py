@@ -339,3 +339,24 @@ def wallet_info(request):
     account_num = w.account_num
     return JsonResponse({'account_num':account_num})
 
+def admin_login(request):
+    res = get_res(request)
+    pw = hash_md5(res['password'])
+    account = str(res['tel'])
+    info = ''
+    if Producer.objects.filter(account_id=account).exists():
+        Pro = Producer.objects.get(account_id=account)
+        if Pro.password == pw:
+            code = 200
+            info = Pro.to_dict()
+            t = Token()
+            t.account_id = info['account_id']
+            t.save()
+            info['wallet_status'] = 1
+        else:
+            code = 404
+    else:
+        code = 404
+    data = {'code': code, "userInfo": info}
+    return JsonResponse(data)
+
