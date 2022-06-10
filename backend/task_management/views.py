@@ -859,6 +859,7 @@ def admin_management(request):
         time_s = int(time.mktime(time.strptime(time_, "%Y-%m-%d %H:%M:%S"))) * 1000
         data['start_time'] = time_s
         data['project_type'] = p.project_type
+        data['task_id'] = task.task_id
         missions.append(data)
     return JsonResponse({'code': 200, 'data': missions})
 
