@@ -116,6 +116,7 @@ def jdzz_product(request, user_id=0, pIndex=1):
     type_ = request.GET.get('caidan1', '所有类型')
     star = request.GET.get('caidan3', '所有星级')
     Plist = Project.objects.exclude(project_status=6)
+    Plist = Plist.exclude(project_status=5)
     now = datetime.datetime.now()
     for item in Plist:
         if now>item.start_time.replace(tzinfo=None):

@@ -19,6 +19,7 @@ urlpatterns = [
     path('admin_management/', admin_management, name='admin_management'),
     path('acceptance_admin/', acceptance_admin, name='acceptance_admin'),
     path('admin_change/', admin_change, name='admin_change'),
+    path('admin_conclusion/', admin_conclusion, name='admin_conclusion'),
 ]
 
 

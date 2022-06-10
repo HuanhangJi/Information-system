@@ -367,8 +367,9 @@ def give_up_task(request):
     ta = Task_association.objects.filter(Q(account_id=account_id),Q(task_id=task_id))
     ta.delete()
     t = Task.objects.get(task_id=task_id)
-    t.task_status = 0
-    t.save()
+    if t.task_status != 3:
+        t.task_status = 0
+        t.save()
     return JsonResponse({'code': 200})
 
 
@@ -868,7 +869,7 @@ def admin_management(request):
 def acceptance_admin(request):
     res = get_res(request)
     task_id = res['task_id']
-    E = task_error.objects.get(task_id=task_id)
+    E = task_error.objects.filter(task_id=task_id)
     errors = []
     project_id = task_id.split('_')[0]
     p = Project.objects.get(project_id=project_id)
@@ -882,7 +883,7 @@ def acceptance_admin(request):
 def admin_change(request):
     res = get_res(request)
     task_id = res['task_id']
-    E = task_error.objects.get(task_id=task_id)
+    E = task_error.objects.filter(task_id=task_id)
     errors = []
     project_id = task_id.split('_')[0]
     p = Project.objects.get(project_id=project_id)
@@ -892,5 +893,20 @@ def admin_change(request):
         data['value'] = item.error_value
         errors.append(data)
     return JsonResponse({'code':200,'data':errors,'mission_target':p.project_target,'task_id':task_id})
+
+def admin_conclusion(request):
+    res = get_res(request)
+    task_id = res['task_id']
+    accept = res['accept']
+    t = Task.objects.get(task_id=task_id)
+    if accept == 1:
+        t.task_status = 3
+        completed_task(task_id)
+    else:
+        t.task_status = 4
+    t.save()
+    return JsonResponse({'code': 200})
+
+
 
 

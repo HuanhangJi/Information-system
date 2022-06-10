@@ -24,9 +24,15 @@ function lingqu() {
         data: '',
         success: function (res) { //data为地址传过来的数据
             if (res['code']!=200){$('#myModal2').text(res['msg']);$('#myModal2').css("color",'red')}
-            else {    x = document.getElementById("lingqu");
+            else {
+            $('#myModal2').text('提交任务成功！:)');
+            $('#myModal2').css("color","#0b68fb");
+            x = document.getElementById("lingqu");
             x.innerHTML = "领取成功";
-            x.className = "btn btn-lg btn-success disabled";}
+            x.className = "btn btn-lg btn-success disabled";
+
+
+            }
             }
         });}
                         };
