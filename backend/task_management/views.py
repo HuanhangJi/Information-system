@@ -819,7 +819,6 @@ def get_data(request):
     return JsonResponse({'code':200,'url':f'http://localhost:8000/static/data/account_{account}_task_{task_id}/ans.zip'})
 
 # 管理员审核
-# 管理员审核
 def admin_management(request):
     res = get_res(request)
     tlist = Task.objects.filter(task_status=10)
@@ -865,5 +864,33 @@ def admin_management(request):
         missions.append(data)
     return JsonResponse({'code': 200, 'data': missions})
 
+
+def acceptance_admin(request):
+    res = get_res(request)
+    task_id = res['task_id']
+    E = task_error.objects.get(task_id=task_id)
+    errors = []
+    project_id = task_id.split('_')[0]
+    p = Project.objects.get(project_id=project_id)
+    for item in E:
+        data = {}
+        data['content'] = item.error
+        data['value'] = item.error_value
+        errors.append(data)
+    return JsonResponse({'code':200,'data':errors,'mission_target':p.project_target,'task_id':task_id})
+
+def admin_change(request):
+    res = get_res(request)
+    task_id = res['task_id']
+    E = task_error.objects.get(task_id=task_id)
+    errors = []
+    project_id = task_id.split('_')[0]
+    p = Project.objects.get(project_id=project_id)
+    for item in E:
+        data = {}
+        data['content'] = item.error
+        data['value'] = item.error_value
+        errors.append(data)
+    return JsonResponse({'code':200,'data':errors,'mission_target':p.project_target,'task_id':task_id})
 
 

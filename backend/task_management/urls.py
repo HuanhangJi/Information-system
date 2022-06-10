@@ -17,6 +17,8 @@ urlpatterns = [
     path('error_append/', error_append, name='error_append'),
     path('get_data/', get_data, name='get_data'),
     path('admin_management/', admin_management, name='admin_management'),
+    path('acceptance_admin/', acceptance_admin, name='acceptance_admin'),
+    path('admin_change/', admin_change, name='admin_change'),
 ]
 
 
