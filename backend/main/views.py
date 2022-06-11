@@ -396,7 +396,7 @@ def get_task(request,account_id,project_id):
     try:
         c = Consumer.objects.get(account_id=account_id)
     except:
-        return JsonResponse({'code':402,'msg':'接收者错误'})
+        return JsonResponse({'code':402,'msg':'发布者无法接收任务，请注册标注者账号！'})
     tasks = Task.objects.filter(Q(project_id=project_id),(Q(task_status=0)))
     p = Project.objects.get(project_id=project_id)
     status = star_level(p.project_star, c.level)
