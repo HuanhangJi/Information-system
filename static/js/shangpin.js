@@ -25,7 +25,7 @@ function lingqu() {
         success: function (res) { //data为地址传过来的数据
             if (res['code']!=200){$('#myModal2').text(res['msg']);$('#myModal2').css("color",'red')}
             else {
-            $('#myModal2').text('提交任务成功！:)');
+            $('#myModal2').text('领取任务成功！:)');
             $('#myModal2').css("color","#0b68fb");
             x = document.getElementById("lingqu");
             x.innerHTML = "领取成功";

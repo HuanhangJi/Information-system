@@ -14,6 +14,7 @@ import json
 from django.shortcuts import render
 import json
 from django.db.models import Q
+import math
 
 
 ## 补充id池 FINISH
@@ -251,9 +252,10 @@ def withdraw_wallet(request):
         info = {'code': 404, 'msg':'网络连接异常'}
         return JsonResponse(info)
     pay_time = str(datetime.datetime.now())
-    r.cw_type = 'withdraw'
+    r.cw_type = '提现'
     r.cw_amount = cw_amount
     r.pay_time = pay_time
+    r.AB_id = account_id
     r.save()
     info = {'code': 200}
     return JsonResponse(info)
@@ -268,7 +270,8 @@ def recharge_wallet(request):
     w.account_num += account_num
     w.save()
     pay_time = datetime.datetime.now()
-    r.cw_type = 'recharge'
+    r.cw_type = '充值'
+    r.AB_id = account_id
     r.cw_amount = account_num
     r.pay_time = pay_time
     r.save()
@@ -284,8 +287,6 @@ def user_change(request):
     usertype = res['usertype']
     type = res['type']
     value = res['value']
-    print(type)
-    print(value)
     if type == 'pay_password':
         set_payment_password(value,account_id)
     if usertype == 'pointer':
@@ -359,4 +360,20 @@ def admin_login(request):
         code = 404
     data = {'code': code, "userInfo": info}
     return JsonResponse(data)
+
+
+def money_flow(request):
+    res = get_res(request)
+    account_id = res['account_id']
+    wr = Wallet_record.objects.filter(AB_id=account_id)
+    info = []
+    for item in wr:
+        data = {}
+        data['cash_id'] = item.id
+        data['type'] = item.cw_type
+        data['time'] = item.pay_time
+        data['money'] = item.cw_amount
+        info.append(data)
+    return JsonResponse({'code':200,'data':info})
+
 

@@ -205,36 +205,6 @@ def project_query(request):
         return JsonResponse(data)
 
 
-# def write_data(request, project_id):
-#     project_id = project_id
-#     sample_document = request.FILES['file']
-#     destination = f'./static/sample_document/{project_id}/{sample_document.name}'
-#     if os.path.exists(destination):
-#         os.remove(destination)
-#     z = zipfile.ZipFile(destination,'w',zipfile.ZIP_DEFLATED)
-#     z.close()
-#     try:
-#         with open(destination,'wb') as f:
-#             for chunk in sample_document.chunks():
-#                 f.write(chunk)
-#         Z = zipfile.ZipFile(destination,'r',zipfile.ZIP_DEFLATED)
-#         path = f'./static/sample_document/{project_id}'
-#         num = 0
-#         for i in Z.namelist():
-#             num += 1
-#             try:
-#                 new_name = i.encode('cp437').decode('gbk')
-#             except:
-#                 new_name = i.encode('cp437').decode('utf-8')
-#             Z.extract(i,path=path)
-#             os.rename(path+f'/{i}',path+f'/{new_name}')
-#         data = {'code': 200, 'msg': '写入成功'}
-#     except Exception:
-#         os.remove(destination)
-#         data = {'code': 404, 'msg': '写入失败'}
-#     return JsonResponse(data)
-
-
 def write_data(request, project_id):
     global task_num
     global flag
@@ -353,6 +323,12 @@ def prepay(request,project_id):
         p.project_id = project_id
         p.account_id = account_id
         p.save()
+        wr = Wallet_record()
+        wr.cw_type = '预付款'
+        wr.cw_amount = total
+        wr.AB_id = account_id
+        wr.pay_time = datetime.datetime.now()
+        wr.save()
         data = {'code': 200}
     else:
         data = {'code':404}
@@ -439,17 +415,25 @@ def project_management(request):
     plist = Project.objects.filter(account_id=account_id).exclude(project_status=6)
     now = datetime.datetime.now()
     for item in plist:
-        if now>item.start_time.replace(tzinfo=None):
+        origin = item.project_status
+        if now > item.start_time.replace(tzinfo=None):
             item.project_status=1
-        if now>item.due_time.replace(tzinfo=None):
-            item.project_status=5
-            project_id = item.project_id
-            account_id = item.project_id
-            w = Wallet.objects.get(account_id=account_id)
-            p = Prepay.objects.get(project_id=project_id)
-            w.account_num += p.prepay_balance
-            w.save()
-            p.delete()
+        if now > item.due_time.replace(tzinfo=None):
+            item.project_status = 5
+            if origin != 5:
+                project_id = item.project_id
+                account_id = item.account_id
+                w = Wallet.objects.get(account_id=account_id)
+                p = Prepay.objects.get(project_id=project_id)
+                w.account_num += p.prepay_balance
+                w.save()
+                wr = Wallet_record()
+                wr.cw_type = '任务超时退款'
+                wr.cw_amount = p.prepay_balance
+                wr.pay_time = datetime.datetime.now()
+                wr.AB_id = account_id
+                wr.save()
+                p.delete()
         item.save()
     if where is not None:
         name = where['name']
@@ -507,6 +491,7 @@ def task_management(request):
     ta = Task_association.objects.filter(account_id=account_id)
     if list(ta) == []:
         return JsonResponse({'code': 200, 'data': []})
+    print(list(ta))
     missions = []
     name = ''
     status = ''
@@ -741,8 +726,10 @@ def error_append(request):
     else:
         t.task_status=10
         t.save()
+        num = 0
         for item in wrong_item_list:
             if item!={}:
+                num += 1
                 te = task_error()
                 te.task_id = task_id
                 te.error = item['content']
@@ -906,6 +893,9 @@ def admin_conclusion(request):
         t.task_status = 4
     t.save()
     return JsonResponse({'code': 200})
+
+
+
 
 
 

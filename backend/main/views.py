@@ -119,17 +119,25 @@ def jdzz_product(request, user_id=0, pIndex=1):
     Plist = Plist.exclude(project_status=5)
     now = datetime.datetime.now()
     for item in Plist:
-        if now>item.start_time.replace(tzinfo=None):
+        origin = item.project_status
+        if now > item.start_time.replace(tzinfo=None):
             item.project_status=1
-        if now>item.due_time.replace(tzinfo=None):
-            item.project_status=5
-            project_id = item.project_id
-            account_id = item.project_id
-            w = Wallet.objects.get(account_id=account_id)
-            p = Prepay.objects.get(project_id=project_id)
-            w.account_num += p.prepay_balance
-            w.save()
-            p.delete()
+        if now > item.due_time.replace(tzinfo=None):
+            item.project_status = 5
+            if origin != 5:
+                project_id = item.project_id
+                account_id = item.account_id
+                w = Wallet.objects.get(account_id=account_id)
+                p = Prepay.objects.get(project_id=project_id)
+                w.account_num += p.prepay_balance
+                w.save()
+                wr = Wallet_record()
+                wr.cw_type = '任务超时退款'
+                wr.cw_amount = p.prepay_balance
+                wr.pay_time = datetime.datetime.now()
+                wr.AB_id = account_id
+                wr.save()
+                p.delete()
         item.save()
     Plist = Plist.exclude(project_status=5)
     Plist = Plist.exclude(project_status=0)
@@ -311,6 +319,8 @@ def work3(request, user_id, task_id, page=1):
     pic_list = []
     for item in os.listdir(path):
         try:
+            if item.split('.')[-1] not in ['jpg','jpeg','png']:
+                continue
             id = item.split('.')[0].split("_")[1]
             if id == task_num:
                 pic_list.append(item)
@@ -331,6 +341,7 @@ def work3(request, user_id, task_id, page=1):
             number = start + n - 1
         img = ''
         for pic in pic_list:
+            print(pic)
             if int(pic.split('_')[0]) == number:
                 img = f'/static/sample_document/{project_id}/{pic}'
                 break
@@ -462,7 +473,7 @@ def store_data_3(user_id, task_id, page, choice):
     path = f'./static/data/account_{user_id}_task_{task_id}'
     project_id = task_id.split('_')[0]
     path2 = f'./static/sample_document/{project_id}/text_tags_{project_id}.txt'
-    with open(path2,'r') as f:
+    with open(path2,'r',encoding='utf-8') as f:
         for line in f:
             tags = line.split(';')[0].split(',')
             break
@@ -477,6 +488,7 @@ def store_data_3(user_id, task_id, page, choice):
         with open(f'{path}/data.json','r') as f:
             data = json.load(f)
             data[str(page)] = tags[int(choice[-1])-1]
+            print(data)
         with open(f'{path}/data.json','w') as f:
             json.dump(data,f)
 

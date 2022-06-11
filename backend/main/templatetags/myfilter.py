@@ -6,4 +6,4 @@ register = template.Library()
 
 @register.filter
 def test(value, args):
-    return value * args
+    return round(value * args,1)

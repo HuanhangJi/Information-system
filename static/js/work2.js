@@ -93,7 +93,6 @@ function click_button(){
 
 function end_window(){
     window.opener=null;
-    window.close();
     // var img_div = $('.imageLabel-box-active').html();
 };
 function end_task(){
