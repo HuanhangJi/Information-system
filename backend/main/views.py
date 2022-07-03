@@ -117,11 +117,14 @@ def jdzz_product(request, user_id=0, pIndex=1):
     star = request.GET.get('caidan3', '所有星级')
     Plist = Project.objects.exclude(project_status=6)
     Plist = Plist.exclude(project_status=5)
+    Plist = Plist.exclude(project_status=2)
+    Plist = Plist.exclude(project_status=10)
     now = datetime.datetime.now()
     for item in Plist:
         origin = item.project_status
         if now > item.start_time.replace(tzinfo=None):
-            item.project_status=1
+            if int(item.project_status) == 0:
+                item.project_status = 1
         if now > item.due_time.replace(tzinfo=None):
             item.project_status = 5
             if origin != 5:
@@ -239,22 +242,51 @@ def work1(request, user_id, task_id, page=1):
         jindu = math.floor((page-1)/int(page_max)*100)
         return JsonResponse({'data': {'content': content, 'jindu': jindu, 'new_page': page}})
     else:
-        with open(path+'/total.txt','r',encoding='gb18030') as fp:
-            for line in fp:
-                if count == start:
-                    content = line
+        paths = f'./static/data/account_{user_id}_task_{task_id}/data.json'
+        if os.path.exists(paths):
+            with open(paths, 'r') as fp:
+                dic = json.load(fp)
+                last = int(list(dic.keys())[-1])
+                page = last + 1
+                jindu = math.floor((page-1)/int(page_max)*100)
+                if jindu > 100:
+                    jindu = 100
+                number = start + int(page) - 1
+                with open(path + '/total.txt', 'r', encoding='gb18030') as fp:
+                    for line in fp:
+                        if count == number:
+                            content = line
+                            break
+                        count += 1
+                with open(f'{path}/text_tags_{project_id}.txt', 'r', encoding='utf-8') as fp1:
+                    for line in fp1:
+                        choices = line.split(';')[0].split(',')
+                        break
+                choices_num = len(choices)
+                choice_dict = {}
+                for i in range(choices_num):
+                    choice_dict[f'choice_{i + 1}'] = choices[i]
+                task_info = {'new_page': page-1, 'page_max': page_max + 1, 'task_id': task_id, 'page': page-1,
+                             'renwuhao': task_id, 'miaoshu': descreption, 'jindu': jindu, 'content': f'{content}'[:-1],
+                             'yaoqiu': descreption, 'choice_num': choices_num}
+                return render(request, "index/work_1.html", {**context, **task_info, **choice_dict})
+        else:
+            with open(path+'/total.txt','r',encoding='gb18030') as fp:
+                for line in fp:
+                    if count == start:
+                        content = line
+                        break
+                    count += 1
+            with open(f'{path}/text_tags_{project_id}.txt','r',encoding='utf-8') as fp1:
+                for line in fp1:
+                    choices = line.split(';')[0].split(',')
                     break
-                count += 1
-        with open(f'{path}/text_tags_{project_id}.txt','r',encoding='utf-8') as fp1:
-            for line in fp1:
-                choices = line.split(';')[0].split(',')
-                break
-        choices_num = len(choices)
-        choice_dict = {}
-        for i in range(choices_num):
-            choice_dict[f'choice_{i+1}'] = choices[i]
-        task_info = {'new_page':page,'page_max':page_max+1,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption,'jindu': 0,'content': f'{content}'[:-1],'yaoqiu':descreption,'choice_num':choices_num}
-        return render(request, "index/work_1.html", {**context, **task_info,**choice_dict})
+            choices_num = len(choices)
+            choice_dict = {}
+            for i in range(choices_num):
+                choice_dict[f'choice_{i+1}'] = choices[i]
+            task_info = {'new_page':page,'page_max':page_max+1,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption,'jindu': 0,'content': f'{content}'[:-1],'yaoqiu':descreption,'choice_num':choices_num}
+            return render(request, "index/work_1.html", {**context, **task_info,**choice_dict})
 
 def work2(request,user_id,task_id,page = 1):
     page_try = request.GET.get('page')
@@ -293,14 +325,38 @@ def work2(request,user_id,task_id,page = 1):
                 break
         return JsonResponse({'data':{'task_img':img,'jindu':jindu,'new_page':int(page_try),'target': p.project_target}})
     else:
-        img = ''
-        for pic in pic_list:
-            if int(pic.split('_')[0]) == start:
-                img = f'/static/sample_document/{project_id}/{pic}'
-                break
-        task_info = {'new_page':page,'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': p.project_target, 'jindu': 0,
-                     'task_img': img,'page_max':n+1}
-        return render(request, "index/work_2.html",{**context,**task_info})
+        paths = f'./static/data/account_{user_id}_task_{task_id}/data.json'
+        if os.path.exists(paths):
+            with open(paths, 'r') as fp:
+                dic = json.load(fp)
+                last = int(list(dic.keys())[-1])
+                page = last + 1
+                jindu = math.floor(float(int(page) / n) * 100)
+                if jindu > 100:
+                    jindu = 100
+                number = start + int(page) - 1
+                if number < start:
+                    number = start
+                if number > start + n - 1:
+                    number = start + n - 1
+                img = ''
+                for pic in pic_list:
+                    if int(pic.split('_')[0]) == number:
+                        img = f'/static/sample_document/{project_id}/{pic}'
+                        break
+                task_info = {'new_page': page-1, 'task_id': task_id, 'page': page-1, 'renwuhao': task_id,
+                             'target': p.project_target, 'jindu': jindu,
+                             'task_img': img, 'page_max': n + 1}
+                return render(request, "index/work_2.html", {**context, **task_info})
+        else:
+            img = ''
+            for pic in pic_list:
+                if int(pic.split('_')[0]) == start:
+                    img = f'/static/sample_document/{project_id}/{pic}'
+                    break
+            task_info = {'new_page':page,'task_id': task_id, 'page': page, 'renwuhao': task_id, 'target': p.project_target, 'jindu': 0,
+                         'task_img': img,'page_max':n+1}
+            return render(request, "index/work_2.html",{**context,**task_info})
 
 def work3(request, user_id, task_id, page=1):
     #检查
@@ -347,23 +403,50 @@ def work3(request, user_id, task_id, page=1):
                 break
         return JsonResponse({'data': {'content': img, 'jindu': jindu, 'new_page': page}})
     else:
-        with open(f'{path}/text_tags_{project_id}.txt','r',encoding='utf-8') as fp1:
-            for line in fp1:
-                choices = line.split(';')[0].split(',')
-                break
-        choices_num = len(choices)
-        choice_dict = {}
-        for i in range(choices_num):
-            choice_dict[f'choice_{i+1}'] = choices[i]
-        img = ''
-        for pic in pic_list:
-            if int(pic.split('_')[0]) == start:
-                img = f'/static/sample_document/{project_id}/{pic}'
-                break
-        jindu = 0
-        print(img)
-        task_info = {'page_max':n+1,'new_page':page,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption, 'jindu': jindu,'content': img,'yaoqiu':p.project_target,'choice_num':choices_num}
-        return render(request, "index/work_3.html", {**context, **task_info,**choice_dict})
+        paths = f'./static/data/account_{user_id}_task_{task_id}/data.json'
+        if os.path.exists(paths):
+            with open(paths, 'r') as fp:
+                dic = json.load(fp)
+                last = int(list(dic.keys())[-1])
+                page = last + 1
+                jindu = math.floor(float(int(page) / n) * 100)
+                if jindu > 100:
+                    jindu = 100
+                number = start + int(page) - 1
+                with open(f'{path}/text_tags_{project_id}.txt', 'r', encoding='utf-8') as fp1:
+                    for line in fp1:
+                        choices = line.split(';')[0].split(',')
+                        break
+                choices_num = len(choices)
+                choice_dict = {}
+                for i in range(choices_num):
+                    choice_dict[f'choice_{i + 1}'] = choices[i]
+                img = ''
+                for pic in pic_list:
+                    if int(pic.split('_')[0]) == number:
+                        img = f'/static/sample_document/{project_id}/{pic}'
+                        break
+                task_info = {'page_max': n , 'new_page': page, 'task_id': task_id, 'page': page-1, 'renwuhao': task_id,
+                             'miaoshu': descreption, 'jindu': jindu, 'content': img, 'yaoqiu': p.project_target,
+                             'choice_num': choices_num}
+                return render(request, "index/work_3.html", {**context, **task_info, **choice_dict})
+        else:
+            with open(f'{path}/text_tags_{project_id}.txt','r',encoding='utf-8') as fp1:
+                for line in fp1:
+                    choices = line.split(';')[0].split(',')
+                    break
+            choices_num = len(choices)
+            choice_dict = {}
+            for i in range(choices_num):
+                choice_dict[f'choice_{i+1}'] = choices[i]
+            img = ''
+            for pic in pic_list:
+                if int(pic.split('_')[0]) == start:
+                    img = f'/static/sample_document/{project_id}/{pic}'
+                    break
+            jindu = 0
+            task_info = {'page_max':n+1,'new_page':page,'task_id': task_id, 'page': page, 'renwuhao':task_id , 'miaoshu': descreption, 'jindu': jindu,'content': img,'yaoqiu':p.project_target,'choice_num':choices_num}
+            return render(request, "index/work_3.html", {**context, **task_info,**choice_dict})
 
 
 def work1_post(request):
@@ -395,7 +478,7 @@ def work3_post(request):
     return JsonResponse({})
 
 def star_level(star,level):
-    if int(star) < int(level)+2:
+    if int(star) <= int(level)+1:
         i = 1
     else:
         i = 0
@@ -412,7 +495,7 @@ def get_task(request,account_id,project_id):
     p = Project.objects.get(project_id=project_id)
     status = star_level(p.project_star, c.level)
     if not status:
-        return JsonResponse({'code':403,'msg':'标注着等级不足，无法领取任务'})
+        return JsonResponse({'code':403,'msg':'标注者等级不足，无法领取任务'})
     p.project_status = 1
     p.save()
     task_num = tasks.count()
@@ -428,7 +511,9 @@ def get_task(request,account_id,project_id):
         ta.save()
         return JsonResponse({'code': 200,'task_id':id})
     else:
-        return JsonResponse({'code':404,'msg':'网络繁忙'})
+        p.project_status = 2
+        p.save()
+        return JsonResponse({'code':404,'msg':'手速慢了哦，任务已被抢完了'})
 
 def store_data_1(user_id, task_id, page, choice):
     path = f'./static/data/account_{user_id}_task_{task_id}'
@@ -503,6 +588,7 @@ def commit_task_2(request, user_id, task_id, page):
             for i in range(1, page):
                 if str(i) not in keys:
                     miss.append(str(i))
+        print(miss)
         if miss == []:
             t = Task.objects.get(task_id=task_id)
             t.task_status = 2
@@ -541,4 +627,6 @@ def commit_task_1(request, user_id, task_id, page):
     else:
         msg = f'无标注数据'
         return JsonResponse({'code': 404, 'msg': msg})
+
+
 

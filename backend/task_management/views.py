@@ -295,7 +295,7 @@ def write_data(request, project_id):
         except:
             with open(f'{path}/total.txt','w',encoding='gb18030') as fp:
                 for i in range(1,num+1):
-                    with open(f'{path}/{i}.txt','r',encoding='gbk') as f:
+                    with open(f'{path}/{i}.txt','r',encoding='utf-8') as f:
                         for line in f:
                             n += 1
                             fp.write(line)
@@ -351,6 +351,7 @@ def give_up_task(request):
 
 ## TODO task提交成功后付款与升级
 def completed_task(task_id):
+    print('start')
     project_id = task_id.split('_')[0]
     t = Task.objects.get(task_id=task_id)
     ta = Task_association.objects.get(task_id=task_id)
@@ -382,8 +383,10 @@ def completed_task(task_id):
     c.experience += t.score
     c.level = judge_level(c.experience)
     c.save()
-    if p.task_num == p.completed_task_num:
-        p.project_status = 2
+    print(p.task_num)
+    print(p.completed_task_num)
+    if int(p.task_num) == int(p.completed_task_num):
+        p.project_status = 5
     p.save()
 
 
@@ -417,7 +420,8 @@ def project_management(request):
     for item in plist:
         origin = item.project_status
         if now > item.start_time.replace(tzinfo=None):
-            item.project_status=1
+            if int(item.project_status) == 0:
+                item.project_status = 1
         if now > item.due_time.replace(tzinfo=None):
             item.project_status = 5
             if origin != 5:
@@ -778,7 +782,7 @@ def get_data(request):
         with open(path1,'r',encoding='utf-8') as fp:
             for line in fp:
                 num += 1
-                if num >= start and num < start + int(p.item_per_task):
+                if num >= start and num < start + int(p.item_per_task)-1:
                     po = data[str(i)]
                     ans[line.split(' ')[0]] = po
                     i += 1
@@ -895,8 +899,44 @@ def admin_conclusion(request):
     return JsonResponse({'code': 200})
 
 
+def up_and_down(level):
+    level = int(level)
+    max = 0
+    min = 0
+    if level == 1:
+        max = 1000
+        min = 0
+    if level == 2:
+        max = 3000
+        min = 1000
+    if level == 3:
+        max = 10000
+        min = 3000
+    if level == 4:
+        max = 20000
+        min = 10000
+    if level == 5:
+        max = 20000
+        min = 20000
+    return max,min
 
 
 
-
+def get_rank(request):
+    try:
+        res = get_res(request)
+        account_id = res['account_id']
+        c = Consumer.objects.get(account_id=account_id)
+        level = c.level
+        max, min = up_and_down(level)
+        data = {}
+        data['level'] = level
+        data['experience'] = c.experience
+        if int (level) == 5:
+            data['experience'] = 20000
+        data['max_exp'] = max
+        data['min_exp'] = min
+        return JsonResponse({'code': 200, 'data': data})
+    except:
+        return JsonResponse({'code': 200, 'data': ''})
 

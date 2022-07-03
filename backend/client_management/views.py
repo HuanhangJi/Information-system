@@ -87,6 +87,7 @@ def con_login(request):
     res = get_res(request)
     pw = hash_md5(res['password'])
     account = str(res['tel'])
+    print(account)
     info = ''
     if Consumer.objects.filter(tel=account).exists():
         Con = Consumer.objects.get(tel=account)
@@ -336,6 +337,7 @@ def user_change(request):
 def wallet_info(request):
     res = get_res(request)
     account_id = res['account_id']
+    print(account_id)
     w = Wallet.objects.get(account_id=account_id)
     account_num = w.account_num
     return JsonResponse({'account_num':account_num})
@@ -365,15 +367,20 @@ def admin_login(request):
 def money_flow(request):
     res = get_res(request)
     account_id = res['account_id']
+    print(account_id)
     wr = Wallet_record.objects.filter(AB_id=account_id)
     info = []
     for item in wr:
+        print(item.AB_id)
         data = {}
         data['cash_id'] = item.id
         data['type'] = item.cw_type
-        data['time'] = item.pay_time
+        print(data['type'])
+        data['time'] = str(item.pay_time.replace(tzinfo=None))[:-7]
         data['money'] = item.cw_amount
         info.append(data)
+    info.sort(key=lambda x:x['time'],reverse=True)
+    print(info)
     return JsonResponse({'code':200,'data':info})
 
 

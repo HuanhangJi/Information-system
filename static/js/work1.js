@@ -222,7 +222,7 @@ function end_task(){
         data: JSON.stringify(JSON_data), //传进views里的数据
         success: function (res) { //data为地址传过来的数据
             if (res['code']!=200){$('#myModal2').text(res['msg']);$('#myModal2').css("color",'red')}
-            else {$('#myModal2').css("color",'#0b68fb')}
+            else {$('#myModal2').css("color",'#0b68fb');$('#myModal2').text(res['msg']);}
             }
         });
 }
